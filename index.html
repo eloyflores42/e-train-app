@@ -7,137 +7,80 @@
   <link rel="manifest" href="./manifest.json">
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --border: #334155;
-      --primary: #3b82f6;
-      --accent: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
+      --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; --text: #f8fafc; --muted: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
-    header {
-      background: var(--card);
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
-      align-items: center;
-    }
+    header { background: var(--card); padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
     header h1 { font-size: 1.15rem; letter-spacing: 0.5px; color: var(--primary); }
     .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
     .container { max-width: 780px; margin: 0 auto; padding: 16px; }
     
-    /* LOGIN SCREEN */
-    #loginScreen {
-      max-width: 400px;
-      margin: 60px auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
-    }
+    #loginScreen { max-width: 400px; margin: 60px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
     #loginScreen h2 { color: var(--primary); margin-bottom: 8px; font-size: 1.4rem; }
     #loginScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
     .form-group { margin-bottom: 14px; text-align: left; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-    .tab-btn {
-      flex: 1; min-width: 100px; padding: 10px 6px; background: var(--card); color: var(--muted);
-      border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; text-align: center;
-    }
+    .tab-btn { flex: 1; min-width: 80px; padding: 10px 4px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.75rem; cursor: pointer; text-align: center; }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
     .card h2 { font-size: 1.05rem; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     
-    /* PERFIL HEADER / AVATAR */
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .avatar-container {
-      position: relative;
-      width: 75px;
-      height: 75px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: #0b1120;
-      border: 2px solid var(--primary);
-      flex-shrink: 0;
-    }
-    .avatar-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .avatar-container { position: relative; width: 75px; height: 75px; border-radius: 50%; overflow: hidden; background: #0b1120; border: 2px solid var(--primary); flex-shrink: 0; }
+    .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
-    input, select {
-      width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border);
-      background: #0b1120; color: var(--text); font-size: 0.92rem;
-    }
-    button.btn {
-      background: var(--primary); color: #fff; border: none; padding: 10px 14px;
-      border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%;
-    }
+    input, select { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.92rem; }
+    
+    button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
-    button.btn-success { background: var(--accent); }
+    button.btn-success { background: var(--accent); color: #000; }
     button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 10px; font-size: 0.8rem; }
+    
     table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 8px; }
     th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-weight: 600; }
+    
     .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: #1d4ed8; color: #fff; }
     .badge-pagado { background: var(--accent); color: #000; }
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
-    .bloque-item { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
-    .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; font-size: 0.8rem; }
-    .bloque-meta span { background: var(--card); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--text); }
+    
+    /* ESTILOS DE RUTINAS MEJORADOS */
+    .bloque-item { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
+    .ejercicio-titulo { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
+    .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
+    .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.7rem; }
+    
     .video-card { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA DE ACCESO -->
   <div id="loginScreen">
     <h2>E-TRAIN</h2>
     <p>Ingresa con tu correo y tu PIN asignado.</p>
-    <div class="form-group">
-      <label>Correo Electrónico</label>
-      <input type="email" id="loginEmail" placeholder="tu@correo.com" />
-    </div>
-    <div class="form-group">
-      <label>PIN de Acceso / DNI</label>
-      <input type="password" id="loginPin" placeholder="Ej: 1234" />
-    </div>
+    <div class="form-group"><label>Correo Electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" /></div>
+    <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" /></div>
     <button class="btn" onclick="iniciarSesion()" id="btnLoginBtn">Ingresar a la App</button>
     <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-top:10px;"></div>
   </div>
 
-  <!-- APLICACIÓN PRINCIPAL -->
   <div id="appContainer" class="hidden">
     <header>
       <h1>E-TRAIN</h1>
       <div class="user-info">
         <span id="headerAtletaNombre">Atleta</span>
-        <!-- Botón dinámico para instalar PWA (Se muestra oculto hasta que el navegador lo permite) -->
-        <button id="btnInstalarApp" class="btn btn-outline hidden" onclick="instalarPWA()" style="background: var(--accent); color: #000; border: none;">
-          📲 Instalar App
-        </button>
-        <button class="btn btn-outline" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <button id="btnInstalarApp" class="btn btn-outline hidden" onclick="instalarPWA()" style="background: var(--accent); color: #000; border: none;">📲 Instalar</button>
+        <button class="btn btn-outline" onclick="cerrarSesion()">Salir</button>
       </div>
     </header>
 
@@ -145,11 +88,12 @@
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('rutinas', this)">1. Rutinas</button>
         <button class="tab-btn" onclick="switchTab('atleta', this)">2. Perfil</button>
-        <button class="tab-btn" onclick="switchTab('videoteca', this)">3. Videoteca</button>
-        <button class="tab-btn" onclick="switchTab('pagos', this)">4. Pagos</button>
+        <button class="tab-btn" onclick="switchTab('calculadora', this)">3. Calculadora</button>
+        <button class="tab-btn" onclick="switchTab('videoteca', this)">4. Videos</button>
+        <button class="tab-btn" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
 
-      <!-- SECCIÓN 1: RUTINAS -->
+      <!-- RUTINAS -->
       <section id="tab-rutinas">
         <div class="card">
           <h2>Planificación de Entrenamientos</h2>
@@ -157,629 +101,318 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 2: PERFIL, DATOS PERSONALES, FOTO Y ZONAS -->
+      <!-- PERFIL -->
       <section id="tab-atleta" class="hidden">
-        <!-- Tarjeta de Datos Personales y Foto -->
         <div class="card">
-          <h2>Datos Personales y Perfil</h2>
+          <h2>Datos Personales</h2>
           <div class="profile-header">
-            <div class="avatar-container">
-              <img id="avatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto de perfil" />
-            </div>
-            <div style="flex: 1;">
-              <h3 id="perfilNombreCompleto" style="font-size: 1.15rem; color: var(--text);">Nombre del Atleta</h3>
-              <p id="perfilEmailText" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;"></p>
-            </div>
+            <div class="avatar-container"><img id="avatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto" /></div>
+            <div style="flex: 1;"><h3 id="perfilNombreCompleto" style="font-size: 1.15rem; color: var(--text);">Nombre</h3><p id="perfilEmailText" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;"></p></div>
           </div>
-
           <div class="grid-2" style="margin-bottom: 12px;">
-            <div>
-              <label>DNI / Identificación</label>
-              <input type="text" id="inputDNI" placeholder="Ej: 35.444.222" />
-            </div>
-            <div>
-              <label>Fecha de Nacimiento</label>
-              <input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" />
-            </div>
+            <div><label>PIN (Usado para ingresar)</label><input type="text" id="inputDNI" placeholder="Ej: 1234" /></div>
+            <div><label>Fecha de Nacimiento</label><input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" /></div>
           </div>
-          <div style="margin-bottom: 12px;">
-            <label>URL de Foto de Perfil (Imagen web)</label>
-            <input type="text" id="inputFotoUrl" placeholder="https://ejemplo.com/mi-foto.jpg" />
-          </div>
+          <div style="margin-bottom: 12px;"><label>URL de Foto de Perfil (Imagen web)</label><input type="text" id="inputFotoUrl" placeholder="https://ejemplo.com/mi-foto.jpg" /></div>
           <button class="btn btn-outline" onclick="guardarDatosPersonales()">💾 Guardar Datos Personales</button>
         </div>
+      </section>
 
-        <!-- Parámetros Fisiológicos -->
+      <!-- CALCULADORA Y MARCAS -->
+      <section id="tab-calculadora" class="hidden">
         <div class="card">
-          <h2>Parámetros Fisiológicos de Running</h2>
+          <h2>Test de Resistencia (VAM / VO2máx)</h2>
+          <div class="grid-3">
+            <div><label>Tipo de Test</label><select id="testResistenciaTipo" onchange="previewTestResistencia()"><option value="Test de 5 Min (VAM)">Test de 5 Minutos (VAM)</option><option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option></select></div>
+            <div><label>Distancia (metros)</label><input type="number" id="testResistenciaDist" value="1200" step="10" oninput="previewTestResistencia()" /></div>
+          </div>
+          <div style="margin-top:10px; font-size:0.9rem;">Resultado Estimado: <strong id="previewResistencia" style="color:var(--accent);">-</strong></div>
+          <button class="btn" style="margin-top:10px;" id="btnGuardarTestResistencia" onclick="guardarTestResistencia()">Actualizar VAM en Perfil</button>
+        </div>
+
+        <div class="card">
+          <h2>Parámetros de Running & Zonas</h2>
           <div class="grid-3">
             <div><label>VAM (km/h)</label><input type="number" step="0.1" id="inputVAM" oninput="recalcularZonas()" /></div>
             <div><label>FC Reposo (ppm)</label><input type="number" id="inputFCR" oninput="recalcularZonas()" /></div>
             <div><label>FC Máxima (ppm)</label><input type="number" id="inputFCMax" oninput="recalcularZonas()" /></div>
           </div>
           <div style="margin-top: 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx: <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
-            <button class="btn btn-outline" onclick="guardarPerfilEnSheets(null)" id="btnGuardarPerfil">💾 Guardar VAM y FC</button>
+            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado: <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
+            <button class="btn btn-outline" onclick="guardarParametrosFisiologicos()" id="btnGuardarParametros">💾 Guardar Parámetros</button>
           </div>
           <h2 style="margin-top: 18px;">Zonas de Entrenamiento</h2>
-          <table>
-            <thead><tr><th>Zona</th><th>% VAM</th><th>Velocidad</th><th>Ritmo</th><th>FC</th></tr></thead>
-            <tbody id="zonasTableBody"></tbody>
-          </table>
+          <table><thead><tr><th>Zona</th><th>% VAM</th><th>Velocidad</th><th>Ritmo</th></tr></thead><tbody id="zonasTableBody"></tbody></table>
         </div>
 
-        <!-- Calculadora de Tests -->
         <div class="card">
-          <h2>Calculadora y Registro de Marcas (1RM / VAM)</h2>
+          <h2>Test de Fuerza (Calculadora 1RM)</h2>
           <div class="grid-3">
-            <div>
-              <label>Test / Ejercicio</label>
-              <select id="testTipo" onchange="cambiarLabelsTest()">
-                <option value="Sentadilla (1RM)">Sentadilla (1RM)</option>
-                <option value="Hip Thrust (1RM)">Hip Thrust (1RM)</option>
-                <option value="Peso Muerto (1RM)">Peso Muerto (1RM)</option>
-                <option value="Press de Banca (1RM)">Press de Banca (1RM)</option>
-                <option value="Test de 5 Min (VAM)">Test de 5 Min (VAM)</option>
-                <option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option>
-              </select>
-            </div>
-            <div><label id="labelInput1">Peso (kg)</label><input type="number" step="0.5" id="testInput1" value="80" oninput="previewTest()" /></div>
-            <div><label id="labelInput2">Repeticiones</label><input type="number" id="testInput2" value="5" oninput="previewTest()" /></div>
+            <div><label>Ejercicio</label><select id="testFuerzaTipo" onchange="previewTestFuerza()"><option value="Sentadilla">Sentadilla</option><option value="Hip Thrust">Hip Thrust</option><option value="Peso Muerto">Peso Muerto</option><option value="Press de Banca">Press de Banca</option></select></div>
+            <div><label>Peso (kg)</label><input type="number" step="0.5" id="testFuerzaPeso" value="80" oninput="previewTestFuerza()" /></div>
+            <div><label>Repeticiones</label><input type="number" id="testFuerzaReps" value="5" oninput="previewTestFuerza()" /></div>
           </div>
-          <div style="margin-top:10px; font-size:0.9rem;">Resultado: <strong id="testResultadoPreview" style="color:var(--accent);">-</strong></div>
-          <button class="btn" style="margin-top:10px;" id="btnGuardarTest" onclick="guardarNuevoTest()">Actualizar Marca en Planilla</button>
+          <div style="margin-top:10px; font-size:0.9rem;">1RM Estimado: <strong id="previewFuerza" style="color:var(--accent);">-</strong></div>
+          <button class="btn btn-outline" style="margin-top:10px;" id="btnGuardarTestFuerza" onclick="guardarTestFuerza()">Guardar 1RM</button>
         </div>
 
-        <!-- Tabla 1RM -->
         <div class="card">
-          <h2>Mis 1RM y Tabla de Cargas (%)</h2>
-          <table>
-            <thead><tr><th>Ejercicio</th><th>1RM</th><th>65%</th><th>75%</th><th>80%</th><th>90%</th></tr></thead>
-            <tbody id="rmTableBody"></tbody>
-          </table>
+          <h2>Mis Marcas 1RM y Cargas (%)</h2>
+          <table><thead><tr><th>Ejercicio</th><th>1RM</th><th>65%</th><th>75%</th><th>85%</th></tr></thead><tbody id="rmTableBody"></tbody></table>
         </div>
       </section>
 
-      <!-- SECCIÓN 3: VIDEOTECA -->
+      <!-- VIDEOTECA -->
       <section id="tab-videoteca" class="hidden">
-        <div class="card">
-          <h2>Videoteca de Ejercicios</h2>
-          <div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div>
-          <div id="videotecaContainer">Cargando videoteca...</div>
-        </div>
+        <div class="card"><h2>Videoteca de Ejercicios</h2><div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div><div id="videotecaContainer">Cargando videoteca...</div></div>
       </section>
 
-      <!-- SECCIÓN 4: PAGOS -->
+      <!-- PAGOS -->
       <section id="tab-pagos" class="hidden">
-        <div class="card">
-          <h2>Estado de tu Membresía</h2>
-          <div id="pagosContainer">Cargando pagos...</div>
-        </div>
+        <div class="card"><h2>Estado de tu Membresía</h2><div id="pagosContainer">Cargando pagos...</div></div>
       </section>
     </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwWsvcN7QCrcYXBD5zAPOR20ChJmlvTyXbu1eS0tR1ZTEyz9g4Fom1qXFdw28AfmZIl7w/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby2JVPCRTt1qXWb8zFw__WvVwiz9xfvfF1D-j-EPlILAYhRCd9B6O2ITj8IMomiIb4UtQ/exec";
 
-    // --- LÓGICA DE INSTALACIÓN PWA (BANNER / BOTÓN AUTOMÁTICO) ---
+    // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
-
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const btnInstalar = document.getElementById('btnInstalarApp');
-      if (btnInstalar) {
-        btnInstalar.classList.remove('hidden');
-      }
+      e.preventDefault(); deferredPrompt = e;
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.remove('hidden');
     });
-
     async function instalarPWA() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('El usuario aceptó instalar E-TRAIN');
-      }
-      deferredPrompt = null;
-      const btnInstalar = document.getElementById('btnInstalarApp');
-      if (btnInstalar) {
-        btnInstalar.classList.add('hidden');
-      }
+      if (!deferredPrompt) return; deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null;
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
     }
-
     window.addEventListener('appinstalled', () => {
-      const btnInstalar = document.getElementById('btnInstalarApp');
-      if (btnInstalar) {
-        btnInstalar.classList.add('hidden');
-      }
-      deferredPrompt = null;
-      console.log('E-TRAIN fue instalada con éxito');
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
     });
-    // -------------------------------------------------------------
+    // -----------------------
 
     const state = {
-      perfil: {
-        email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "",
-        vam: 15.5, fcr: 52, fcmax: 188, cooperMetros: 2800
-      },
-      rms: {
-        "Sentadilla (1RM)": { peso: 80, reps: 5, rm: 90.0 },
-        "Hip Thrust (1RM)": { peso: 100, reps: 8, rm: 124.2 },
-        "Peso Muerto (1RM)": { peso: 110, reps: 3, rm: 116.5 },
-        "Press de Banca (1RM)": { peso: 70, reps: 6, rm: 81.3 }
-      },
-      sesionesAgrupadas: [],
-      videoteca: [],
-      pagos: []
+      perfil: { email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: 15.5, fcr: 52, fcmax: 188, cooperMetros: 2800 },
+      rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
+      sesionesAgrupadas: [], videoteca: [], pagos: []
     };
 
     function parseNum(val, fallback = 0) {
       if (val === undefined || val === null || val === "") return fallback;
-      const n = parseFloat(String(val).replace(",", "."));
-      return isNaN(n) ? fallback : n;
+      const n = parseFloat(String(val).replace(",", ".")); return isNaN(n) ? fallback : n;
     }
-
     function kmhToPace(kmh) {
-      if (!kmh || kmh <= 0) return "-:--";
-      const totalMin = 60 / kmh;
-      const min = Math.floor(totalMin);
-      const sec = Math.round((totalMin - min) * 60);
+      if (!kmh || kmh <= 0) return "-:--"; const totalMin = 60 / kmh; const min = Math.floor(totalMin); const sec = Math.round((totalMin - min) * 60);
       return sec === 60 ? `${min + 1}:00 /km` : `${min}:${sec < 10 ? "0" : ""}${sec} /km`;
     }
-
-    function calcBrzycki(peso, reps) {
-      if (reps <= 1) return peso;
-      return peso / (1.0278 - 0.0278 * reps);
-    }
-
-    function calcCooperVO2(metros) {
-      return (metros - 504.9) / 44.73;
-    }
+    function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
+    function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const savedEmail = localStorage.getItem("etrain_email");
-      const savedPin = localStorage.getItem("etrain_pin");
-      if (savedEmail && savedPin) {
-        document.getElementById("loginEmail").value = savedEmail;
-        document.getElementById("loginPin").value = savedPin;
-        iniciarSesion();
-      }
+      const savedEmail = localStorage.getItem("etrain_email"); const savedPin = localStorage.getItem("etrain_pin");
+      if (savedEmail && savedPin) { document.getElementById("loginEmail").value = savedEmail; document.getElementById("loginPin").value = savedPin; iniciarSesion(); }
     });
 
     async function iniciarSesion() {
-      const email = document.getElementById("loginEmail").value.trim();
-      const pin = document.getElementById("loginPin").value.trim();
-      const errDiv = document.getElementById("loginError");
-      const btn = document.getElementById("btnLoginBtn");
-
-      if (!email || !pin) {
-        errDiv.textContent = "Completa tu correo y tu PIN.";
-        return;
-      }
-
-      errDiv.textContent = "";
-      btn.disabled = true;
-      btn.textContent = "Validando acceso...";
+      const email = document.getElementById("loginEmail").value.trim(); const pin = document.getElementById("loginPin").value.trim();
+      const errDiv = document.getElementById("loginError"); const btn = document.getElementById("btnLoginBtn");
+      if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; return; }
+      errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
 
       try {
         const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}`);
         const data = await res.json();
-
-        if (data.status === "error") {
-          errDiv.textContent = data.message;
-          btn.disabled = false;
-          btn.textContent = "Ingresar a la App";
-          return;
-        }
-
-        localStorage.setItem("etrain_email", email);
-        localStorage.setItem("etrain_pin", pin);
-
+        if (data.status === "error") { errDiv.textContent = data.message; btn.disabled = false; btn.textContent = "Ingresar a la App"; return; }
+        localStorage.setItem("etrain_email", email); localStorage.setItem("etrain_pin", pin);
         procesarDatosRecibidos(data);
-
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("appContainer").classList.remove("hidden");
-      } catch (err) {
-        console.error(err);
-        errDiv.textContent = "Error de conexión con Google Sheets.";
-        btn.disabled = false;
-        btn.textContent = "Ingresar a la App";
-      }
+        document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("appContainer").classList.remove("hidden");
+      } catch (err) { errDiv.textContent = "Error de conexión."; btn.disabled = false; btn.textContent = "Ingresar"; }
     }
 
-    function cerrarSesion() {
-      localStorage.removeItem("etrain_email");
-      localStorage.removeItem("etrain_pin");
-      location.reload();
-    }
+    function cerrarSesion() { localStorage.removeItem("etrain_email"); localStorage.removeItem("etrain_pin"); location.reload(); }
 
     function procesarDatosRecibidos(data) {
       if (data.perfil) {
         state.perfil = {
-          email: data.perfil["Correo Electrónico"] || "",
-          nombre: data.perfil["Nombre y Apellido"] || "Atleta",
-          dni: data.perfil["DNI"] || data.perfil["PIN"] || "",
-          fechaNac: data.perfil["Fecha de Nacimiento"] || "",
-          fotoUrl: data.perfil["Foto URL"] || "",
-          vam: parseNum(data.perfil["VAM (km/h)"], 15.5),
-          fcr: parseNum(data.perfil["FCR (Reposo)"], 52),
-          fcmax: parseNum(data.perfil["FCmáx"], 188),
-          cooperMetros: 2800
+          email: data.perfil["Correo Electrónico"] || "", nombre: data.perfil["Nombre y Apellido"] || "Atleta",
+          dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin") || "", fechaNac: data.perfil["Fecha de Nacimiento"] || "", fotoUrl: data.perfil["Foto URL"] || "",
+          vam: parseNum(data.perfil["VAM (km/h)"], 15.5), fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800
         };
       }
-
       if (Array.isArray(data.historial)) {
         data.historial.forEach(h => {
-          const tipo = String(h["Tipo / Ejercicio"] || "").trim();
-          const in1 = parseNum(h["Input 1 (Peso kg / Dist m / Nivel)"]);
-          const in2 = parseNum(h["Input 2 (Reps / Tiempo / Zona)"], 1);
-          const resCalc = parseNum(h["Resultado Calculado (1RM / VAM / etc)"]);
-
-          if (state.rms[tipo] && in1 > 0) {
-            state.rms[tipo] = { peso: in1, reps: in2, rm: resCalc > 0 ? resCalc : calcBrzycki(in1, in2) };
-          } else if (tipo.includes("Cooper") && in1 > 0) {
-            state.perfil.cooperMetros = in1;
-          }
+          const tipo = String(h["Ejercicio o Test"] || "").trim();
+          const in1 = parseNum(h["Métrica 1"]); const in2 = parseNum(h["Métrica 2"], 1); const resCalc = parseNum(h["Marca Calculada"]);
+          if (state.rms[tipo] && in1 > 0) { state.rms[tipo] = { peso: in1, reps: in2, rm: resCalc > 0 ? resCalc : calcBrzycki(in1, in2) }; } 
+          else if (tipo.includes("Cooper") && in1 > 0) { state.perfil.cooperMetros = in1; }
         });
       }
-
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
         data.rutinas.forEach(r => {
-          const fecha = r["Fecha"] || "-";
-          const tipo = r["Tipo de Sesión"] || "Sesión";
-          const key = `${fecha}__${tipo}`;
-          if (!mapa.has(key)) {
-            mapa.set(key, {
-              fecha, tipo,
-              volumen: r["Volumen (km o min)"] || "-",
-              rpe: r["Esfuerzo RPE (0-10)"] || "",
-              completado: r["Completado (Sí/No)"] || "No",
-              bloques: []
-            });
-          }
+          const fecha = r["Fecha"] || "-"; const tipo = r["Tipo de Sesión"] || "Sesión"; const key = `${fecha}__${tipo}`;
+          if (!mapa.has(key)) { mapa.set(key, { fecha, tipo, volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", completado: r["Completado (Sí/No)"] || "No", bloques: [] }); }
           mapa.get(key).bloques.push({
-            orden: r["Orden / Bloque"] || "Bloque 1",
-            descripcion: r["Descripción del Ejercicio"] || "",
-            cargaRaw: r["Carga / Ritmo"] || "-",
-            micropausa: r["Micropausa"] || "-",
-            macropausa: r["Macropausa"] || "-"
+            orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
+            seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", pausa: r["Pausa"] || "-"
           });
         });
         state.sesionesAgrupadas = Array.from(mapa.values());
       }
-
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
       if (Array.isArray(data.pagos)) state.pagos = data.pagos;
 
-      document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre;
-      document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
-      document.getElementById("perfilEmailText").textContent = state.perfil.email;
-      document.getElementById("inputDNI").value = state.perfil.dni;
-      document.getElementById("inputFechaNac").value = state.perfil.fechaNac;
-      document.getElementById("inputFotoUrl").value = state.perfil.fotoUrl;
-      
-      if (state.perfil.fotoUrl) {
-        document.getElementById("avatarImg").src = state.perfil.fotoUrl;
-      }
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos();
+    }
 
-      document.getElementById("inputVAM").value = state.perfil.vam;
-      document.getElementById("inputFCR").value = state.perfil.fcr;
-      document.getElementById("inputFCMax").value = state.perfil.fcmax;
+    function actualizarUIPerfil() {
+      document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre; document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
+      document.getElementById("perfilEmailText").textContent = state.perfil.email; document.getElementById("inputDNI").value = state.perfil.dni;
+      document.getElementById("inputFechaNac").value = state.perfil.fechaNac; document.getElementById("inputFotoUrl").value = state.perfil.fotoUrl;
+      if (state.perfil.fotoUrl) document.getElementById("avatarImg").src = state.perfil.fotoUrl;
+      document.getElementById("inputVAM").value = state.perfil.vam; document.getElementById("inputFCR").value = state.perfil.fcr; document.getElementById("inputFCMax").value = state.perfil.fcmax;
+      previewTestResistencia(); previewTestFuerza();
+    }
 
-      recalcularZonas();
-      renderRMTable();
-      previewTest();
-      renderRutinas();
-      renderVideoteca(state.videoteca);
-      renderPagos();
+    function syncSeguroAtleta() {
+      state.perfil.dni = document.getElementById("inputDNI").value || state.perfil.dni || localStorage.getItem("etrain_pin");
+      state.perfil.fechaNac = document.getElementById("inputFechaNac").value; state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
+      state.perfil.vam = parseNum(document.getElementById("inputVAM").value, state.perfil.vam); state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
+    }
+
+    async function guardarPerfilEnSheets(testObj, botonId) {
+      syncSeguroAtleta(); const btn = document.getElementById(botonId); const txt = btn ? btn.textContent : "";
+      if(btn){ btn.disabled = true; btn.textContent = "Guardando..."; }
+      try {
+        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax, nuevoTest: testObj }) });
+        if(btn){ btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = txt; btn.disabled = false; }, 2000); }
+      } catch (err) { if(btn){ btn.textContent = "Error"; btn.disabled = false; } }
     }
 
     async function guardarDatosPersonales() {
-      state.perfil.dni = document.getElementById("inputDNI").value;
-      state.perfil.fechaNac = document.getElementById("inputFechaNac").value;
-      state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
+      if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
+      await guardarPerfilEnSheets(null, null); alert("Datos Personales guardados con éxito.");
+    }
+    
+    async function guardarParametrosFisiologicos() { recalcularZonas(); await guardarPerfilEnSheets(null, "btnGuardarParametros"); }
 
-      if (state.perfil.fotoUrl) {
-        document.getElementById("avatarImg").src = state.perfil.fotoUrl;
-      }
-
-      await guardarPerfilEnSheets(null);
+    function previewTestResistencia() {
+      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      document.getElementById("previewResistencia").textContent = tipo.includes("5 Min") ? ((dist / 1000) * 12).toFixed(2) + " km/h (VAM)" : calcCooperVO2(dist).toFixed(1) + " ml/kg/min (VO2)";
     }
 
-    function buscarVideoParaEjercicio(descripcionEjercicio) {
-      if (!state.videoteca || !state.videoteca.length) return null;
-      const descLower = descripcionEjercicio.toLowerCase();
-      const match = state.videoteca.find(v => {
-        const nombreVideo = String(v["Ejercicio / Movimiento"] || "").toLowerCase();
-        return nombreVideo && descLower.includes(nombreVideo);
-      });
-      if (match) {
-        const url = match["URL del Video"] || match["URL Video"] || "";
-        return (url && url !== "#") ? url : null;
-      }
-      return null;
+    async function guardarTestResistencia() {
+      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      let resCalc = 0;
+      if (tipo.includes("5 Min")) { resCalc = +((dist / 1000) * 12).toFixed(2); document.getElementById("inputVAM").value = resCalc; recalcularZonas(); } 
+      else { resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); }
+      await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
     }
 
-    function enriquecerCarga(descripcion, cargaRaw) {
+    function previewTestFuerza() {
+      const p = parseNum(document.getElementById("testFuerzaPeso").value, 0); const r = parseNum(document.getElementById("testFuerzaReps").value, 1);
+      document.getElementById("previewFuerza").textContent = calcBrzycki(p, r).toFixed(1) + " kg";
+    }
+
+    async function guardarTestFuerza() {
+      const tipo = document.getElementById("testFuerzaTipo").value; const p = parseNum(document.getElementById("testFuerzaPeso").value, 0); const r = parseNum(document.getElementById("testFuerzaReps").value, 1);
+      const rm = +(calcBrzycki(p, r).toFixed(1)); state.rms[tipo] = { peso: p, reps: r, rm: rm };
+      renderRMTable(); renderRutinas();
+      await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
+    }
+
+    function recalcularZonas() {
+      const vam = parseNum(document.getElementById("inputVAM").value, 15.5); state.perfil.vam = vam;
+      document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
+      const zonas = [ { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 }, { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 } ];
+      document.getElementById("zonasTableBody").innerHTML = zonas.map(z => {
+        const vel = vam * z.p; return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:600;">${kmhToPace(vel)}</td></tr>`;
+      }).join("");
+      renderRutinas();
+    }
+
+    function renderRMTable() {
+      document.getElementById("rmTableBody").innerHTML = Object.entries(state.rms).map(([n, d]) => `<tr><td><strong>${n}</strong></td><td style="color:var(--accent); font-weight:700;">${d.rm.toFixed(1)} kg</td><td>${(d.rm * 0.65).toFixed(1)} kg</td><td>${(d.rm * 0.75).toFixed(1)} kg</td><td>${(d.rm * 0.85).toFixed(1)} kg</td></tr>`).join("");
+    }
+
+    function enriquecerCarga(ejercicio, cargaRaw) {
       if (!cargaRaw || cargaRaw === "-") return "Libre";
-      const texto = `${descripcion} ${cargaRaw}`.toLowerCase();
+      const texto = `${ejercicio} ${cargaRaw}`.toLowerCase();
       const matchRM = cargaRaw.match(/(\d+)\s*%\s*1rm/i);
       if (matchRM) {
-        const pct = parseFloat(matchRM[1]) / 100;
-        let refKey = null;
-        if (texto.includes("sentadilla")) refKey = "Sentadilla (1RM)";
-        else if (texto.includes("muerto")) refKey = "Peso Muerto (1RM)";
-        else if (texto.includes("banca") || texto.includes("press")) refKey = "Press de Banca (1RM)";
-        else if (texto.includes("hip")) refKey = "Hip Thrust (1RM)";
-
-        if (refKey && state.rms[refKey]) {
-          const kg = (state.rms[refKey].rm * pct).toFixed(1);
-          return `${cargaRaw} → <strong>${kg} kg</strong>`;
-        }
+        const pct = parseFloat(matchRM[1]) / 100; let refKey = null;
+        if (texto.includes("sentadilla")) refKey = "Sentadilla"; else if (texto.includes("muerto")) refKey = "Peso Muerto"; else if (texto.includes("banca") || texto.includes("press")) refKey = "Press de Banca"; else if (texto.includes("hip")) refKey = "Hip Thrust";
+        if (refKey && state.rms[refKey]) return `${cargaRaw} → <strong>${(state.rms[refKey].rm * pct).toFixed(1)} kg</strong>`;
       }
       const matchVam = cargaRaw.match(/(\d+)\s*%\s*vam/i);
       if (matchVam) {
-        const pct = parseFloat(matchVam[1]) / 100;
-        const vel = state.perfil.vam * pct;
-        return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
+        const vel = state.perfil.vam * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
       }
       return cargaRaw;
     }
 
     function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
-      if (!state.sesionesAgrupadas.length) {
-        container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`;
-        return;
-      }
-
+      if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
       container.innerHTML = state.sesionesAgrupadas.map((s, idx) => {
         const bloquesHtml = s.bloques.map(b => {
-          const cargaCalculada = enriquecerCarga(b.descripcion, b.cargaRaw);
-          const videoUrl = buscarVideoParaEjercicio(b.descripcion);
-          const linkVideoHtml = videoUrl ? `<a href="${videoUrl}" target="_blank" style="font-size:0.78rem; color:var(--primary); margin-left:8px; text-decoration:none; background:#0f172a; padding:2px 6px; border-radius:4px; border:1px solid var(--border);">🎥 Ver video</a>` : "";
-
-          return `
-            <div class="bloque-item">
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
-                <strong>${b.orden}: ${b.descripcion}</strong>
-                ${linkVideoHtml}
-              </div>
+          const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
+          if(state.videoteca.length) {
+            const match = state.videoteca.find(v => (v["Ejercicio / Movimiento"]||"").toLowerCase().includes(b.ejercicio.toLowerCase()) && b.ejercicio.length > 3);
+            if(match && match["URL del Video"] && match["URL del Video"] !== "#") linkVideoHtml = `<a href="${match["URL del Video"]}" target="_blank" style="font-size:0.75rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
+          }
+          return `<div class="bloque-item">
+              <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
               <div class="bloque-meta">
-                <span>🎯 <strong>Carga/Ritmo:</strong> ${cargaCalculada}</span>
-                <span>⏱️ <strong>Pausa:</strong> ${b.micropausa}</span>
+                <span><i>Reps:</i> <strong>${b.seriesReps}</strong></span>
+                <span><i>Carga:</i> <strong>${cargaCalculada}</strong></span>
+                <span><i>Pausa:</i> <strong>${b.pausa}</strong></span>
               </div>
-            </div>
-          `;
+            </div>`;
         }).join("");
-
-        return `
-          <div class="card" style="background:#152033; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <div>
-                <span class="badge" style="background:var(--primary);">${s.fecha}</span>
-                <strong style="margin-left:8px;">${s.tipo}</strong>
-              </div>
+        return `<div class="card" style="background:#152033; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <div><span class="badge" style="background:var(--primary);">${s.fecha}</span><strong style="margin-left:8px;">${s.tipo}</strong></div>
               <span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span>
             </div>
             ${bloquesHtml}
             <div class="grid-3" style="margin-top:12px; align-items:end;">
-              <div>
-                <label>RPE (0-10)</label>
-                <input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" placeholder="Ej: 7" />
-              </div>
-              <div>
-                <label>Estado</label>
-                <select id="comp-${idx}">
-                  <option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option>
-                  <option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Completado</option>
-                </select>
-              </div>
-              <div>
-                <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button>
-              </div>
+              <div><label>RPE</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
+              <div><label>Estado</label><select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select></div>
+              <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join("");
+    }
+
+    async function registrarRPE(idx) {
+      const s = state.sesionesAgrupadas[idx]; s.rpe = document.getElementById(`rpe-${idx}`).value; s.completado = document.getElementById(`comp-${idx}`).value;
+      const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
+      try {
+        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "updateRutina", email: state.perfil.email, fecha: s.fecha, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado }) });
+        btn.textContent = "✔"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
+      } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
     function renderVideoteca(lista) {
       const container = document.getElementById("videotecaContainer");
-      if (!lista.length) {
-        container.innerHTML = `<p style="color:var(--muted);">No hay videos cargados.</p>`;
-        return;
-      }
-
-      container.innerHTML = lista.map(v => {
-        const url = v["URL del Video"] || v["URL Video"] || "";
-        const tieneUrl = url && url !== "#";
-        const botonHtml = tieneUrl 
-          ? `<a href="${url}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; padding:6px 12px; display:inline-block; text-decoration:none;">▶ Ver</a>`
-          : `<span style="font-size:0.75rem; color:var(--muted);">Próximamente</span>`;
-
-        return `
-          <div class="video-card">
-            <div>
-              <strong style="font-size:0.95rem; color:var(--text);">${v["Ejercicio / Movimiento"] || "-"}</strong>
-              <div style="font-size:0.78rem; color:var(--accent); margin-top:2px;">${v["Grupo Muscular"] || ""}</div>
-              <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;">${v["Descripción / Puntos Clave"] || ""}</div>
-            </div>
-            <div>${botonHtml}</div>
-          </div>
-        `;
-      }).join("");
+      if (!lista.length) { container.innerHTML = `<p style="color:var(--muted);">No hay videos.</p>`; return; }
+      container.innerHTML = lista.map(v => `<div class="video-card"><div><strong style="font-size:0.95rem; color:var(--text);">${v["Ejercicio / Movimiento"] || "-"}</strong><div style="font-size:0.78rem; color:var(--accent);">${v["Grupo Muscular"] || ""}</div></div><div>${v["URL del Video"] && v["URL del Video"] !== "#" ? `<a href="${v["URL del Video"]}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.75rem; color:var(--muted);">Próx.</span>`}</div></div>`).join("");
     }
-
+    function filtrarVideos() { const q = document.getElementById("busquedaVideo").value.toLowerCase(); renderVideoteca(state.videoteca.filter(v => String(v["Ejercicio / Movimiento"]).toLowerCase().includes(q) || String(v["Grupo Muscular"]).toLowerCase().includes(q))); }
+    
     function renderPagos() {
       const container = document.getElementById("pagosContainer");
-      if (!state.pagos.length) {
-        container.innerHTML = `<p style="color:var(--muted);">No hay registros de pagos para este usuario.</p>`;
-        return;
-      }
-
-      const filasHtml = state.pagos.map(p => {
-        const estado = String(p["Estado"] || "Pendiente").trim().toLowerCase();
-        let badgeClass = "badge-pendiente";
-        if (estado.includes("pagado") || estado.includes("al día")) badgeClass = "badge-pagado";
-        else if (estado.includes("vencido")) badgeClass = "badge-vencido";
-
-        return `
-          <tr>
-            <td><strong>${p["Mes / Periodo"] || "Periodo"}</strong></td>
-            <td>${p["Monto"] || "$ -"}</td>
-            <td><span class="badge ${badgeClass}">${p["Estado"] || "Pendiente"}</span></td>
-            <td>${p["Fecha de Vencimiento"] || "-"}</td>
-          </tr>
-        `;
-      }).join("");
-
-      container.innerHTML = `
-        <table>
-          <thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Vencimiento</th></tr></thead>
-          <tbody>${filasHtml}</tbody>
-        </table>
-      `;
-    }
-
-    function filtrarVideos() {
-      const query = document.getElementById("busquedaVideo").value.toLowerCase();
-      const filtrados = state.videoteca.filter(v => 
-        String(v["Ejercicio / Movimiento"]).toLowerCase().includes(query) ||
-        String(v["Grupo Muscular"]).toLowerCase().includes(query)
-      );
-      renderVideoteca(filtrados);
-    }
-
-    async function registrarRPE(idx) {
-      const sesion = state.sesionesAgrupadas[idx];
-      const rpe = document.getElementById(`rpe-${idx}`).value;
-      const comp = document.getElementById(`comp-${idx}`).value;
-      const btn = document.getElementById(`btn-rutina-${idx}`);
-
-      sesion.rpe = rpe;
-      sesion.completado = comp;
-      btn.disabled = true;
-      btn.textContent = "...";
-
-      try {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "updateRutina",
-            email: state.perfil.email,
-            fecha: sesion.fecha,
-            tipoSesion: sesion.tipo,
-            rpe: rpe,
-            completado: comp
-          })
-        });
-        btn.textContent = "✔";
-        setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
-      } catch (err) {
-        btn.textContent = "Error";
-        btn.disabled = false;
-      }
-    }
-
-    function recalcularZonas() {
-      const vam = parseNum(document.getElementById("inputVAM").value, 15.5);
-      const fcr = parseNum(document.getElementById("inputFCR").value, 52);
-      const fcmax = parseNum(document.getElementById("inputFCMax").value, 188);
-      state.perfil.vam = vam; state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
-
-      document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
-
-      const zonas = [
-        { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 },
-        { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 }
-      ];
-
-      document.getElementById("zonasTableBody").innerHTML = zonas.map(z => {
-        const vel = vam * z.p;
-        return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:600;">${kmhToPace(vel)}</td><td>-</td></tr>`;
-      }).join("");
-
-      renderRutinas();
-    }
-
-    function cambiarLabelsTest() {
-      const tipo = document.getElementById("testTipo").value;
-      document.getElementById("labelInput1").textContent = tipo.includes("Test") ? "Distancia (metros)" : "Peso (kg)";
-      document.getElementById("labelInput2").textContent = tipo.includes("Test") ? "Duración (min)" : "Repeticiones";
-    }
-
-    function previewTest() {}
-
-    async function guardarNuevoTest() {
-      const tipo = document.getElementById("testTipo").value;
-      const v1 = parseNum(document.getElementById("testInput1").value, 0);
-      const v2 = parseNum(document.getElementById("testInput2").value, 1);
-      let resCalc = tipo.includes("Test") ? v1 : calcBrzycki(v1, v2);
-
-      if (tipo.includes("VAM")) {
-        state.perfil.vam = +((v1 / 1000) * 12).toFixed(2);
-        document.getElementById("inputVAM").value = state.perfil.vam;
-        recalcularZonas();
-      } else if (!tipo.includes("Cooper")) {
-        state.rms[tipo] = { peso: v1, reps: v2, rm: +resCalc.toFixed(1) };
-        renderRMTable();
-        renderRutinas();
-      }
-
-      await guardarPerfilEnSheets({ tipo, input1: v1, input2: v2, resultado: +resCalc.toFixed(1), obs: "Actualizado desde App" });
-    }
-
-    async function guardarPerfilEnSheets(testObj) {
-      const btn = testObj ? document.getElementById("btnGuardarTest") : document.getElementById("btnGuardarPerfil");
-      btn.disabled = true;
-      try {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "updateAtleta",
-            email: state.perfil.email,
-            dni: state.perfil.dni,
-            fechaNac: state.perfil.fechaNac,
-            fotoUrl: state.perfil.fotoUrl,
-            vam: state.perfil.vam,
-            fcr: state.perfil.fcr,
-            fcmax: state.perfil.fcmax,
-            nuevoTest: testObj
-          })
-        });
-        btn.textContent = "✔ Guardado";
-        setTimeout(() => { btn.textContent = testObj ? "Actualizar Marca y Guardar en Historial" : "💾 Guardar Cambios"; btn.disabled = false; }, 2000);
-      } catch (err) {
-        btn.textContent = "Error";
-        btn.disabled = false;
-      }
-    }
-
-    function renderRMTable() {
-      document.getElementById("rmTableBody").innerHTML = Object.entries(state.rms).map(([n, d]) => `
-        <tr>
-          <td><strong>${n.replace(" (1RM)", "")}</strong></td>
-          <td style="color:var(--accent); font-weight:700;">${d.rm.toFixed(1)} kg</td>
-          <td>${(d.rm * 0.65).toFixed(1)} kg</td>
-          <td>${(d.rm * 0.75).toFixed(1)} kg</td>
-          <td>${(d.rm * 0.80).toFixed(1)} kg</td>
-          <td>${(d.rm * 0.90).toFixed(1)} kg</td>
-        </tr>
-      `).join("");
+      if (!state.pagos.length) { container.innerHTML = `<p style="color:var(--muted);">Sin pagos.</p>`; return; }
+      container.innerHTML = `<table><thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Venc</th></tr></thead><tbody>${state.pagos.map(p => { const e = String(p["Estado"]||"").toLowerCase(); const bc = (e.includes("pagado")||e.includes("día")) ? "badge-pagado" : (e.includes("vencido") ? "badge-vencido" : "badge-pendiente"); return `<tr><td><strong>${p["Mes / Periodo"]}</strong></td><td>${p["Monto"]}</td><td><span class="badge ${bc}">${p["Estado"]}</span></td><td>${p["Fecha de Vencimiento"]}</td></tr>`; }).join("")}</tbody></table>`;
     }
 
     function switchTab(tab, btn) {
-      document.getElementById("tab-rutinas").classList.toggle("hidden", tab !== "rutinas");
-      document.getElementById("tab-atleta").classList.toggle("hidden", tab !== "atleta");
-      document.getElementById("tab-videoteca").classList.toggle("hidden", tab !== "videoteca");
-      document.getElementById("tab-pagos").classList.toggle("hidden", tab !== "pagos");
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
+      document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
     }
   </script>
 </body>
