@@ -133,6 +133,10 @@
       <h1>E-TRAIN</h1>
       <div class="user-info">
         <span id="headerAtletaNombre">Atleta</span>
+        <!-- Botón dinámico para instalar PWA (Se muestra oculto hasta que el navegador lo permite) -->
+        <button id="btnInstalarApp" class="btn btn-outline hidden" onclick="instalarPWA()" style="background: var(--accent); color: #000; border: none;">
+          📲 Instalar App
+        </button>
         <button class="btn btn-outline" onclick="cerrarSesion()">Cerrar Sesión</button>
       </div>
     </header>
@@ -257,6 +261,42 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwWsvcN7QCrcYXBD5zAPOR20ChJmlvTyXbu1eS0tR1ZTEyz9g4Fom1qXFdw28AfmZIl7w/exec";
+
+    // --- LÓGICA DE INSTALACIÓN PWA (BANNER / BOTÓN AUTOMÁTICO) ---
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btnInstalar = document.getElementById('btnInstalarApp');
+      if (btnInstalar) {
+        btnInstalar.classList.remove('hidden');
+      }
+    });
+
+    async function instalarPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('El usuario aceptó instalar E-TRAIN');
+      }
+      deferredPrompt = null;
+      const btnInstalar = document.getElementById('btnInstalarApp');
+      if (btnInstalar) {
+        btnInstalar.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('appinstalled', () => {
+      const btnInstalar = document.getElementById('btnInstalarApp');
+      if (btnInstalar) {
+        btnInstalar.classList.add('hidden');
+      }
+      deferredPrompt = null;
+      console.log('E-TRAIN fue instalada con éxito');
+    });
+    // -------------------------------------------------------------
 
     const state = {
       perfil: {
@@ -413,7 +453,6 @@
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
       if (Array.isArray(data.pagos)) state.pagos = data.pagos;
 
-      // Actualizar UI del perfil
       document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre;
       document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
       document.getElementById("perfilEmailText").textContent = state.perfil.email;
