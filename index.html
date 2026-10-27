@@ -176,7 +176,7 @@
 
   <script>
     // URL DEFINITIVA DE APPS SCRIPT
-    const API_URL = "https://script.google.com/macros/s/AKfycby2JVPCRTt1qXWb8zFw__WvVwiz9xfvfF1D-j-EPlILAYhRCd9B6O2ITj8IMomiIb4UtQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyteKOolSd8bz0K64PHPLjgYdZH9CagIqRQbMyNiHiYqc_nb0lkAyOgNR_fYqVboBFjMw/exec";
 
     // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
@@ -274,7 +274,8 @@
           if (!mapa.has(key)) { mapa.set(key, { fecha, tipo, volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", completado: r["Completado (Sí/No)"] || "No", bloques: [] }); }
           mapa.get(key).bloques.push({
             orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
-            seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", pausa: r["Pausa"] || "-"
+            seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", 
+            micropausa: r["Micropausa"] || "-", macropausa: r["Macropausa"] || "-" // NUEVOS CAMPOS DE PAUSA
           });
         });
         state.sesionesAgrupadas = Array.from(mapa.values());
@@ -388,7 +389,8 @@
               <div class="bloque-meta">
                 <span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span>
                 <span><i>Carga:</i> <strong>${cargaCalculada}</strong></span>
-                <span><i>Pausa:</i> <strong>${b.pausa}</strong></span>
+                <span><i>Micro:</i> <strong>${b.micropausa}</strong></span>
+                <span><i>Macro:</i> <strong>${b.macropausa}</strong></span>
               </div>
             </div>`;
         }).join("");
