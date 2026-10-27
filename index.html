@@ -353,7 +353,7 @@
       return cargaRaw;
     }
 
-    function renderRutinas() {
+   function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
       if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
       container.innerHTML = state.sesionesAgrupadas.map((s, idx) => {
@@ -366,7 +366,7 @@
           return `<div class="bloque-item">
               <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
               <div class="bloque-meta">
-                <span><i>Reps:</i> <strong>${b.seriesReps}</strong></span>
+                <span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span>
                 <span><i>Carga:</i> <strong>${cargaCalculada}</strong></span>
                 <span><i>Pausa:</i> <strong>${b.pausa}</strong></span>
               </div>
