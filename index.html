@@ -52,7 +52,7 @@
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
     
-    /* ESTILOS DE RUTINAS MEJORADOS */
+    /* ESTILOS DE RUTINAS */
     .bloque-item { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
     .ejercicio-titulo { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
@@ -175,6 +175,7 @@
   </div>
 
   <script>
+    // URL DEFINITIVA DE APPS SCRIPT
     const API_URL = "https://script.google.com/macros/s/AKfycby2JVPCRTt1qXWb8zFw__WvVwiz9xfvfF1D-j-EPlILAYhRCd9B6O2ITj8IMomiIb4UtQ/exec";
 
     // --- INSTALACIÓN PWA ---
@@ -203,12 +204,28 @@
       if (val === undefined || val === null || val === "") return fallback;
       const n = parseFloat(String(val).replace(",", ".")); return isNaN(n) ? fallback : n;
     }
+    
     function kmhToPace(kmh) {
       if (!kmh || kmh <= 0) return "-:--"; const totalMin = 60 / kmh; const min = Math.floor(totalMin); const sec = Math.round((totalMin - min) * 60);
       return sec === 60 ? `${min + 1}:00 /km` : `${min}:${sec < 10 ? "0" : ""}${sec} /km`;
     }
+    
     function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
+
+    // --- TRADUCTOR DE FECHAS ---
+    function formatearFecha(cadena) {
+      if (!cadena || cadena === "-") return "-";
+      if (String(cadena).includes("T")) {
+        const d = new Date(cadena);
+        if (!isNaN(d)) {
+          let str = new Intl.DateTimeFormat('es-AR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+          str = str.replace(',', ''); 
+          return str.charAt(0).toUpperCase() + str.slice(1); 
+        }
+      }
+      return cadena;
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedEmail = localStorage.getItem("etrain_email"); const savedPin = localStorage.getItem("etrain_pin");
@@ -252,7 +269,8 @@
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
         data.rutinas.forEach(r => {
-          const fecha = r["Fecha"] || "-"; const tipo = r["Tipo de Sesión"] || "Sesión"; const key = `${fecha}__${tipo}`;
+          const fecha = formatearFecha(r["Fecha"]); // Fecha bonita
+          const tipo = r["Tipo de Sesión"] || "Sesión"; const key = `${fecha}__${tipo}`;
           if (!mapa.has(key)) { mapa.set(key, { fecha, tipo, volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", completado: r["Completado (Sí/No)"] || "No", bloques: [] }); }
           mapa.get(key).bloques.push({
             orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
@@ -262,7 +280,9 @@
         state.sesionesAgrupadas = Array.from(mapa.values());
       }
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
-      if (Array.isArray(data.pagos)) state.pagos = data.pagos;
+      if (Array.isArray(data.pagos)) {
+        state.pagos = data.pagos.map(p => { p["Fecha de Vencimiento"] = formatearFecha(p["Fecha de Vencimiento"]); return p; });
+      }
 
       actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos();
     }
@@ -353,7 +373,7 @@
       return cargaRaw;
     }
 
-   function renderRutinas() {
+    function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
       if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
       container.innerHTML = state.sesionesAgrupadas.map((s, idx) => {
