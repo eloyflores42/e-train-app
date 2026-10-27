@@ -52,7 +52,6 @@
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
     
-    /* ESTILOS DE RUTINAS */
     .bloque-item { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
     .ejercicio-titulo { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
@@ -93,7 +92,6 @@
         <button class="tab-btn" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
 
-      <!-- RUTINAS -->
       <section id="tab-rutinas">
         <div class="card">
           <h2>Planificación de Entrenamientos</h2>
@@ -101,7 +99,6 @@
         </div>
       </section>
 
-      <!-- PERFIL -->
       <section id="tab-atleta" class="hidden">
         <div class="card">
           <h2>Datos Personales</h2>
@@ -118,7 +115,6 @@
         </div>
       </section>
 
-      <!-- CALCULADORA Y MARCAS -->
       <section id="tab-calculadora" class="hidden">
         <div class="card">
           <h2>Test de Resistencia (VAM / VO2máx)</h2>
@@ -162,12 +158,10 @@
         </div>
       </section>
 
-      <!-- VIDEOTECA -->
       <section id="tab-videoteca" class="hidden">
         <div class="card"><h2>Videoteca de Ejercicios</h2><div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div><div id="videotecaContainer">Cargando videoteca...</div></div>
       </section>
 
-      <!-- PAGOS -->
       <section id="tab-pagos" class="hidden">
         <div class="card"><h2>Estado de tu Membresía</h2><div id="pagosContainer">Cargando pagos...</div></div>
       </section>
@@ -175,8 +169,7 @@
   </div>
 
   <script>
-    // URL DEFINITIVA DE APPS SCRIPT
-    const API_URL = "https://script.google.com/macros/s/AKfycbyteKOolSd8bz0K64PHPLjgYdZH9CagIqRQbMyNiHiYqc_nb0lkAyOgNR_fYqVboBFjMw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxSy82gSX0GgCZaFCoWlMh-0DDouyiacbu0qnaqyRmRroSuBmX1LcusvQPb0vK84mJ6YQ/exec";
 
     // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
@@ -204,16 +197,13 @@
       if (val === undefined || val === null || val === "") return fallback;
       const n = parseFloat(String(val).replace(",", ".")); return isNaN(n) ? fallback : n;
     }
-    
     function kmhToPace(kmh) {
       if (!kmh || kmh <= 0) return "-:--"; const totalMin = 60 / kmh; const min = Math.floor(totalMin); const sec = Math.round((totalMin - min) * 60);
       return sec === 60 ? `${min + 1}:00 /km` : `${min}:${sec < 10 ? "0" : ""}${sec} /km`;
     }
-    
     function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
-    // --- TRADUCTOR DE FECHAS ---
     function formatearFecha(cadena) {
       if (!cadena || cadena === "-") return "-";
       if (String(cadena).includes("T")) {
@@ -269,13 +259,27 @@
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
         data.rutinas.forEach(r => {
-          const fecha = formatearFecha(r["Fecha"]); // Fecha bonita
-          const tipo = r["Tipo de Sesión"] || "Sesión"; const key = `${fecha}__${tipo}`;
-          if (!mapa.has(key)) { mapa.set(key, { fecha, tipo, volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", completado: r["Completado (Sí/No)"] || "No", bloques: [] }); }
+          const rawFecha = r["Fecha"] || "-"; 
+          const displayFecha = formatearFecha(r["Fecha"]); 
+          
+          const tipo = r["Tipo de Sesión"] || "Sesión"; 
+          const key = `${rawFecha}__${tipo}`;
+          
+          if (!mapa.has(key)) { 
+            mapa.set(key, { 
+              fechaRaw: rawFecha, 
+              fechaDisplay: displayFecha, 
+              tipo, 
+              volumen: r["Volumen Sesión"] || "-", 
+              rpe: r["Esfuerzo RPE (0-10)"] || "", 
+              completado: r["Completado (Sí/No)"] || "No", 
+              bloques: [] 
+            }); 
+          }
           mapa.get(key).bloques.push({
             orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
             seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", 
-            micropausa: r["Micropausa"] || "-", macropausa: r["Macropausa"] || "-" // NUEVOS CAMPOS DE PAUSA
+            micropausa: r["Micropausa"] || "-", macropausa: r["Macropausa"] || "-"
           });
         });
         state.sesionesAgrupadas = Array.from(mapa.values());
@@ -396,7 +400,7 @@
         }).join("");
         return `<div class="card" style="background:#152033; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-              <div><span class="badge" style="background:var(--primary);">${s.fecha}</span><strong style="margin-left:8px;">${s.tipo}</strong></div>
+              <div><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="margin-left:8px;">${s.tipo}</strong></div>
               <span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span>
             </div>
             ${bloquesHtml}
@@ -413,7 +417,11 @@
       const s = state.sesionesAgrupadas[idx]; s.rpe = document.getElementById(`rpe-${idx}`).value; s.completado = document.getElementById(`comp-${idx}`).value;
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
-        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "updateRutina", email: state.perfil.email, fecha: s.fecha, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado }) });
+        await fetch(API_URL, { 
+          method: "POST", 
+          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+          body: JSON.stringify({ action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado }) 
+        });
         btn.textContent = "✔"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
