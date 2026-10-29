@@ -88,7 +88,7 @@
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('rutinas', this)">1. Rutinas</button>
         <button class="tab-btn" onclick="switchTab('atleta', this)">2. Perfil</button>
-        <button class="tab-btn" onclick="switchTab('calculadora', this)">3. Calculadora</button>
+        <button class="tab-btn" onclick="switchTab('calculadora', this)">3. Tests</button>
         <button class="tab-btn" onclick="switchTab('videoteca', this)">4. Videos</button>
         <button class="tab-btn" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
@@ -130,7 +130,7 @@
         <div class="card">
           <h2>Parámetros de Running & Zonas</h2>
           <div class="grid-3">
-            <div><label>VAM (km/h)</label><input type="number" step="0.1" id="inputVAM" oninput="recalcularZonas()" /></div>
+            <div><label>VAM (km/h) 🔒</label><input type="number" step="0.1" id="inputVAM" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed; border-color: var(--bg);" title="La VAM solo se actualiza guardando un Test de Resistencia." /></div>
             <div><label>FC Reposo (ppm)</label><input type="number" id="inputFCR" oninput="recalcularZonas()" /></div>
             <div><label>FC Máxima (ppm)</label><input type="number" id="inputFCMax" oninput="recalcularZonas()" /></div>
           </div>
@@ -138,8 +138,17 @@
             <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado: <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
             <button class="btn btn-outline" onclick="guardarParametrosFisiologicos()" id="btnGuardarParametros">💾 Guardar Parámetros</button>
           </div>
-          <h2 style="margin-top: 18px;">Zonas de Entrenamiento</h2>
-          <table><thead><tr><th>Zona</th><th>% VAM</th><th>Velocidad</th><th>Ritmo</th></tr></thead><tbody id="zonasTableBody"></tbody></table>
+          
+          <div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h2 style="margin: 0; border: none; padding: 0;">Zonas de Entrenamiento</h2>
+            <div class="tabs" style="margin: 0;">
+              <button class="tab-btn active" id="btnTablaVAM" onclick="toggleZonas('vam')" style="min-width: 90px;">Ritmos (VAM)</button>
+              <button class="tab-btn" id="btnTablaFC" onclick="toggleZonas('fc')" style="min-width: 90px;">Pulsaciones (FC)</button>
+            </div>
+          </div>
+          
+          <table id="tablaVAM" style="margin-top: 12px;"><thead><tr><th>Zona</th><th>% VAM</th><th>Velocidad</th><th>Ritmo</th></tr></thead><tbody id="zonasTableBodyVAM"></tbody></table>
+          <table id="tablaFC" class="hidden" style="margin-top: 12px;"><thead><tr><th>Zona</th><th>% FC (Karvonen)</th><th>Rango / Pulsaciones</th></tr></thead><tbody id="zonasTableBodyFC"></tbody></table>
         </div>
 
         <div class="card">
@@ -170,7 +179,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxBPxg4axHeCIV9sklf3LBfr95gxWl9iouHEnSL2iYTHjrCL2NrOAXEyP6q-O8vf2qC_g/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxNrfEhiREK36iYW8yUvecIyrMR-fiBLbsmT6TlhqkCn5OIV2vvBgM3H97r9RKMR7f9cg/exec";
 
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -305,7 +314,7 @@
     function syncSeguroAtleta() {
       state.perfil.dni = document.getElementById("inputDNI").value || state.perfil.dni || localStorage.getItem("etrain_pin");
       state.perfil.fechaNac = document.getElementById("inputFechaNac").value; state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
-      state.perfil.vam = parseNum(document.getElementById("inputVAM").value, state.perfil.vam); state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
+      state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
     }
 
     async function guardarPerfilEnSheets(testObj, botonId) {
@@ -332,7 +341,12 @@
     async function guardarTestResistencia() {
       const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
       let resCalc = 0;
-      if (tipo.includes("5 Min")) { resCalc = +((dist / 1000) * 12).toFixed(2); document.getElementById("inputVAM").value = resCalc; recalcularZonas(); } 
+      if (tipo.includes("5 Min")) { 
+        resCalc = +((dist / 1000) * 12).toFixed(2); 
+        document.getElementById("inputVAM").value = resCalc; 
+        state.perfil.vam = resCalc;
+        recalcularZonas(); 
+      } 
       else { resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); }
       await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
     }
@@ -349,13 +363,39 @@
       await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
     }
 
+    function toggleZonas(tipo) {
+      if(tipo === 'vam') {
+        document.getElementById('tablaVAM').classList.remove('hidden'); document.getElementById('tablaFC').classList.add('hidden');
+        document.getElementById('btnTablaVAM').classList.add('active'); document.getElementById('btnTablaFC').classList.remove('active');
+      } else {
+        document.getElementById('tablaFC').classList.remove('hidden'); document.getElementById('tablaVAM').classList.add('hidden');
+        document.getElementById('btnTablaFC').classList.add('active'); document.getElementById('btnTablaVAM').classList.remove('active');
+      }
+    }
+
     function recalcularZonas() {
-      const vam = parseNum(document.getElementById("inputVAM").value, 15.5); state.perfil.vam = vam;
+      const vam = parseNum(document.getElementById("inputVAM").value, 15.5);
+      const fcr = parseNum(document.getElementById("inputFCR").value, 52);
+      const fcmax = parseNum(document.getElementById("inputFCMax").value, 188);
+      const fcReserva = fcmax - fcr;
+      
+      state.perfil.vam = vam; state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
       document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
+      
       const zonas = [ { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 }, { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 } ];
-      document.getElementById("zonasTableBody").innerHTML = zonas.map(z => {
+      
+      // Tabla VAM
+      document.getElementById("zonasTableBodyVAM").innerHTML = zonas.map(z => {
         const vel = vam * z.p; return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:600;">${kmhToPace(vel)}</td></tr>`;
       }).join("");
+
+      // Tabla FC (Fórmula Karvonen)
+      document.getElementById("zonasTableBodyFC").innerHTML = zonas.map((z, idx) => {
+        const latidos = Math.round((fcReserva * z.p) + fcr);
+        const latidosAnteriores = idx === 0 ? Math.round((fcReserva * 0.50) + fcr) : Math.round((fcReserva * zonas[idx-1].p) + fcr);
+        return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td style="color:var(--accent); font-weight:600;">${latidosAnteriores} - ${latidos} ppm</td></tr>`;
+      }).join("");
+      
       renderRutinas();
     }
 
@@ -451,9 +491,19 @@
     function renderVideoteca(lista) {
       const container = document.getElementById("videotecaContainer");
       if (!lista.length) { container.innerHTML = `<p style="color:var(--muted);">No hay videos.</p>`; return; }
-      container.innerHTML = lista.map(v => `<div class="video-card"><div><strong style="font-size:0.95rem; color:var(--text);">${v["Ejercicio / Movimiento"] || "-"}</strong><div style="font-size:0.78rem; color:var(--accent);">${v["Grupo Muscular"] || ""}</div></div><div>${v["URL del Video"] && v["URL del Video"] !== "#" ? `<a href="${v["URL del Video"]}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.75rem; color:var(--muted);">Próx.</span>`}</div></div>`).join("");
+      container.innerHTML = lista.map(v => {
+        const descHTML = v["Descripción"] ? `<div style="font-size:0.8rem; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border);"><em>${v["Descripción"]}</em></div>` : "";
+        return `<div class="video-card" style="flex-direction:column; align-items:stretch;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div><strong style="font-size:0.95rem; color:var(--text);">${v["Ejercicio / Movimiento"] || "-"}</strong><div style="font-size:0.78rem; color:var(--accent);">${v["Grupo Muscular"] || ""}</div></div>
+            <div>${v["URL del Video"] && v["URL del Video"] !== "#" ? `<a href="${v["URL del Video"]}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.75rem; color:var(--muted);">Próx.</span>`}</div>
+          </div>
+          ${descHTML}
+        </div>`;
+      }).join("");
     }
-    function filtrarVideos() { const q = document.getElementById("busquedaVideo").value.toLowerCase(); renderVideoteca(state.videoteca.filter(v => String(v["Ejercicio / Movimiento"]).toLowerCase().includes(q) || String(v["Grupo Muscular"]).toLowerCase().includes(q))); }
+    
+    function filtrarVideos() { const q = document.getElementById("busquedaVideo").value.toLowerCase(); renderVideoteca(state.videoteca.filter(v => String(v["Ejercicio / Movimiento"]).toLowerCase().includes(q) || String(v["Grupo Muscular"]).toLowerCase().includes(q) || String(v["Descripción"]).toLowerCase().includes(q))); }
     
     function renderPagos() {
       const container = document.getElementById("pagosContainer");
