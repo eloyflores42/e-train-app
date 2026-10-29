@@ -33,10 +33,11 @@
     .avatar-container { position: relative; width: 75px; height: 75px; border-radius: 50%; overflow: hidden; background: #0b1120; border: 2px solid var(--primary); flex-shrink: 0; }
     .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
-    input, select { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.92rem; }
+    input, select, textarea { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.92rem; }
+    textarea { resize: vertical; min-height: 60px; }
     
     button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
@@ -169,9 +170,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxfmp27mRipYB-Ir23Nlb8eGb2dFVXzTEyMUq8OvPgeu7SHMcltRUXcYLdQ-omr4rV9sA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzzy30F22kaFtqNhbz73STH9IiXUZuWWmHNfdRIl1huzMcqroka6xzJPrG-J1C-bEuPVg/exec";
 
-    // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault(); deferredPrompt = e;
@@ -185,7 +185,6 @@
     window.addEventListener('appinstalled', () => {
       const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
     });
-    // -----------------------
 
     const state = {
       perfil: { email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: 15.5, fcr: 52, fcmax: 188, cooperMetros: 2800 },
@@ -245,7 +244,7 @@
       if (data.perfil) {
         state.perfil = {
           email: data.perfil["Correo Electrónico"] || "", nombre: data.perfil["Nombre y Apellido"] || "Atleta",
-          dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin") || "", fechaNac: data.perfil["Fecha de Nacimiento"] || "", fotoUrl: data.perfil["Foto URL"] || "",
+          dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin"] || "", fechaNac: data.perfil["Fecha de Nacimiento"] || "", fotoUrl: data.perfil["Foto URL"] || "",
           vam: parseNum(data.perfil["VAM (km/h)"], 15.5), fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800
         };
       }
@@ -262,7 +261,6 @@
         data.rutinas.forEach(r => {
           const rawFecha = r["Fecha"] || "-"; 
           const displayFecha = formatearFecha(rawFecha); 
-          
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
           const key = `${rawFecha}__${tipo}`;
           
@@ -274,6 +272,7 @@
               volumen: r["Volumen Sesión"] || "-", 
               rpe: r["Esfuerzo RPE (0-10)"] || "", 
               completado: r["Completado (Sí/No)"] || "No", 
+              notaAtleta: r["Notas del Atleta"] || "",
               bloques: [] 
             }); 
           }
@@ -399,6 +398,7 @@
               </div>
             </div>`;
         }).join("");
+
         return `<div class="card" style="background:#152033; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
               <div><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="margin-left:8px;">${s.tipo}</strong></div>
@@ -406,24 +406,44 @@
             </div>
             ${bloquesHtml}
             <div class="grid-3" style="margin-top:12px; align-items:end;">
-              <div><label>RPE</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
-              <div><label>Estado</label><select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select></div>
+              <div><label>RPE (0-10)</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
+              <div><label>Estado</label><select id="comp-${idx}">
+                <option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option>
+                <option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option>
+                <option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option>
+              </select></div>
               <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
+            </div>
+            <div style="margin-top: 10px;">
+              <label>Nota para el Profe (molestias, sueño, clima, etc.)</label>
+              <textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea>
             </div>
           </div>`;
       }).join("");
     }
 
     async function registrarRPE(idx) {
-      const s = state.sesionesAgrupadas[idx]; s.rpe = document.getElementById(`rpe-${idx}`).value; s.completado = document.getElementById(`comp-${idx}`).value;
+      const s = state.sesionesAgrupadas[idx]; 
+      s.rpe = document.getElementById(`rpe-${idx}`).value; 
+      s.completado = document.getElementById(`comp-${idx}`).value;
+      s.notaAtleta = document.getElementById(`nota-${idx}`).value;
+
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
         await fetch(API_URL, { 
           method: "POST", 
           headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-          body: JSON.stringify({ action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado }) 
+          body: JSON.stringify({ 
+            action: "updateRutina", 
+            email: state.perfil.email, 
+            fecha: s.fechaRaw, 
+            tipoSesion: s.tipo, 
+            rpe: s.rpe, 
+            completado: s.completado,
+            notaAtleta: s.notaAtleta 
+          }) 
         });
-        btn.textContent = "✔"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
