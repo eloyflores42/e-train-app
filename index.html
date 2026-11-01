@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-TRAIN | Plataforma Atletas</title>
   <link rel="manifest" href="./manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
@@ -53,7 +54,6 @@
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
     
-    /* Nuevos estilos para Indicaciones del Profe y Acordeón de Rutinas */
     .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 0 8px 8px 0; margin: 10px 0; font-size: 0.86rem; color: var(--text); line-height: 1.4; }
     .coach-notes strong { color: var(--primary); display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
     .rutina-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 4px 0; user-select: none; }
@@ -66,6 +66,7 @@
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.7rem; }
     
     .video-card { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .chart-wrapper { position: relative; height: 260px; width: 100%; margin-top: 12px; }
     .hidden { display: none; }
   </style>
 </head>
@@ -203,6 +204,26 @@
           <h2>Mis Marcas 1RM y Cargas (%)</h2>
           <table><thead><tr><th>Ejercicio</th><th>1RM</th><th>65%</th><th>75%</th><th>85%</th></tr></thead><tbody id="rmTableBody"></tbody></table>
         </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <h2 style="margin: 0; border: none; padding: 0;">📈 Mi Progreso Histórico</h2>
+            <select id="chartSelector" onchange="renderChart()" style="width: auto; min-width: 190px; padding: 6px 10px; font-size: 0.85rem;">
+              <option value="Test de 5 Min (VAM)">VAM (km/h)</option>
+              <option value="Test de Cooper (VO2 Max)">Cooper - VO2máx (ml/kg/min)</option>
+              <option value="Sentadilla">1RM Sentadilla (kg)</option>
+              <option value="Hip Thrust">1RM Hip Thrust (kg)</option>
+              <option value="Peso Muerto">1RM Peso Muerto (kg)</option>
+              <option value="Press de Banca">1RM Press de Banca (kg)</option>
+            </select>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="evolucionChart"></canvas>
+          </div>
+          <p id="chartEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.85rem; padding: 30px 10px;">
+            Aún no tienes registros guardados en el historial para esta métrica. ¡Realiza un test arriba y guárdalo para inaugurar tu curva de evolución!
+          </p>
+        </div>
       </section>
 
       <section id="tab-videoteca" class="hidden">
@@ -219,6 +240,8 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbw3ergbuCUfzBJq8_zt724WeCITWjwWEJVgoNY8jGCZAnPHOIdM092TxlHYUDfX-vITrA/exec";
 
     let deferredPrompt = null;
+    let chartInstance = null;
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault(); deferredPrompt = e;
       const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.remove('hidden');
@@ -238,6 +261,7 @@
         celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
+      historialRaw: [],
       sesionesAgrupadas: [], videoteca: [], pagos: [],
       filtroRutina: "pendientes"
     };
@@ -320,6 +344,7 @@
         };
       }
       if (Array.isArray(data.historial)) {
+        state.historialRaw = data.historial;
         data.historial.forEach(h => {
           const tipo = String(h["Ejercicio o Test"] || "").trim();
           const in1 = parseNum(h["Métrica 1"]); const in2 = parseNum(h["Métrica 2"], 1); const resCalc = parseNum(h["Marca Calculada"]);
@@ -335,7 +360,6 @@
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
           const key = `${rawFecha}__${tipo}`;
           
-          // Captura flexible para la nueva columna "Indicaciones del Profe"
           const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
 
           if (!mapa.has(key)) { 
@@ -347,7 +371,6 @@
               bloques: [] 
             }); 
           } else {
-            // Si la indicación se puso en otra fila de la misma sesión, la rescata igual
             if (!mapa.get(key).indicacionesProfe && notaProfeRow) {
               mapa.get(key).indicacionesProfe = notaProfeRow;
             }
@@ -371,7 +394,7 @@
         }));
       }
 
-      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos();
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
     }
 
     function actualizarUIPerfil() {
@@ -442,6 +465,15 @@
         recalcularZonas(); 
       } 
       else { resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); }
+      
+      const hoy = new Date();
+      const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({
+        "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc
+      });
+      document.getElementById("chartSelector").value = tipo;
+      renderChart();
+
       await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
     }
 
@@ -454,7 +486,101 @@
       const tipo = document.getElementById("testFuerzaTipo").value; const p = parseNum(document.getElementById("testFuerzaPeso").value, 0); const r = parseNum(document.getElementById("testFuerzaReps").value, 1);
       const rm = +(calcBrzycki(p, r).toFixed(1)); state.rms[tipo] = { peso: p, reps: r, rm: rm };
       renderRMTable(); renderRutinas();
+
+      const hoy = new Date();
+      const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({
+        "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm
+      });
+      document.getElementById("chartSelector").value = tipo;
+      renderChart();
+
       await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
+    }
+
+    function renderChart() {
+      const canvas = document.getElementById("evolucionChart");
+      const emptyMsg = document.getElementById("chartEmptyMsg");
+      const selector = document.getElementById("chartSelector");
+      if (!canvas || !selector) return;
+
+      const filtro = selector.value;
+      const registros = state.historialRaw.filter(h => {
+        const tipoH = String(h["Ejercicio o Test"] || "").trim().toLowerCase();
+        if (filtro.includes("5 Min")) return tipoH.includes("5 min") || tipoH.includes("vam");
+        if (filtro.includes("Cooper")) return tipoH.includes("cooper");
+        return tipoH === filtro.toLowerCase();
+      });
+
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+
+      if (!registros.length) {
+        canvas.parentElement.classList.add("hidden");
+        emptyMsg.classList.remove("hidden");
+        return;
+      }
+
+      canvas.parentElement.classList.remove("hidden");
+      emptyMsg.classList.add("hidden");
+
+      const labels = [];
+      const valores = [];
+
+      registros.forEach(r => {
+        const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || Object.values(r)[0] || "-";
+        labels.push(formatSimpleDate(fechaRaw));
+
+        const in1 = parseNum(r["Métrica 1"]);
+        const in2 = parseNum(r["Métrica 2"], 1);
+        const marca = parseNum(r["Marca Calculada"]);
+
+        let valFinal = marca;
+        if (filtro.includes("Cooper")) {
+          const metros = in1 > 300 ? in1 : marca;
+          valFinal = +(calcCooperVO2(metros).toFixed(1));
+        } else if (filtro.includes("5 Min")) {
+          valFinal = marca > 0 ? marca : +(((in1 / 1000) * 12).toFixed(2));
+        } else {
+          valFinal = marca > 0 ? marca : +(calcBrzycki(in1, in2).toFixed(1));
+        }
+        valores.push(valFinal);
+      });
+
+      const ctx = canvas.getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: selector.options[selector.selectedIndex].text,
+            data: valores,
+            borderColor: "#10b981",
+            backgroundColor: "rgba(16, 185, 129, 0.15)",
+            borderWidth: 3,
+            pointBackgroundColor: "#3b82f6",
+            pointBorderColor: "#fff",
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#f8fafc", font: { size: 12, weight: "600" } } },
+            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1, padding: 10 }
+          },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
+            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }
+          }
+        }
+      });
     }
 
     function toggleZonas(tipo) {
@@ -512,7 +638,6 @@
       return cargaRaw;
     }
 
-    // --- NUEVAS FUNCIONES PARA FILTRAR Y PLEGAR RUTINAS ---
     function filtrarRutinas(filtro) {
       state.filtroRutina = filtro;
       document.querySelectorAll("#tab-rutinas .tab-btn").forEach(b => b.classList.remove("active"));
@@ -537,7 +662,6 @@
       const container = document.getElementById("rutinasContainer");
       if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
       
-      // Filtramos manteniendo el índice original (idx) para que el guardado de RPE no se confunda
       const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
       
       const sesionesFiltradas = sesionesConIndice.filter(s => {
@@ -554,7 +678,6 @@
 
       container.innerHTML = sesionesFiltradas.map(s => {
         const idx = s.originalIdx;
-        // Si el filtro está en "completadas" o "todas", las sesiones ya listas aparecen plegadas para ahorrar espacio
         const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && s.completado === "Sí");
 
         const notaProfeHtml = s.indicacionesProfe ? `
@@ -630,7 +753,7 @@
         setTimeout(() => { 
           btn.textContent = "Guardar"; 
           btn.disabled = false; 
-          renderRutinas(); // Actualiza la vista por si la sesión pasa de Pendiente a Historial
+          renderRutinas(); 
         }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
@@ -662,6 +785,9 @@
       document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
       document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
+      if (tab === 'calculadora') {
+        setTimeout(() => renderChart(), 50);
+      }
     }
   </script>
 </body>
