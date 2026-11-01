@@ -228,18 +228,15 @@
       sesionesAgrupadas: [], videoteca: [], pagos: []
     };
 
-    // --- NUEVO: FILTRO LIMPIADOR DE FECHAS ---
     function formatSimpleDate(val) {
       if (!val || val === "-") return "";
       const str = String(val).trim();
       
-      // 1. Si viene como formato de sistema (Ej: 2026-10-29T15:00:00Z)
       if (str.includes("T") && str.includes("-")) {
         const partes = str.split("T")[0].split("-");
         return `${partes[2]}/${partes[1]}/${partes[0]}`; 
       }
       
-      // 2. Extractor de números (Ej: Si dice "Lunes, 14/05/1995", saca solo "14/05/1995")
       const regexFecha = /(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/;
       const coincidencia = str.match(regexFecha);
       if (coincidencia) {
@@ -250,13 +247,12 @@
         return `${dia}/${mes}/${anio}`;
       }
       
-      // 3. Si Javascript lo lee nativamente sin barras
       const d = new Date(str);
       if (!isNaN(d.getTime()) && !str.includes("/")) {
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
       }
       
-      return str; // Fallback
+      return str;
     }
 
     function parseNum(val, fallback = 0) {
@@ -299,7 +295,7 @@
         state.perfil = {
           email: data.perfil["Correo Electrónico"] || "", nombre: data.perfil["Nombre y Apellido"] || "Atleta",
           dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin") || "",
-          fechaNac: formatSimpleDate(data.perfil["Fecha de Nacimiento"]), // <-- APLICADO AQUI
+          fechaNac: formatSimpleDate(data.perfil["Fecha de Nacimiento"]),
           fotoUrl: data.perfil["Foto URL"] || "",
           vam: data.perfil["VAM (km/h)"] ? parseNum(data.perfil["VAM (km/h)"]) : "",
           fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800,
@@ -342,10 +338,10 @@
       }
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
       
-      // --- APLICADO A LOS PAGOS AQUI ---
       if (Array.isArray(data.pagos)) {
         state.pagos = data.pagos.map(p => ({
           ...p,
+          "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), 
           "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
         }));
       }
