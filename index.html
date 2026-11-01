@@ -87,7 +87,7 @@
     <div class="container">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('rutinas', this)">1. Rutinas</button>
-        <button class="tab-btn" onclick="switchTab('atleta', this)">2. Perfil</button>
+        <button class="tab-btn" onclick="switchTab('atleta', this)">2. Perfil & Ficha</button>
         <button class="tab-btn" onclick="switchTab('calculadora', this)">3. Tests</button>
         <button class="tab-btn" onclick="switchTab('videoteca', this)">4. Videos</button>
         <button class="tab-btn" onclick="switchTab('pagos', this)">5. Pagos</button>
@@ -107,12 +107,36 @@
             <div class="avatar-container"><img id="avatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto" /></div>
             <div style="flex: 1;"><h3 id="perfilNombreCompleto" style="font-size: 1.15rem; color: var(--text);">Nombre</h3><p id="perfilEmailText" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;"></p></div>
           </div>
-          <div class="grid-2" style="margin-bottom: 12px;">
-            <div><label>PIN (Usado para ingresar)</label><input type="text" id="inputDNI" placeholder="Ej: 1234" /></div>
+          <div class="grid-2">
+            <div><label>PIN de Acceso 🔒</label><input type="text" id="inputDNI" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed;" /></div>
             <div><label>Fecha de Nacimiento</label><input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" /></div>
+            <div><label>Celular Personal <span style="color:var(--danger)">*</span></label><input type="text" id="inputCelular" placeholder="Tu número" /></div>
+            <div><label>Dirección / Domicilio</label><input type="text" id="inputDireccion" placeholder="Ej: Av. Colón 1234" /></div>
           </div>
-          <div style="margin-bottom: 12px;"><label>URL de Foto de Perfil (Imagen web)</label><input type="text" id="inputFotoUrl" placeholder="https://ejemplo.com/mi-foto.jpg" /></div>
-          <button class="btn btn-outline" onclick="guardarDatosPersonales()">💾 Guardar Datos Personales</button>
+          <div style="margin-top: 12px;"><label>URL de Foto de Perfil</label><input type="text" id="inputFotoUrl" placeholder="https://ejemplo.com/mi-foto.jpg" /></div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--danger);">
+          <h2 style="color: var(--danger);">Contacto de Emergencia</h2>
+          <div>
+            <label>Nombre y Teléfono a quién avisar <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="inputEmergencia" placeholder="Ej: Mamá (Susana) - 223 1234567" />
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Ficha Médica</h2>
+          <div class="grid-2">
+            <div><label>Obra Social / Prepaga</label><input type="text" id="inputObraSocial" placeholder="Ej: IOMA, OSDE..." /></div>
+            <div><label>Clínica / Hospital Ref.</label><input type="text" id="inputClinica" placeholder="Ej: Clínica Pueyrredón" /></div>
+            <div><label>Grupo Sanguíneo</label><input type="text" id="inputSangre" placeholder="Ej: 0 Positivo" /></div>
+            <div><label>Donante de Órganos</label><select id="inputDonante"><option value="">Seleccionar...</option><option value="Sí">Sí</option><option value="No">No</option></select></div>
+          </div>
+          <div style="margin-top: 12px;">
+            <label>Alergias o Lesiones Previas</label>
+            <textarea id="inputAlergias" placeholder="Ej: Alergia a la penicilina, asma, esguince de tobillo crónico..."></textarea>
+          </div>
+          <button class="btn btn-outline" style="margin-top: 16px; width: 100%; border-color: var(--accent); color: var(--accent);" onclick="guardarDatosPersonales()">💾 Guardar Ficha Completa</button>
         </div>
       </section>
 
@@ -179,7 +203,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxNrfEhiREK36iYW8yUvecIyrMR-fiBLbsmT6TlhqkCn5OIV2vvBgM3H97r9RKMR7f9cg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyPO-TZokE1TlvRDVf5q9Qmne5xRqpxYFxM32HwL8_BueyzkydX1B-R1MnDoQSNxcjatg/exec";
 
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -196,7 +220,10 @@
     });
 
     const state = {
-      perfil: { email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: 15.5, fcr: 52, fcmax: 188, cooperMetros: 2800 },
+      perfil: { 
+        email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
+        celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
+      },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
       sesionesAgrupadas: [], videoteca: [], pagos: []
     };
@@ -212,20 +239,6 @@
     function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
-    function formatearFecha(cadena) {
-      if (!cadena || cadena === "-") return "-";
-      const partes = cadena.split("/");
-      if (partes.length === 3) {
-        const d = new Date(partes[2], partes[1] - 1, partes[0]);
-        if (!isNaN(d)) {
-          let str = new Intl.DateTimeFormat('es-AR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
-          str = str.replace(',', ''); 
-          return str.charAt(0).toUpperCase() + str.slice(1); 
-        }
-      }
-      return cadena;
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
       const savedEmail = localStorage.getItem("etrain_email"); const savedPin = localStorage.getItem("etrain_pin");
       if (savedEmail && savedPin) { document.getElementById("loginEmail").value = savedEmail; document.getElementById("loginPin").value = savedPin; iniciarSesion(); }
@@ -238,7 +251,8 @@
       errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
 
       try {
-        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}`);
+        const cacheBuster = new Date().getTime(); // Evita cargar datos viejos
+        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${cacheBuster}`);
         const data = await res.json();
         if (data.status === "error") { errDiv.textContent = data.message; btn.disabled = false; btn.textContent = "Ingresar a la App"; return; }
         localStorage.setItem("etrain_email", email); localStorage.setItem("etrain_pin", pin);
@@ -255,7 +269,12 @@
           email: data.perfil["Correo Electrónico"] || "", nombre: data.perfil["Nombre y Apellido"] || "Atleta",
           dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin") || "",
           fechaNac: data.perfil["Fecha de Nacimiento"] || "", fotoUrl: data.perfil["Foto URL"] || "",
-          vam: parseNum(data.perfil["VAM (km/h)"], 15.5), fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800
+          vam: data.perfil["VAM (km/h)"] ? parseNum(data.perfil["VAM (km/h)"]) : "",
+          fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800,
+          celular: data.perfil["Celular"] || "", emergencia: data.perfil["Contacto de Emergencia"] || "",
+          direccion: data.perfil["Dirección"] || "", obraSocial: data.perfil["Obra Social"] || "",
+          clinica: data.perfil["Clínica"] || "", sangre: data.perfil["Grupo Sanguíneo"] || "",
+          donante: data.perfil["Donante"] || "", alergias: data.perfil["Alergias / Lesiones"] || ""
         };
       }
       if (Array.isArray(data.historial)) {
@@ -270,20 +289,15 @@
         const mapa = new Map();
         data.rutinas.forEach(r => {
           const rawFecha = r["Fecha"] || "-"; 
-          const displayFecha = formatearFecha(rawFecha); 
+          const displayFecha = typeof rawFecha === 'string' && rawFecha.includes("/") ? rawFecha : rawFecha;
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
           const key = `${rawFecha}__${tipo}`;
           
           if (!mapa.has(key)) { 
             mapa.set(key, { 
-              fechaRaw: rawFecha, 
-              fechaDisplay: displayFecha, 
-              tipo, 
-              volumen: r["Volumen Sesión"] || "-", 
-              rpe: r["Esfuerzo RPE (0-10)"] || "", 
-              completado: r["Completado (Sí/No)"] || "No", 
-              notaAtleta: r["Notas del Atleta"] || "",
-              bloques: [] 
+              fechaRaw: rawFecha, fechaDisplay: displayFecha, tipo, 
+              volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", 
+              completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", bloques: [] 
             }); 
           }
           mapa.get(key).bloques.push({
@@ -295,9 +309,7 @@
         state.sesionesAgrupadas = Array.from(mapa.values());
       }
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
-      if (Array.isArray(data.pagos)) {
-        state.pagos = data.pagos.map(p => { p["Fecha de Vencimiento"] = formatearFecha(p["Fecha de Vencimiento"]); return p; });
-      }
+      if (Array.isArray(data.pagos)) state.pagos = data.pagos;
 
       actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos();
     }
@@ -307,28 +319,51 @@
       document.getElementById("perfilEmailText").textContent = state.perfil.email; document.getElementById("inputDNI").value = state.perfil.dni;
       document.getElementById("inputFechaNac").value = state.perfil.fechaNac; document.getElementById("inputFotoUrl").value = state.perfil.fotoUrl;
       if (state.perfil.fotoUrl) document.getElementById("avatarImg").src = state.perfil.fotoUrl;
+      
       document.getElementById("inputVAM").value = state.perfil.vam; document.getElementById("inputFCR").value = state.perfil.fcr; document.getElementById("inputFCMax").value = state.perfil.fcmax;
+      
+      // Nuevos campos médicos
+      document.getElementById("inputCelular").value = state.perfil.celular; document.getElementById("inputEmergencia").value = state.perfil.emergencia;
+      document.getElementById("inputDireccion").value = state.perfil.direccion; document.getElementById("inputObraSocial").value = state.perfil.obraSocial;
+      document.getElementById("inputClinica").value = state.perfil.clinica; document.getElementById("inputSangre").value = state.perfil.sangre;
+      document.getElementById("inputDonante").value = state.perfil.donante; document.getElementById("inputAlergias").value = state.perfil.alergias;
+      
       previewTestResistencia(); previewTestFuerza();
     }
 
     function syncSeguroAtleta() {
-      state.perfil.dni = document.getElementById("inputDNI").value || state.perfil.dni || localStorage.getItem("etrain_pin");
       state.perfil.fechaNac = document.getElementById("inputFechaNac").value; state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
       state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
+      
+      state.perfil.celular = document.getElementById("inputCelular").value.trim(); state.perfil.emergencia = document.getElementById("inputEmergencia").value.trim();
+      state.perfil.direccion = document.getElementById("inputDireccion").value.trim(); state.perfil.obraSocial = document.getElementById("inputObraSocial").value.trim();
+      state.perfil.clinica = document.getElementById("inputClinica").value.trim(); state.perfil.sangre = document.getElementById("inputSangre").value.trim();
+      state.perfil.donante = document.getElementById("inputDonante").value.trim(); state.perfil.alergias = document.getElementById("inputAlergias").value.trim();
     }
 
     async function guardarPerfilEnSheets(testObj, botonId) {
       syncSeguroAtleta(); const btn = document.getElementById(botonId); const txt = btn ? btn.textContent : "";
       if(btn){ btn.disabled = true; btn.textContent = "Guardando..."; }
       try {
-        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax, nuevoTest: testObj }) });
+        const payload = { 
+          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, 
+          vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax,
+          celular: state.perfil.celular, emergencia: state.perfil.emergencia, direccion: state.perfil.direccion, obraSocial: state.perfil.obraSocial,
+          clinica: state.perfil.clinica, sangre: state.perfil.sangre, donante: state.perfil.donante, alergias: state.perfil.alergias, nuevoTest: testObj 
+        };
+        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         if(btn){ btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = txt; btn.disabled = false; }, 2000); }
       } catch (err) { if(btn){ btn.textContent = "Error"; btn.disabled = false; } }
     }
 
     async function guardarDatosPersonales() {
+      syncSeguroAtleta();
+      if (!state.perfil.celular || !state.perfil.emergencia) {
+        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia. Son obligatorios por tu seguridad antes de guardar.");
+        return;
+      }
       if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
-      await guardarPerfilEnSheets(null, null); alert("Datos Personales guardados con éxito.");
+      await guardarPerfilEnSheets(null, null); alert("Ficha Médica guardada con éxito.");
     }
     
     async function guardarParametrosFisiologicos() { recalcularZonas(); await guardarPerfilEnSheets(null, "btnGuardarParametros"); }
@@ -374,22 +409,21 @@
     }
 
     function recalcularZonas() {
-      const vam = parseNum(document.getElementById("inputVAM").value, 15.5);
+      // Si la VAM está vacía en la base, usamos 15.5 solo para previsualizar y no dar error, pero no sobrescribimos el dato
+      const vam = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5; 
       const fcr = parseNum(document.getElementById("inputFCR").value, 52);
       const fcmax = parseNum(document.getElementById("inputFCMax").value, 188);
       const fcReserva = fcmax - fcr;
       
-      state.perfil.vam = vam; state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
+      state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
       document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
       
       const zonas = [ { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 }, { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 } ];
       
-      // Tabla VAM
       document.getElementById("zonasTableBodyVAM").innerHTML = zonas.map(z => {
         const vel = vam * z.p; return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:600;">${kmhToPace(vel)}</td></tr>`;
       }).join("");
 
-      // Tabla FC (Fórmula Karvonen)
       document.getElementById("zonasTableBodyFC").innerHTML = zonas.map((z, idx) => {
         const latidos = Math.round((fcReserva * z.p) + fcr);
         const latidosAnteriores = idx === 0 ? Math.round((fcReserva * 0.50) + fcr) : Math.round((fcReserva * zonas[idx-1].p) + fcr);
@@ -414,7 +448,8 @@
       }
       const matchVam = cargaRaw.match(/(\d+)\s*%\s*vam/i);
       if (matchVam) {
-        const vel = state.perfil.vam * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
+        const vamParaCalculo = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5;
+        const vel = vamParaCalculo * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
       }
       return cargaRaw;
     }
@@ -471,19 +506,8 @@
 
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
-        await fetch(API_URL, { 
-          method: "POST", 
-          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-          body: JSON.stringify({ 
-            action: "updateRutina", 
-            email: state.perfil.email, 
-            fecha: s.fechaRaw, 
-            tipoSesion: s.tipo, 
-            rpe: s.rpe, 
-            completado: s.completado,
-            notaAtleta: s.notaAtleta 
-          }) 
-        });
+        const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
+        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
