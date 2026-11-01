@@ -23,7 +23,7 @@
     .form-group { margin-bottom: 14px; text-align: left; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-    .tab-btn { flex: 1; min-width: 80px; padding: 10px 4px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.75rem; cursor: pointer; text-align: center; }
+    .tab-btn { flex: 1; min-width: 80px; padding: 10px 4px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.75rem; cursor: pointer; text-align: center; transition: 0.2s; }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
@@ -53,6 +53,12 @@
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
     
+    /* Nuevos estilos para Indicaciones del Profe y Acordeón de Rutinas */
+    .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 0 8px 8px 0; margin: 10px 0; font-size: 0.86rem; color: var(--text); line-height: 1.4; }
+    .coach-notes strong { color: var(--primary); display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .rutina-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 4px 0; user-select: none; }
+    .rutina-body { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+
     .bloque-item { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; }
     .ejercicio-titulo { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; }
@@ -95,7 +101,14 @@
 
       <section id="tab-rutinas">
         <div class="card">
-          <h2>Planificación de Entrenamientos</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <h2 style="margin: 0; border: none; padding: 0;">Planificación</h2>
+            <div class="tabs" style="margin: 0;">
+              <button class="tab-btn active" id="filtro-pendientes" onclick="filtrarRutinas('pendientes')" style="min-width: 85px; padding: 6px 10px;">⏳ Pendientes</button>
+              <button class="tab-btn" id="filtro-completadas" onclick="filtrarRutinas('completadas')" style="min-width: 85px; padding: 6px 10px;">✅ Historial</button>
+              <button class="tab-btn" id="filtro-todas" onclick="filtrarRutinas('todas')" style="min-width: 70px; padding: 6px 10px;">📋 Todas</button>
+            </div>
+          </div>
           <div id="rutinasContainer">Cargando rutinas...</div>
         </div>
       </section>
@@ -225,7 +238,8 @@
         celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
-      sesionesAgrupadas: [], videoteca: [], pagos: []
+      sesionesAgrupadas: [], videoteca: [], pagos: [],
+      filtroRutina: "pendientes"
     };
 
     function formatSimpleDate(val) {
@@ -321,13 +335,24 @@
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
           const key = `${rawFecha}__${tipo}`;
           
+          // Captura flexible para la nueva columna "Indicaciones del Profe"
+          const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
+
           if (!mapa.has(key)) { 
             mapa.set(key, { 
               fechaRaw: rawFecha, fechaDisplay: displayFecha, tipo, 
               volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", 
-              completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", bloques: [] 
+              completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", 
+              indicacionesProfe: notaProfeRow,
+              bloques: [] 
             }); 
+          } else {
+            // Si la indicación se puso en otra fila de la misma sesión, la rescata igual
+            if (!mapa.get(key).indicacionesProfe && notaProfeRow) {
+              mapa.get(key).indicacionesProfe = notaProfeRow;
+            }
           }
+
           mapa.get(key).bloques.push({
             orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
             seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", 
@@ -487,10 +512,57 @@
       return cargaRaw;
     }
 
+    // --- NUEVAS FUNCIONES PARA FILTRAR Y PLEGAR RUTINAS ---
+    function filtrarRutinas(filtro) {
+      state.filtroRutina = filtro;
+      document.querySelectorAll("#tab-rutinas .tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`filtro-${filtro}`).classList.add("active");
+      renderRutinas();
+    }
+
+    function toggleSesion(idx) {
+      const body = document.getElementById(`rutina-body-${idx}`);
+      const icon = document.getElementById(`rutina-icon-${idx}`);
+      if (!body) return;
+      if (body.classList.contains("hidden")) {
+        body.classList.remove("hidden");
+        if (icon) icon.textContent = "▲";
+      } else {
+        body.classList.add("hidden");
+        if (icon) icon.textContent = "▼";
+      }
+    }
+
     function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
       if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
-      container.innerHTML = state.sesionesAgrupadas.map((s, idx) => {
+      
+      // Filtramos manteniendo el índice original (idx) para que el guardado de RPE no se confunda
+      const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
+      
+      const sesionesFiltradas = sesionesConIndice.filter(s => {
+        if (state.filtroRutina === "pendientes") return s.completado !== "Sí";
+        if (state.filtroRutina === "completadas") return s.completado === "Sí";
+        return true;
+      });
+
+      if (!sesionesFiltradas.length) {
+        const msj = state.filtroRutina === "pendientes" ? "🎉 ¡Estás al día! No tienes entrenamientos pendientes." : "No hay sesiones en esta sección.";
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`;
+        return;
+      }
+
+      container.innerHTML = sesionesFiltradas.map(s => {
+        const idx = s.originalIdx;
+        // Si el filtro está en "completadas" o "todas", las sesiones ya listas aparecen plegadas para ahorrar espacio
+        const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && s.completado === "Sí");
+
+        const notaProfeHtml = s.indicacionesProfe ? `
+          <div class="coach-notes">
+            <strong>📢 Indicaciones del Profe:</strong>
+            ${s.indicacionesProfe}
+          </div>` : "";
+
         const bloquesHtml = s.bloques.map(b => {
           const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
           if(state.videoteca.length) {
@@ -508,24 +580,37 @@
             </div>`;
         }).join("");
 
+        const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
+
         return `<div class="card" style="background:#152033; margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-              <div><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="margin-left:8px;">${s.tipo}</strong></div>
-              <span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span>
+            <div class="rutina-header" onclick="toggleSesion(${idx})">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span>
+                <strong>${s.tipo}</strong>
+                ${badgeEstado}
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span>
+                <span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span>
+              </div>
             </div>
-            ${bloquesHtml}
-            <div class="grid-3" style="margin-top:12px; align-items:end;">
-              <div><label>RPE (0-10)</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
-              <div><label>Estado</label><select id="comp-${idx}">
-                <option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option>
-                <option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option>
-                <option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option>
-              </select></div>
-              <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
-            </div>
-            <div style="margin-top: 10px;">
-              <label>Nota para el Profe (molestias, sueño, clima, etc.)</label>
-              <textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea>
+            
+            <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
+              ${notaProfeHtml}
+              ${bloquesHtml}
+              <div class="grid-3" style="margin-top:12px; align-items:end;">
+                <div><label>RPE (0-10)</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
+                <div><label>Estado</label><select id="comp-${idx}">
+                  <option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option>
+                  <option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option>
+                  <option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option>
+                </select></div>
+                <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
+              </div>
+              <div style="margin-top: 10px;">
+                <label>Nota para el Profe (molestias, sueño, clima, etc.)</label>
+                <textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea>
+              </div>
             </div>
           </div>`;
       }).join("");
@@ -541,7 +626,12 @@
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; }, 1500);
+        btn.textContent = "✔ Guardado"; 
+        setTimeout(() => { 
+          btn.textContent = "Guardar"; 
+          btn.disabled = false; 
+          renderRutinas(); // Actualiza la vista por si la sesión pasa de Pendiente a Historial
+        }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
@@ -571,7 +661,7 @@
     function switchTab(tab, btn) {
       document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
+      document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
     }
   </script>
 </body>
