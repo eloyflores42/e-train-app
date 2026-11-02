@@ -31,12 +31,15 @@
     .form-group { margin-bottom: 14px; text-align: left; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-    .tab-btn { flex: 1; min-width: 80px; padding: 10px 4px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.75rem; cursor: pointer; text-align: center; transition: 0.2s; }
+    .tab-btn { flex: 1; min-width: 75px; padding: 10px 4px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.75rem; cursor: pointer; text-align: center; transition: 0.2s; }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
     .card h2 { font-size: 1.05rem; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     
+    .help-text { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; line-height: 1.4; background: rgba(15, 23, 42, 0.5); padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--primary); }
+    .field-hint { font-size: 0.7rem; color: var(--muted); margin-top: 3px; display: block; line-height: 1.2; }
+
     .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
     .avatar-container { position: relative; width: 75px; height: 75px; border-radius: 50%; overflow: hidden; background: #0b1120; border: 2px solid var(--primary); flex-shrink: 0; }
     .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
@@ -72,9 +75,30 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.7rem; }
     
+    /* Estilos de Vista Calendario y Candado de Cuota */
+    .view-switcher { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .view-switcher button { background: transparent; color: var(--muted); border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .view-switcher button.active { background: var(--primary); color: #fff; }
+    
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #0b1120; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-bottom: 14px; }
+    .cal-day-name { font-size: 0.72rem; color: var(--muted); font-weight: 700; padding-bottom: 4px; }
+    .cal-cell { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; position: relative; transition: 0.15s; user-select: none; }
+    .cal-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+    .cal-cell.today { border-color: var(--primary); font-weight: 700; }
+    .cal-cell.selected { background: rgba(59, 130, 246, 0.25); border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+    .cal-dots { display: flex; gap: 3px; margin-top: 4px; }
+    .cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+    .cal-dot.done { background: var(--accent); }
+    .cal-dot.partial { background: var(--warning); }
+
+    .lock-screen { text-align: center; padding: 32px 16px; background: rgba(239, 68, 68, 0.08); border: 2px dashed var(--danger); border-radius: 12px; margin: 10px 0; }
+    .lock-screen h3 { color: var(--danger); font-size: 1.2rem; margin: 10px 0 8px; }
+    .lock-screen p { color: var(--muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto 18px; line-height: 1.5; }
+
     .video-card { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .chart-wrapper { position: relative; height: 260px; width: 100%; margin-top: 12px; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -88,7 +112,6 @@
     <button class="btn" onclick="iniciarSesion()" id="btnLoginBtn">Ingresar a la App</button>
     <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-top:10px;"></div>
     
-    <!-- ACCESO SECRETO AL PANEL DEL PROFE -->
     <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
       <a href="./profe.html" style="color: var(--muted); font-size: 0.8rem; text-decoration: none;">🔒 Acceso Entrenador</a>
     </div>
@@ -109,27 +132,56 @@
 
     <div class="container">
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('rutinas', this)">1. Rutinas</button>
-        <button class="tab-btn" onclick="switchTab('atleta', this)">2. Perfil & Ficha</button>
-        <button class="tab-btn" onclick="switchTab('calculadora', this)">3. Tests</button>
-        <button class="tab-btn" onclick="switchTab('videoteca', this)">4. Videos</button>
-        <button class="tab-btn" onclick="switchTab('pagos', this)">5. Pagos</button>
+        <button class="tab-btn active" id="nav-btn-rutinas" onclick="switchTab('rutinas', this)">1. Rutinas</button>
+        <button class="tab-btn" id="nav-btn-atleta" onclick="switchTab('atleta', this)">2. Perfil & Ficha</button>
+        <button class="tab-btn" id="nav-btn-calculadora" onclick="switchTab('calculadora', this)">3. Tests</button>
+        <button class="tab-btn" id="nav-btn-videoteca" onclick="switchTab('videoteca', this)">4. Videos</button>
+        <button class="tab-btn" id="nav-btn-pagos" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
 
+      <!-- SECCIÓN 1: RUTINAS -->
       <section id="tab-rutinas">
         <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
             <h2 style="margin: 0; border: none; padding: 0;">Planificación</h2>
-            <div class="tabs" style="margin: 0;">
-              <button class="tab-btn active" id="filtro-pendientes" onclick="filtrarRutinas('pendientes')" style="min-width: 85px; padding: 6px 10px;">⏳ Pendientes</button>
-              <button class="tab-btn" id="filtro-completadas" onclick="filtrarRutinas('completadas')" style="min-width: 85px; padding: 6px 10px;">✅ Historial</button>
-              <button class="tab-btn" id="filtro-todas" onclick="filtrarRutinas('todas')" style="min-width: 70px; padding: 6px 10px;">📋 Todas</button>
+            <div class="view-switcher" id="controlesVistaRutina">
+              <button type="button" id="btnVistaLista" class="active" onclick="cambiarVistaRutina('lista')">📋 Lista</button>
+              <button type="button" id="btnVistaCalendario" onclick="cambiarVistaRutina('calendario')">🗓️ Mes</button>
             </div>
           </div>
+
+          <div class="help-text" id="ayudaRutinas">
+            💡 <strong>¿Cómo usar tu planificación?</strong> Toca cualquier entrenamiento para desplegar los ejercicios. Si la carga indica un porcentaje (ej: <em>75% 1RM</em> o <em>85% VAM</em>), la app calcula automáticamente tus kilos o tu ritmo exacto por kilómetro. Al terminar de entrenar, registra tu <strong>RPE</strong> y cambia el estado a <strong>Listo</strong>.
+          </div>
+
+          <!-- Botonera de filtros para Vista Lista -->
+          <div class="tabs" id="barraFiltrosLista" style="margin-bottom: 14px;">
+            <button class="tab-btn active" id="filtro-semana" onclick="filtrarRutinas('semana')" style="padding: 7px 6px;">📆 Esta Semana</button>
+            <button class="tab-btn" id="filtro-pendientes" onclick="filtrarRutinas('pendientes')" style="padding: 7px 6px;">⏳ Pendientes</button>
+            <button class="tab-btn" id="filtro-completadas" onclick="filtrarRutinas('completadas')" style="padding: 7px 6px;">✅ Historial</button>
+            <button class="tab-btn" id="filtro-todas" onclick="filtrarRutinas('todas')" style="padding: 7px 6px;">📋 Todas</button>
+          </div>
+
+          <!-- Contenedor Vista Calendario -->
+          <div id="calendarioWrapper" class="hidden">
+            <div class="cal-header">
+              <button class="btn btn-outline" onclick="cambiarMesCalendario(-1)" style="padding: 4px 10px;">◀</button>
+              <strong id="calMesTitulo" style="font-size: 0.95rem; text-transform: capitalize;">Mes Año</strong>
+              <button class="btn btn-outline" onclick="cambiarMesCalendario(1)" style="padding: 4px 10px;">▶</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div style="display:flex; justify-content:center; gap:14px; font-size:0.72rem; color:var(--muted); margin-bottom:14px;">
+              <span><span class="cal-dot" style="display:inline-block; vertical-align:middle; margin-right:4px;"></span>Pendiente</span>
+              <span><span class="cal-dot partial" style="display:inline-block; vertical-align:middle; margin-right:4px;"></span>Parcial</span>
+              <span><span class="cal-dot done" style="display:inline-block; vertical-align:middle; margin-right:4px;"></span>Completado</span>
+            </div>
+          </div>
+
           <div id="rutinasContainer">Cargando rutinas...</div>
         </div>
       </section>
 
+      <!-- SECCIÓN 2: PERFIL Y FICHA -->
       <section id="tab-atleta" class="hidden">
         <div class="card">
           <h2>Datos Personales</h2>
@@ -156,6 +208,9 @@
 
         <div class="card">
           <h2>Ficha Médica</h2>
+          <div class="help-text">
+            🏥 Mantén esta información actualizada por tu seguridad durante las sesiones en pista, calle o gimnasio.
+          </div>
           <div class="grid-2">
             <div><label>Obra Social / Prepaga</label><input type="text" id="inputObraSocial" placeholder="Ej: IOMA, OSDE..." /></div>
             <div><label>Clínica / Hospital Ref.</label><input type="text" id="inputClinica" placeholder="Ej: Clínica Pueyrredón" /></div>
@@ -170,27 +225,34 @@
         </div>
       </section>
 
+      <!-- SECCIÓN 3: TESTS Y MARCAS -->
       <section id="tab-calculadora" class="hidden">
         <div class="card">
           <h2>Test de Resistencia (VAM / VO2máx)</h2>
+          <div class="help-text">
+            🏃‍♂️ <strong>¿Para qué sirve?</strong> El <em>Test de 5 Minutos</em> determina tu <strong>VAM</strong> (Velocidad Aeróbica Máxima), que usamos para calcular a qué ritmo exacto debes hacer cada pasada. El <em>Test de Cooper</em> estima tu consumo máximo de oxígeno (VO2máx).
+          </div>
           <div class="grid-3">
             <div><label>Tipo de Test</label><select id="testResistenciaTipo" onchange="previewTestResistencia()"><option value="Test de 5 Min (VAM)">Test de 5 Minutos (VAM)</option><option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option></select></div>
-            <div><label>Distancia (metros)</label><input type="number" id="testResistenciaDist" value="1200" step="10" oninput="previewTestResistencia()" /></div>
+            <div><label>Distancia lograda (metros)</label><input type="number" id="testResistenciaDist" value="1200" step="10" oninput="previewTestResistencia()" /></div>
           </div>
           <div style="margin-top:10px; font-size:0.9rem;">Resultado Estimado: <strong id="previewResistencia" style="color:var(--accent);">-</strong></div>
-          <button class="btn" style="margin-top:10px;" id="btnGuardarTestResistencia" onclick="guardarTestResistencia()">Actualizar VAM en Perfil</button>
+          <button class="btn" style="margin-top:10px;" id="btnGuardarTestResistencia" onclick="guardarTestResistencia()">Guardar Test y Actualizar Perfil</button>
         </div>
 
         <div class="card">
           <h2>Parámetros de Running & Zonas</h2>
+          <div class="help-text">
+            💓 Consulta aquí tus ritmos de carrera (en min/km) o tus rangos de pulsaciones para cada zona de intensidad (Z1 a Z5).
+          </div>
           <div class="grid-3">
-            <div><label>VAM (km/h) 🔒</label><input type="number" step="0.1" id="inputVAM" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed; border-color: var(--bg);" title="La VAM solo se actualiza guardando un Test de Resistencia." /></div>
+            <div><label>VAM (km/h) 🔒</label><input type="number" step="0.1" id="inputVAM" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed; border-color: var(--bg);" title="La VAM solo se actualiza guardando un Test de 5 Minutos." /></div>
             <div><label>FC Reposo (ppm)</label><input type="number" id="inputFCR" oninput="recalcularZonas()" /></div>
             <div><label>FC Máxima (ppm)</label><input type="number" id="inputFCMax" oninput="recalcularZonas()" /></div>
           </div>
           <div style="margin-top: 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado: <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
-            <button class="btn btn-outline" onclick="guardarParametrosFisiologicos()" id="btnGuardarParametros">💾 Guardar Parámetros</button>
+            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado (Cooper): <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
+            <button class="btn btn-outline" onclick="guardarParametrosFisiologicos()" id="btnGuardarParametros">💾 Guardar Pulsaciones</button>
           </div>
           
           <div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -207,6 +269,9 @@
         
         <div class="card">
           <h2>🏃‍♂️ Mis Marcas Personales (PB)</h2>
+          <div class="help-text">
+            ⏱️ Registra tus mejores tiempos en pruebas de pista o calle. En distancias de velocidad (100m a 400m) puedes ingresar decimales en los segundos (ej: <em>12.45</em>).
+          </div>
           <div class="grid-3">
             <div>
               <label>Distancia de Carrera</label>
@@ -249,10 +314,13 @@
 
         <div class="card">
           <h2>Test de Fuerza (Calculadora 1RM)</h2>
+          <div class="help-text">
+            🏋️‍♂️ Ingresa cuánto peso levantaste y cuántas repeticiones lograste hacer para estimar tu fuerza máxima (<strong>1RM</strong>) sin riesgo de lesión. Con este dato la app calculará tus kilos exactos en las rutinas de gimnasio.
+          </div>
           <div class="grid-3">
             <div><label>Ejercicio</label><select id="testFuerzaTipo" onchange="previewTestFuerza()"><option value="Sentadilla">Sentadilla</option><option value="Hip Thrust">Hip Thrust</option><option value="Peso Muerto">Peso Muerto</option><option value="Press de Banca">Press de Banca</option></select></div>
-            <div><label>Peso (kg)</label><input type="number" step="0.5" id="testFuerzaPeso" value="80" oninput="previewTestFuerza()" /></div>
-            <div><label>Repeticiones</label><input type="number" id="testFuerzaReps" value="5" oninput="previewTestFuerza()" /></div>
+            <div><label>Peso utilizado (kg)</label><input type="number" step="0.5" id="testFuerzaPeso" value="80" oninput="previewTestFuerza()" /></div>
+            <div><label>Repeticiones logradas</label><input type="number" id="testFuerzaReps" value="5" oninput="previewTestFuerza()" /></div>
           </div>
           <div style="margin-top:10px; font-size:0.9rem;">1RM Estimado: <strong id="previewFuerza" style="color:var(--accent);">-</strong></div>
           <button class="btn btn-outline" style="margin-top:10px;" id="btnGuardarTestFuerza" onclick="guardarTestFuerza()">Guardar 1RM</button>
@@ -291,6 +359,9 @@
               </optgroup>
             </select>
           </div>
+          <div class="help-text" style="margin-top: 10px;">
+            📊 Toca cualquier punto de la gráfica para ver la fecha y marca exacta. <em>Nota: En los gráficos de Tiempos/PBs, que la línea baje significa que tardaste menos segundos (¡mejoraste tu marca!).</em>
+          </div>
           <div class="chart-wrapper">
             <canvas id="evolucionChart"></canvas>
           </div>
@@ -300,18 +371,32 @@
         </div>
       </section>
 
+      <!-- SECCIÓN 4: VIDEOTECA -->
       <section id="tab-videoteca" class="hidden">
-        <div class="card"><h2>Videoteca de Ejercicios</h2><div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div><div id="videotecaContainer">Cargando videoteca...</div></div>
+        <div class="card">
+          <h2>Videoteca de Ejercicios</h2>
+          <div class="help-text">
+            🎥 Busca cualquier ejercicio por nombre o grupo muscular para revisar la técnica correcta antes de entrenar.
+          </div>
+          <div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div>
+          <div id="videotecaContainer">Cargando videoteca...</div>
+        </div>
       </section>
 
+      <!-- SECCIÓN 5: PAGOS -->
       <section id="tab-pagos" class="hidden">
-        <div class="card"><h2>Estado de tu Membresía</h2><div id="pagosContainer">Cargando pagos...</div></div>
+        <div class="card">
+          <h2>Estado de tu Membresía</h2>
+          <div class="help-text">
+            💳 Aquí puedes verificar el historial de tus cuotas mensuales y sus fechas de vencimiento. Recuerda mantener tu membresía al día para conservar el acceso activo a tus rutinas semanales.
+          </div>
+          <div id="pagosContainer">Cargando pagos...</div>
+        </div>
       </section>
     </div>
   </div>
 
   <script>
-    // --- ESTA ES LA URL NUEVA QUE ARREGLA LA CONEXIÓN ---
     const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
 
     let deferredPrompt = null;
@@ -330,6 +415,7 @@
       const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
     });
 
+    const hoyInit = new Date();
     const state = {
       perfil: { 
         email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
@@ -339,7 +425,12 @@
       pbs: { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null },
       historialRaw: [],
       sesionesAgrupadas: [], videoteca: [], pagos: [],
-      filtroRutina: "pendientes"
+      filtroRutina: "semana",
+      vistaRutina: "lista",
+      calMes: hoyInit.getMonth(),
+      calAnio: hoyInit.getFullYear(),
+      calFechaSeleccionada: null,
+      cuotaVencida: false
     };
 
     function formatSimpleDate(val) {
@@ -357,6 +448,40 @@
       const d = new Date(str);
       if (!isNaN(d.getTime()) && !str.includes("/")) return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
       return str;
+    }
+
+    // Convierte texto DD/MM/YYYY a objeto Date real para comparar semanas y calendario
+    function parseFechaDDMMYYYY(str) {
+      if (!str) return null;
+      const partes = String(str).trim().split("/");
+      if (partes.length === 3) {
+        const d = parseInt(partes[0], 10);
+        const m = parseInt(partes[1], 10) - 1;
+        let y = parseInt(partes[2], 10);
+        if (y < 100) y += 2000;
+        const fechaObj = new Date(y, m, d);
+        if (!isNaN(fechaObj.getTime())) return fechaObj;
+      }
+      return null;
+    }
+
+    // Verifica si una fecha DD/MM/YYYY cae entre el lunes y el domingo de la semana actual
+    function esDeEstaSemana(fechaStr) {
+      const f = parseFechaDDMMYYYY(fechaStr);
+      if (!f) return false;
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const diaSemana = hoy.getDay(); // 0 domingo, 1 lunes...
+      const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+      const lunes = new Date(hoy);
+      lunes.setDate(diffLunes);
+      lunes.setHours(0, 0, 0, 0);
+
+      const domingo = new Date(lunes);
+      domingo.setDate(lunes.getDate() + 6);
+      domingo.setHours(23, 59, 59, 999);
+
+      return f >= lunes && f <= domingo;
     }
 
     function parseNum(val, fallback = 0) {
@@ -440,9 +565,9 @@
         const mapa = new Map();
         data.rutinas.forEach(r => {
           const rawFecha = r["Fecha"] || "-"; 
-          const displayFecha = typeof rawFecha === 'string' && rawFecha.includes("/") ? rawFecha : rawFecha;
+          const displayFecha = formatSimpleDate(rawFecha);
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
-          const key = `${rawFecha}__${tipo}`;
+          const key = `${displayFecha}__${tipo}`;
           const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
 
           if (!mapa.has(key)) { 
@@ -466,10 +591,15 @@
       }
       if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
       
+      state.cuotaVencida = false;
       if (Array.isArray(data.pagos)) {
-        state.pagos = data.pagos.map(p => ({
-          ...p, "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
-        }));
+        state.pagos = data.pagos.map(p => {
+          const est = String(p["Estado"] || "").trim().toLowerCase();
+          if (est.includes("vencid")) state.cuotaVencida = true;
+          return {
+            ...p, "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
+          };
+        });
       }
 
       actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
@@ -755,9 +885,74 @@
       return cargaRaw;
     }
 
+    // --- LÓGICA DE VISTAS (LISTA vs CALENDARIO) Y FILTROS ---
+    function cambiarVistaRutina(vista) {
+      state.vistaRutina = vista;
+      document.getElementById("btnVistaLista").classList.toggle("active", vista === "lista");
+      document.getElementById("btnVistaCalendario").classList.toggle("active", vista === "calendario");
+      renderRutinas();
+    }
+
     function filtrarRutinas(filtro) {
-      state.filtroRutina = filtro; document.querySelectorAll("#tab-rutinas .tab-btn").forEach(b => b.classList.remove("active"));
-      document.getElementById(`filtro-${filtro}`).classList.add("active"); renderRutinas();
+      state.filtroRutina = filtro;
+      document.querySelectorAll("#barraFiltrosLista .tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`filtro-${filtro}`).classList.add("active");
+      renderRutinas();
+    }
+
+    function cambiarMesCalendario(delta) {
+      state.calMes += delta;
+      if (state.calMes > 11) { state.calMes = 0; state.calAnio++; }
+      else if (state.calMes < 0) { state.calMes = 11; state.calAnio--; }
+      state.calFechaSeleccionada = null;
+      renderRutinas();
+    }
+
+    function seleccionarDiaCalendario(fechaStr) {
+      state.calFechaSeleccionada = fechaStr;
+      renderRutinas();
+    }
+
+    function renderCalendarioGrid(sesionesConIndice) {
+      const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+      document.getElementById("calMesTitulo").textContent = `${mesesNombres[state.calMes]} ${state.calAnio}`;
+
+      const grid = document.getElementById("calGrid");
+      const diasNombres = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+      let html = diasNombres.map(d => `<div class="cal-day-name">${d}</div>`).join("");
+
+      const primerDiaMes = new Date(state.calAnio, state.calMes, 1).getDay();
+      const offsetLunes = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
+      const totalDiasMes = new Date(state.calAnio, state.calMes + 1, 0).getDate();
+
+      for (let i = 0; i < offsetLunes; i++) {
+        html += `<div class="cal-cell empty"></div>`;
+      }
+
+      const hoyStr = formatSimpleDate(new Date());
+
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const fechaDiaStr = `${String(dia).padStart(2, '0')}/${String(state.calMes + 1).padStart(2, '0')}/${state.calAnio}`;
+        const sesionesDelDia = sesionesConIndice.filter(s => s.fechaDisplay === fechaDiaStr);
+
+        let dotsHtml = "";
+        if (sesionesDelDia.length > 0) {
+          dotsHtml = `<div class="cal-dots">` + sesionesDelDia.map(s => {
+            const cls = s.completado === "Sí" ? "done" : (s.completado === "Parcialmente" ? "partial" : "");
+            return `<span class="cal-dot ${cls}"></span>`;
+          }).join("") + `</div>`;
+        }
+
+        const isToday = fechaDiaStr === hoyStr ? "today" : "";
+        const isSelected = state.calFechaSeleccionada === fechaDiaStr ? "selected" : "";
+
+        html += `<div class="cal-cell ${isToday} ${isSelected}" onclick="seleccionarDiaCalendario('${fechaDiaStr}')">
+          <span>${dia}</span>
+          ${dotsHtml}
+        </div>`;
+      }
+
+      grid.innerHTML = html;
     }
 
     function toggleSesion(idx) {
@@ -767,55 +962,131 @@
       else { body.classList.add("hidden"); if (icon) icon.textContent = "▼"; }
     }
 
+    function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
+      const idx = s.originalIdx;
+      const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
+
+      const bloquesHtml = s.bloques.map(b => {
+        const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
+        if(state.videoteca.length) {
+          const match = state.videoteca.find(v => (v["Ejercicio / Movimiento"]||"").toLowerCase().includes(b.ejercicio.toLowerCase()) && b.ejercicio.length > 3);
+          if(match && match["URL del Video"] && match["URL del Video"] !== "#") linkVideoHtml = `<a href="${match["URL del Video"]}" target="_blank" style="font-size:0.75rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
+        }
+        return `<div class="bloque-item">
+            <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
+            <div class="bloque-meta"><span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span><span><i>Carga:</i> <strong>${cargaCalculada}</strong></span><span><i>Micro:</i> <strong>${b.micropausa}</strong></span><span><i>Macro:</i> <strong>${b.macropausa}</strong></span></div>
+          </div>`;
+      }).join("");
+
+      const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
+
+      return `<div class="card" style="background:#152033; margin-bottom:14px;">
+          <div class="rutina-header" onclick="toggleSesion(${idx})">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong>${s.tipo}</strong>${badgeEstado}</div>
+            <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
+          </div>
+          
+          <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
+            ${notaProfeHtml} ${bloquesHtml}
+            <div class="grid-3" style="margin-top:12px; align-items:start;">
+              <div>
+                <label>RPE (Esfuerzo 1-10)</label>
+                <input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" placeholder="Ej: 7" />
+                <span class="field-hint">1 = Muy suave | 10 = Al límite</span>
+              </div>
+              <div>
+                <label>Estado de la Sesión</label>
+                <select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select>
+              </div>
+              <div style="padding-top: 21px;">
+                <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button>
+              </div>
+            </div>
+            <div style="margin-top: 10px;"><label>Nota para el Profe (molestias, sensaciones, clima, etc.)</label><textarea id="nota-${idx}" placeholder="Ej: Me sentí muy bien en las pasadas, o tuve molestia en gemelo...">${s.notaAtleta || ""}</textarea></div>
+          </div>
+        </div>`;
+    }
+
     function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
-      if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
+      const barraFiltros = document.getElementById("barraFiltrosLista");
+      const calWrapper = document.getElementById("calendarioWrapper");
+      const controlesVista = document.getElementById("controlesVistaRutina");
+      const ayudaRutinas = document.getElementById("ayudaRutinas");
+
+      // 1. VERIFICACIÓN DE CANDADO TOTAL POR CUOTA VENCIDA
+      if (state.cuotaVencida) {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.add("hidden");
+        controlesVista.classList.add("hidden");
+        ayudaRutinas.classList.add("hidden");
+
+        container.innerHTML = `
+          <div class="lock-screen">
+            <div style="font-size: 3rem;">🔒</div>
+            <h3>Planificación Bloqueada por Cuota Vencida</h3>
+            <p>Tu membresía registra un pago vencido. Para continuar visualizando tu planificación semanal y tus cargas de entrenamiento, por favor regulariza tu cuota con el entrenador.</p>
+            <button class="btn" style="max-width: 260px; background: var(--danger);" onclick="switchTab('pagos', document.getElementById('nav-btn-pagos'))">Ver Estado de mi Membresía →</button>
+          </div>
+        `;
+        return;
+      }
+
+      controlesVista.classList.remove("hidden");
+      ayudaRutinas.classList.remove("hidden");
+
+      if (!state.sesionesAgrupadas.length) {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.add("hidden");
+        container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`;
+        return;
+      }
       
       const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
+
+      // 2. MODO VISTA CALENDARIO
+      if (state.vistaRutina === "calendario") {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.remove("hidden");
+        renderCalendarioGrid(sesionesConIndice);
+
+        if (!state.calFechaSeleccionada) {
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">👆 Toca un día con punto en el calendario para abrir el entrenamiento de esa fecha.</p>`;
+          return;
+        }
+
+        const sesionesDia = sesionesConIndice.filter(s => s.fechaDisplay === state.calFechaSeleccionada);
+        if (!sesionesDia.length) {
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">No hay entrenamientos asignados para el <strong>${state.calFechaSeleccionada}</strong> (Día de descanso).</p>`;
+          return;
+        }
+
+        container.innerHTML = sesionesDia.map(s => construirTarjetaSesionHTML(s, false)).join("");
+        return;
+      }
+
+      // 3. MODO VISTA LISTA
+      calWrapper.classList.add("hidden");
+      barraFiltros.classList.remove("hidden");
+
       const sesionesFiltradas = sesionesConIndice.filter(s => {
+        if (state.filtroRutina === "semana") return esDeEstaSemana(s.fechaDisplay);
         if (state.filtroRutina === "pendientes") return s.completado !== "Sí";
-        if (state.filtroRutina === "completadas") return s.completado === "Sí"; return true;
+        if (state.filtroRutina === "completadas") return s.completado === "Sí";
+        return true;
       });
 
       if (!sesionesFiltradas.length) {
-        const msj = state.filtroRutina === "pendientes" ? "🎉 ¡Estás al día! No tienes entrenamientos pendientes." : "No hay sesiones en esta sección.";
-        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`; return;
+        let msj = "No hay sesiones en esta sección.";
+        if (state.filtroRutina === "semana") msj = "📅 No tienes sesiones programadas para esta semana en curso. Revisa la pestaña '⏳ Pendientes' o '🗓️ Mes'.";
+        else if (state.filtroRutina === "pendientes") msj = "🎉 ¡Estás al día! No tienes entrenamientos pendientes.";
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`;
+        return;
       }
 
       container.innerHTML = sesionesFiltradas.map(s => {
-        const idx = s.originalIdx; const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && s.completado === "Sí");
-        const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
-
-        const bloquesHtml = s.bloques.map(b => {
-          const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
-          if(state.videoteca.length) {
-            const match = state.videoteca.find(v => (v["Ejercicio / Movimiento"]||"").toLowerCase().includes(b.ejercicio.toLowerCase()) && b.ejercicio.length > 3);
-            if(match && match["URL del Video"] && match["URL del Video"] !== "#") linkVideoHtml = `<a href="${match["URL del Video"]}" target="_blank" style="font-size:0.75rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
-          }
-          return `<div class="bloque-item">
-              <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
-              <div class="bloque-meta"><span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span><span><i>Carga:</i> <strong>${cargaCalculada}</strong></span><span><i>Micro:</i> <strong>${b.micropausa}</strong></span><span><i>Macro:</i> <strong>${b.macropausa}</strong></span></div>
-            </div>`;
-        }).join("");
-
-        const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
-
-        return `<div class="card" style="background:#152033; margin-bottom:14px;">
-            <div class="rutina-header" onclick="toggleSesion(${idx})">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong>${s.tipo}</strong>${badgeEstado}</div>
-              <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
-            </div>
-            
-            <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
-              ${notaProfeHtml} ${bloquesHtml}
-              <div class="grid-3" style="margin-top:12px; align-items:end;">
-                <div><label>RPE (0-10)</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
-                <div><label>Estado</label><select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select></div>
-                <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
-              </div>
-              <div style="margin-top: 10px;"><label>Nota para el Profe (molestias, sueño, clima, etc.)</label><textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea></div>
-            </div>
-          </div>`;
+        const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && state.filtroRutina !== "semana" && s.completado === "Sí");
+        return construirTarjetaSesionHTML(s, plegadoPorDefecto);
       }).join("");
     }
 
@@ -855,7 +1126,8 @@
     function switchTab(tab, btn) {
       document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
-      document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
+      document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
       if (tab === 'calculadora') { setTimeout(() => renderChart(), 50); }
     }
   </script>
