@@ -14,12 +14,11 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     header { background: var(--card); padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.15rem; letter-spacing: 0.5px; color: var(--primary); }
+    header h1 { font-size: 1.15rem; letter-spacing: 0.5px; color: var(--primary); display: none; } /* Ocultamos el texto original */
     .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
     .container { max-width: 780px; margin: 0 auto; padding: 16px; }
     
     #loginScreen { max-width: 400px; margin: 60px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
-    #loginScreen h2 { color: var(--primary); margin-bottom: 8px; font-size: 1.4rem; }
     #loginScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
     .form-group { margin-bottom: 14px; text-align: left; }
 
@@ -73,7 +72,8 @@
 <body>
 
   <div id="loginScreen">
-    <h2>E-TRAIN</h2>
+    <!-- LOGO EN PANTALLA DE INICIO -->
+    <img src="https://drive.google.com/uc?export=view&id=1NdNhAf4f5s95eKPfqTmAOZkqBvnJ1_Xi" alt="E-TRAIN Logo" style="max-height: 75px; margin-bottom: 15px;">
     <p>Ingresa con tu correo y tu PIN asignado.</p>
     <div class="form-group"><label>Correo Electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" /></div>
     <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" /></div>
@@ -83,7 +83,8 @@
 
   <div id="appContainer" class="hidden">
     <header>
-      <h1>E-TRAIN</h1>
+      <!-- LOGO EN BARRA SUPERIOR -->
+      <img src="https://drive.google.com/uc?export=view&id=1NdNhAf4f5s95eKPfqTmAOZkqBvnJ1_Xi" alt="E-TRAIN" style="max-height: 30px;">
       <div class="user-info">
         <span id="headerAtletaNombre">Atleta</span>
         <button id="btnInstalarApp" class="btn btn-outline hidden" onclick="instalarPWA()" style="background: var(--accent); color: #000; border: none;">📲 Instalar</button>
@@ -216,7 +217,6 @@
               <div style="display:flex; gap:6px;">
                 <input type="number" id="pbHs" placeholder="Hs" min="0" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
                 <input type="number" id="pbMin" placeholder="Min" min="0" max="59" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
-                <!-- step="0.01" permite poner tiempos como 12.34s -->
                 <input type="number" id="pbSeg" placeholder="Seg" min="0" step="0.01" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
               </div>
             </div>
@@ -532,7 +532,6 @@
       await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
     }
     
-    // --- LÓGICA DE MARCAS PERSONALES (PBs) ADAPTADA PARA VELOCIDAD Y FONDO ---
     function previewPBRitmo() {
       const distVal = document.getElementById("pbDistancia").value;
       const isKm = distVal.includes("k");
@@ -541,18 +540,16 @@
       
       const hs = parseInt(document.getElementById("pbHs").value || 0);
       const min = parseInt(document.getElementById("pbMin").value || 0);
-      const seg = parseFloat(document.getElementById("pbSeg").value || 0); // parseFloat permite decimales en Segundos
+      const seg = parseFloat(document.getElementById("pbSeg").value || 0); 
       
       const totalSegundos = (hs * 3600) + (min * 60) + seg;
       
       if (totalSegundos > 0 && distKm > 0) {
         if (distKm < 0.8) { 
-          // Pruebas de velocidad (100m, 200m, 400m) -> Mostrar km/h y m/s
           const ms = (distNum / totalSegundos).toFixed(2);
           const kmh = ((distNum / totalSegundos) * 3.6).toFixed(1);
           document.getElementById("previewPBRitmoText").textContent = `${kmh} km/h (${ms} m/s)`;
         } else {
-          // Pruebas de fondo (800m en adelante) -> Mostrar min/km
           const ritmoDecimal = (totalSegundos / 60) / distKm;
           const rMin = Math.floor(ritmoDecimal);
           const rSeg = Math.round((ritmoDecimal - rMin) * 60);
@@ -588,7 +585,6 @@
 
       const tipoStr = "Marca PB " + distKey;
       const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-      // NOTA: Guardamos los segundos totales en Métrica 2 para que el gráfico pueda leerlos directamente
       state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipoStr, "Métrica 1": tiempoStr, "Métrica 2": totalSegundos, "Marca Calculada": ritmoStr });
       
       document.getElementById("chartSelector").value = tipoStr; renderChart();
@@ -602,10 +598,6 @@
       distancias.forEach(d => {
         if (state.pbs[d]) {
           html += `<tr><td><strong>${d.toUpperCase()}</strong></td><td style="color:var(--accent); font-weight:700;">${state.pbs[d].tiempo}</td><td>${state.pbs[d].ritmo}</td></tr>`;
-        } else {
-          // html += `<tr><td><strong>${d.toUpperCase()}</strong></td><td style="color:var(--muted);">-</td><td style="color:var(--muted);">-</td></tr>`;
-          // Para no hacer una tabla enorme visualmente vacía, solo mostramos las filas con datos (opcional). 
-          // Si querés que se vean vacías siempre, descomentá la línea de arriba. Por ahora la dejamos limpia.
         }
       });
       if (html === "") html = `<tr><td colspan="3" style="text-align:center; color:var(--muted);">Aún no hay récords guardados</td></tr>`;
@@ -653,8 +645,8 @@
         const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || Object.values(r)[0] || "-";
         labels.push(formatSimpleDate(fechaRaw));
 
-        const in1 = r["Métrica 1"]; // En fuerza/resistencia es número, en PB es texto (ej: 12.5s)
-        const in2 = parseNum(r["Métrica 2"], 1); // En PB esto tiene los segundos totales
+        const in1 = r["Métrica 1"]; 
+        const in2 = parseNum(r["Métrica 2"], 1); 
         const marca = parseNum(r["Marca Calculada"]);
         
         let valFinal = marca;
@@ -663,7 +655,6 @@
         } else if (filtro.includes("5 Min")) {
           valFinal = marca > 0 ? marca : +(((parseNum(in1) / 1000) * 12).toFixed(2));
         } else if (filtro.includes("Marca PB")) {
-          // En PBs, el valor a graficar son los SEGUNDOS (Métrica 2). Una caída en el gráfico significa que mejoró su tiempo.
           valFinal = in2;
         } else {
           valFinal = marca > 0 ? marca : +(calcBrzycki(parseNum(in1), in2).toFixed(1));
