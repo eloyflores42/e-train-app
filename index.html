@@ -75,7 +75,10 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.7rem; }
     
-    /* Estilos de Vista Calendario y Candado de Cuota */
+    /* Estilos Periodización y Gráfico de Volumen */
+    .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .period-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
+
     .view-switcher { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
     .view-switcher button { background: transparent; color: var(--muted); border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
     .view-switcher button.active { background: var(--primary); color: #fff; }
@@ -139,11 +142,20 @@
         <button class="tab-btn" id="nav-btn-pagos" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
 
-      <!-- SECCIÓN 1: RUTINAS -->
+      <!-- SECCIÓN 1: RUTINAS & PERIODIZACIÓN -->
       <section id="tab-rutinas">
+        <!-- TARJETA DE MACROCICLO / ESTADO DE CARGA -->
+        <div class="period-card" id="periodCardContainer">
+          <div>
+            <div style="font-size: 0.72rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Macrociclo actual</div>
+            <div id="periodMacroTitle" style="font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 2px;">Temporada Base / Desarrollo</div>
+          </div>
+          <div id="periodBadgeState" class="period-badge" style="background: var(--accent);">🟢 Semana de Carga</div>
+        </div>
+
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-            <h2 style="margin: 0; border: none; padding: 0;">Planificación</h2>
+            <h2 style="margin: 0; border: none; padding: 0;">Planificación & Carga</h2>
             <div class="view-switcher" id="controlesVistaRutina">
               <button type="button" id="btnVistaLista" class="active" onclick="cambiarVistaRutina('lista')">📋 Lista</button>
               <button type="button" id="btnVistaCalendario" onclick="cambiarVistaRutina('calendario')">🗓️ Mes</button>
@@ -151,10 +163,9 @@
           </div>
 
           <div class="help-text" id="ayudaRutinas">
-            💡 <strong>¿Cómo usar tu planificación?</strong> Toca cualquier entrenamiento para desplegar los ejercicios. Si la carga indica un porcentaje (ej: <em>75% 1RM</em> o <em>85% VAM</em>), la app calcula automáticamente tus kilos o tu ritmo exacto por kilómetro. Al terminar de entrenar, registra tu <strong>RPE</strong> y cambia el estado a <strong>Listo</strong>.
+            💡 <strong>Evolución de Carga:</strong> Abajo de tu planificación encontrarás el gráfico con el volumen acumulado semana a semana para que visualices tu progresión.
           </div>
 
-          <!-- Botonera de filtros para Vista Lista -->
           <div class="tabs" id="barraFiltrosLista" style="margin-bottom: 14px;">
             <button class="tab-btn active" id="filtro-semana" onclick="filtrarRutinas('semana')" style="padding: 7px 6px;">📆 Esta Semana</button>
             <button class="tab-btn" id="filtro-pendientes" onclick="filtrarRutinas('pendientes')" style="padding: 7px 6px;">⏳ Pendientes</button>
@@ -162,7 +173,6 @@
             <button class="tab-btn" id="filtro-todas" onclick="filtrarRutinas('todas')" style="padding: 7px 6px;">📋 Todas</button>
           </div>
 
-          <!-- Contenedor Vista Calendario -->
           <div id="calendarioWrapper" class="hidden">
             <div class="cal-header">
               <button class="btn btn-outline" onclick="cambiarMesCalendario(-1)" style="padding: 4px 10px;">◀</button>
@@ -178,6 +188,20 @@
           </div>
 
           <div id="rutinasContainer">Cargando rutinas...</div>
+        </div>
+
+        <!-- GRÁFICO DE VOLUMEN SEMANAL -->
+        <div class="card" id="cardGraficoVolumen">
+          <h2>📊 Evolución del Volumen Semanal</h2>
+          <div class="help-text">
+            📈 Este gráfico muestra la sumatoria de kilómetros o minutos planificados por semana. Te permite anticipar los picos de choque y las semanas de descarga.
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="volumenSemanalChart"></canvas>
+          </div>
+          <p id="volumenEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.85rem; padding: 20px;">
+            Aún no hay registros de volumen en las sesiones cargadas.
+          </p>
         </div>
       </section>
 
@@ -208,9 +232,7 @@
 
         <div class="card">
           <h2>Ficha Médica</h2>
-          <div class="help-text">
-            🏥 Mantén esta información actualizada por tu seguridad durante las sesiones en pista, calle o gimnasio.
-          </div>
+          <div class="help-text">🏥 Mantén esta información actualizada por tu seguridad.</div>
           <div class="grid-2">
             <div><label>Obra Social / Prepaga</label><input type="text" id="inputObraSocial" placeholder="Ej: IOMA, OSDE..." /></div>
             <div><label>Clínica / Hospital Ref.</label><input type="text" id="inputClinica" placeholder="Ej: Clínica Pueyrredón" /></div>
@@ -219,7 +241,7 @@
           </div>
           <div style="margin-top: 12px;">
             <label>Alergias o Lesiones Previas</label>
-            <textarea id="inputAlergias" placeholder="Ej: Alergia a la penicilina, asma, esguince de tobillo crónico..."></textarea>
+            <textarea id="inputAlergias" placeholder="Ej: Alergia a la penicilina, asma..."></textarea>
           </div>
           <button class="btn btn-outline" style="margin-top: 16px; width: 100%; border-color: var(--accent); color: var(--accent);" onclick="guardarDatosPersonales()">💾 Guardar Ficha Completa</button>
         </div>
@@ -229,9 +251,7 @@
       <section id="tab-calculadora" class="hidden">
         <div class="card">
           <h2>Test de Resistencia (VAM / VO2máx)</h2>
-          <div class="help-text">
-            🏃‍♂️ <strong>¿Para qué sirve?</strong> El <em>Test de 5 Minutos</em> determina tu <strong>VAM</strong> (Velocidad Aeróbica Máxima), que usamos para calcular a qué ritmo exacto debes hacer cada pasada. El <em>Test de Cooper</em> estima tu consumo máximo de oxígeno (VO2máx).
-          </div>
+          <div class="help-text">🏃‍♂️ El <em>Test de 5 Minutos</em> determina tu VAM para calcular tus ritmos exactos.</div>
           <div class="grid-3">
             <div><label>Tipo de Test</label><select id="testResistenciaTipo" onchange="previewTestResistencia()"><option value="Test de 5 Min (VAM)">Test de 5 Minutos (VAM)</option><option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option></select></div>
             <div><label>Distancia lograda (metros)</label><input type="number" id="testResistenciaDist" value="1200" step="10" oninput="previewTestResistencia()" /></div>
@@ -242,16 +262,13 @@
 
         <div class="card">
           <h2>Parámetros de Running & Zonas</h2>
-          <div class="help-text">
-            💓 Consulta aquí tus ritmos de carrera (en min/km) o tus rangos de pulsaciones para cada zona de intensidad (Z1 a Z5).
-          </div>
           <div class="grid-3">
-            <div><label>VAM (km/h) 🔒</label><input type="number" step="0.1" id="inputVAM" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed; border-color: var(--bg);" title="La VAM solo se actualiza guardando un Test de 5 Minutos." /></div>
+            <div><label>VAM (km/h) 🔒</label><input type="number" step="0.1" id="inputVAM" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed; border-color: var(--bg);" /></div>
             <div><label>FC Reposo (ppm)</label><input type="number" id="inputFCR" oninput="recalcularZonas()" /></div>
             <div><label>FC Máxima (ppm)</label><input type="number" id="inputFCMax" oninput="recalcularZonas()" /></div>
           </div>
           <div style="margin-top: 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado (Cooper): <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
+            <span style="font-size: 0.85rem; color: var(--muted);">VO2máx Estimado: <strong id="vo2Display" style="color:var(--accent);">-</strong></span>
             <button class="btn btn-outline" onclick="guardarParametrosFisiologicos()" id="btnGuardarParametros">💾 Guardar Pulsaciones</button>
           </div>
           
@@ -269,26 +286,15 @@
         
         <div class="card">
           <h2>🏃‍♂️ Mis Marcas Personales (PB)</h2>
-          <div class="help-text">
-            ⏱️ Registra tus mejores tiempos en pruebas de pista o calle. En distancias de velocidad (100m a 400m) puedes ingresar decimales en los segundos (ej: <em>12.45</em>).
-          </div>
           <div class="grid-3">
             <div>
               <label>Distancia de Carrera</label>
               <select id="pbDistancia" onchange="previewPBRitmo()">
                 <optgroup label="Velocidad / Pista">
-                  <option value="100m">100 metros</option>
-                  <option value="200m">200 metros</option>
-                  <option value="400m">400 metros</option>
-                  <option value="800m">800 metros</option>
-                  <option value="1500m">1500 metros</option>
+                  <option value="100m">100 metros</option><option value="200m">200 metros</option><option value="400m">400 metros</option><option value="800m">800 metros</option><option value="1500m">1500 metros</option>
                 </optgroup>
                 <optgroup label="Fondo / Calle">
-                  <option value="3k">3 km</option>
-                  <option value="5k">5 km</option>
-                  <option value="10k">10 km</option>
-                  <option value="21k">Media Maratón (21k)</option>
-                  <option value="42k">Maratón (42k)</option>
+                  <option value="3k">3 km</option><option value="5k">5 km</option><option value="10k">10 km</option><option value="21k">Media Maratón (21k)</option><option value="42k">Maratón (42k)</option>
                 </optgroup>
               </select>
             </div>
@@ -314,9 +320,6 @@
 
         <div class="card">
           <h2>Test de Fuerza (Calculadora 1RM)</h2>
-          <div class="help-text">
-            🏋️‍♂️ Ingresa cuánto peso levantaste y cuántas repeticiones lograste hacer para estimar tu fuerza máxima (<strong>1RM</strong>) sin riesgo de lesión. Con este dato la app calculará tus kilos exactos en las rutinas de gimnasio.
-          </div>
           <div class="grid-3">
             <div><label>Ejercicio</label><select id="testFuerzaTipo" onchange="previewTestFuerza()"><option value="Sentadilla">Sentadilla</option><option value="Hip Thrust">Hip Thrust</option><option value="Peso Muerto">Peso Muerto</option><option value="Press de Banca">Press de Banca</option></select></div>
             <div><label>Peso utilizado (kg)</label><input type="number" step="0.5" id="testFuerzaPeso" value="80" oninput="previewTestFuerza()" /></div>
@@ -340,33 +343,18 @@
                 <option value="Test de Cooper (VO2 Max)">Cooper - VO2máx (ml/kg/min)</option>
               </optgroup>
               <optgroup label="Tiempos / PBs (En segundos)">
-                <option value="Marca PB 100m">100m Sprint</option>
-                <option value="Marca PB 200m">200m Sprint</option>
-                <option value="Marca PB 400m">400m Sprint</option>
-                <option value="Marca PB 800m">800m</option>
-                <option value="Marca PB 1500m">1500m</option>
-                <option value="Marca PB 3k">3 km</option>
-                <option value="Marca PB 5k">5 km</option>
-                <option value="Marca PB 10k">10 km</option>
-                <option value="Marca PB 21k">Media Maratón (21k)</option>
-                <option value="Marca PB 42k">Maratón (42k)</option>
+                <option value="Marca PB 100m">100m Sprint</option><option value="Marca PB 200m">200m Sprint</option><option value="Marca PB 400m">400m Sprint</option><option value="Marca PB 800m">800m</option><option value="Marca PB 1500m">1500m</option><option value="Marca PB 3k">3 km</option><option value="Marca PB 5k">5 km</option><option value="Marca PB 10k">10 km</option><option value="Marca PB 21k">Media Maratón (21k)</option><option value="Marca PB 42k">Maratón (42k)</option>
               </optgroup>
               <optgroup label="Fuerza 1RM (kg)">
-                <option value="Sentadilla">1RM Sentadilla</option>
-                <option value="Hip Thrust">1RM Hip Thrust</option>
-                <option value="Peso Muerto">1RM Peso Muerto</option>
-                <option value="Press de Banca">1RM Press de Banca</option>
+                <option value="Sentadilla">1RM Sentadilla</option><option value="Hip Thrust">1RM Hip Thrust</option><option value="Peso Muerto">1RM Peso Muerto</option><option value="Press de Banca">1RM Press de Banca</option>
               </optgroup>
             </select>
-          </div>
-          <div class="help-text" style="margin-top: 10px;">
-            📊 Toca cualquier punto de la gráfica para ver la fecha y marca exacta. <em>Nota: En los gráficos de Tiempos/PBs, que la línea baje significa que tardaste menos segundos (¡mejoraste tu marca!).</em>
           </div>
           <div class="chart-wrapper">
             <canvas id="evolucionChart"></canvas>
           </div>
           <p id="chartEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.85rem; padding: 30px 10px;">
-            Aún no tienes registros guardados en el historial para esta métrica. ¡Realiza un test o carga un récord arriba para inaugurar tu curva!
+            Aún no tienes registros guardados en el historial para esta métrica.
           </p>
         </div>
       </section>
@@ -375,9 +363,6 @@
       <section id="tab-videoteca" class="hidden">
         <div class="card">
           <h2>Videoteca de Ejercicios</h2>
-          <div class="help-text">
-            🎥 Busca cualquier ejercicio por nombre o grupo muscular para revisar la técnica correcta antes de entrenar.
-          </div>
           <div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div>
           <div id="videotecaContainer">Cargando videoteca...</div>
         </div>
@@ -387,9 +372,6 @@
       <section id="tab-pagos" class="hidden">
         <div class="card">
           <h2>Estado de tu Membresía</h2>
-          <div class="help-text">
-            💳 Aquí puedes verificar el historial de tus cuotas mensuales y sus fechas de vencimiento. Recuerda mantener tu membresía al día para conservar el acceso activo a tus rutinas semanales.
-          </div>
           <div id="pagosContainer">Cargando pagos...</div>
         </div>
       </section>
@@ -401,6 +383,7 @@
 
     let deferredPrompt = null;
     let chartInstance = null;
+    let volumenChartInstance = null;
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault(); deferredPrompt = e;
@@ -424,7 +407,7 @@
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
       pbs: { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null },
       historialRaw: [],
-      sesionesAgrupadas: [], videoteca: [], pagos: [],
+      sesionesAgrupadas: [], periodizacion: { semanasLabels: [], volumenes: [] }, videoteca: [], pagos: [],
       filtroRutina: "semana",
       vistaRutina: "lista",
       calMes: hoyInit.getMonth(),
@@ -450,7 +433,6 @@
       return str;
     }
 
-    // Convierte texto DD/MM/YYYY a objeto Date real para comparar semanas y calendario
     function parseFechaDDMMYYYY(str) {
       if (!str) return null;
       const partes = String(str).trim().split("/");
@@ -465,13 +447,12 @@
       return null;
     }
 
-    // Verifica si una fecha DD/MM/YYYY cae entre el lunes y el domingo de la semana actual
     function esDeEstaSemana(fechaStr) {
       const f = parseFechaDDMMYYYY(fechaStr);
       if (!f) return false;
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
-      const diaSemana = hoy.getDay(); // 0 domingo, 1 lunes...
+      const diaSemana = hoy.getDay();
       const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
       const lunes = new Date(hoy);
       lunes.setDate(diffLunes);
@@ -589,7 +570,10 @@
         });
         state.sesionesAgrupadas = Array.from(mapa.values());
       }
-      if (Array.isArray(data.videoteca)) state.videoteca = data.videoteca;
+
+      if (data.periodizacion) {
+        state.periodizacion = data.periodizacion;
+      }
       
       state.cuotaVencida = false;
       if (Array.isArray(data.pagos)) {
@@ -602,7 +586,7 @@
         });
       }
 
-      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVolumenChart(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
     }
 
     function actualizarUIPerfil() {
@@ -649,7 +633,7 @@
     async function guardarDatosPersonales() {
       syncSeguroAtleta();
       if (!state.perfil.celular || !state.perfil.emergencia) {
-        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia. Son obligatorios por tu seguridad antes de guardar."); return;
+        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia."); return;
       }
       if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
       await guardarPerfilEnSheets(null, null); alert("Ficha Médica guardada con éxito.");
@@ -714,7 +698,7 @@
       const seg = parseFloat(document.getElementById("pbSeg").value || 0);
       
       const totalSegundos = (hs * 3600) + (min * 60) + seg;
-      if (totalSegundos === 0) { alert("Ingresá un tiempo válido (minutos y segundos)."); return; }
+      if (totalSegundos === 0) { alert("Ingresá un tiempo válido."); return; }
       
       let tiempoStr = "";
       if (hs > 0) tiempoStr += `${hs}h `;
@@ -838,6 +822,84 @@
       });
     }
 
+    function renderVolumenChart() {
+      const canvas = document.getElementById("volumenSemanalChart");
+      const emptyMsg = document.getElementById("volumenEmptyMsg");
+      const badgeState = document.getElementById("periodBadgeState");
+      if (!canvas) return;
+
+      const labels = state.periodizacion.semanasLabels || [];
+      const dataVols = state.periodizacion.volumenes || [];
+
+      if (volumenChartInstance) { volumenChartInstance.destroy(); volumenChartInstance = null; }
+
+      if (!labels.length || !dataVols.length) {
+        canvas.parentElement.classList.add("hidden");
+        emptyMsg.classList.remove("hidden");
+        if (badgeState) { badgeState.textContent = "🟢 Fase Base"; badgeState.style.background = "var(--primary)"; }
+        return;
+      }
+
+      canvas.parentElement.classList.remove("hidden");
+      emptyMsg.classList.add("hidden");
+
+      // Detección automática del microciclo actual (última semana vs promedio)
+      let ultimaSemana = dataVols[dataVols.length - 1];
+      let promedioAnterior = dataVols.length > 1 ? dataVols.slice(0, -1).reduce((a, b) => a + b, 0) / (dataVols.length - 1) : ultimaSemana;
+      
+      if (badgeState) {
+        if (promedioAnterior > 0 && ultimaSemana > promedioAnterior * 1.15) {
+          badgeState.textContent = "🔴 Semana de Choque";
+          badgeState.style.background = "var(--danger)";
+        } else if (promedioAnterior > 0 && ultimaSemana < promedioAnterior * 0.8) {
+          badgeState.textContent = "🟢 Semana de Descarga";
+          badgeState.style.background = "var(--accent)";
+        } else {
+          badgeState.textContent = "🔵 Semana de Carga";
+          badgeState.style.background = "var(--primary)";
+        }
+      }
+
+      const ctx = canvas.getContext("2d");
+      volumenChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Volumen Semanal",
+            data: dataVols,
+            backgroundColor: "rgba(59, 130, 246, 0.6)",
+            borderColor: "#3b82f6",
+            borderWidth: 2,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              titleColor: "#3b82f6",
+              bodyColor: "#f8fafc",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return " Volumen total: " + context.parsed.y;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
+            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }
+          }
+        }
+      });
+    }
+
     function toggleZonas(tipo) {
       if(tipo === 'vam') {
         document.getElementById('tablaVAM').classList.remove('hidden'); document.getElementById('tablaFC').classList.add('hidden');
@@ -885,7 +947,6 @@
       return cargaRaw;
     }
 
-    // --- LÓGICA DE VISTAS (LISTA vs CALENDARIO) Y FILTROS ---
     function cambiarVistaRutina(vista) {
       state.vistaRutina = vista;
       document.getElementById("btnVistaLista").classList.toggle("active", vista === "lista");
@@ -992,7 +1053,7 @@
               <div>
                 <label>RPE (Esfuerzo 1-10)</label>
                 <input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" placeholder="Ej: 7" />
-                <span class="field-hint">1 = Muy suave | 10 = Al límite</span>
+                <span class="field-hint">1 = Suave | 10 = Máximo</span>
               </div>
               <div>
                 <label>Estado de la Sesión</label>
@@ -1002,7 +1063,7 @@
                 <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button>
               </div>
             </div>
-            <div style="margin-top: 10px;"><label>Nota para el Profe (molestias, sensaciones, clima, etc.)</label><textarea id="nota-${idx}" placeholder="Ej: Me sentí muy bien en las pasadas, o tuve molestia en gemelo...">${s.notaAtleta || ""}</textarea></div>
+            <div style="margin-top: 10px;"><label>Nota para el Profe</label><textarea id="nota-${idx}" placeholder="Sensaciones, molestias, clima...">${s.notaAtleta || ""}</textarea></div>
           </div>
         </div>`;
     }
@@ -1013,19 +1074,22 @@
       const calWrapper = document.getElementById("calendarioWrapper");
       const controlesVista = document.getElementById("controlesVistaRutina");
       const ayudaRutinas = document.getElementById("ayudaRutinas");
+      const periodCard = document.getElementById("periodCardContainer");
+      const cardGrafico = document.getElementById("cardGraficoVolumen");
 
-      // 1. VERIFICACIÓN DE CANDADO TOTAL POR CUOTA VENCIDA
       if (state.cuotaVencida) {
         barraFiltros.classList.add("hidden");
         calWrapper.classList.add("hidden");
         controlesVista.classList.add("hidden");
         ayudaRutinas.classList.add("hidden");
+        periodCard.classList.add("hidden");
+        cardGrafico.classList.add("hidden");
 
         container.innerHTML = `
           <div class="lock-screen">
             <div style="font-size: 3rem;">🔒</div>
             <h3>Planificación Bloqueada por Cuota Vencida</h3>
-            <p>Tu membresía registra un pago vencido. Para continuar visualizando tu planificación semanal y tus cargas de entrenamiento, por favor regulariza tu cuota con el entrenador.</p>
+            <p>Tu membresía registra un pago vencido. Por favor regulariza tu cuota con el entrenador para desbloquear el contenido.</p>
             <button class="btn" style="max-width: 260px; background: var(--danger);" onclick="switchTab('pagos', document.getElementById('nav-btn-pagos'))">Ver Estado de mi Membresía →</button>
           </div>
         `;
@@ -1034,6 +1098,8 @@
 
       controlesVista.classList.remove("hidden");
       ayudaRutinas.classList.remove("hidden");
+      periodCard.classList.remove("hidden");
+      cardGrafico.classList.remove("hidden");
 
       if (!state.sesionesAgrupadas.length) {
         barraFiltros.classList.add("hidden");
@@ -1044,20 +1110,19 @@
       
       const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
 
-      // 2. MODO VISTA CALENDARIO
       if (state.vistaRutina === "calendario") {
         barraFiltros.classList.add("hidden");
         calWrapper.classList.remove("hidden");
         renderCalendarioGrid(sesionesConIndice);
 
         if (!state.calFechaSeleccionada) {
-          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">👆 Toca un día con punto en el calendario para abrir el entrenamiento de esa fecha.</p>`;
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">👆 Toca un día con punto en el calendario para ver el entrenamiento.</p>`;
           return;
         }
 
         const sesionesDia = sesionesConIndice.filter(s => s.fechaDisplay === state.calFechaSeleccionada);
         if (!sesionesDia.length) {
-          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">No hay entrenamientos asignados para el <strong>${state.calFechaSeleccionada}</strong> (Día de descanso).</p>`;
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">No hay entrenamientos para el <strong>${state.calFechaSeleccionada}</strong>.</p>`;
           return;
         }
 
@@ -1065,7 +1130,6 @@
         return;
       }
 
-      // 3. MODO VISTA LISTA
       calWrapper.classList.add("hidden");
       barraFiltros.classList.remove("hidden");
 
@@ -1078,8 +1142,7 @@
 
       if (!sesionesFiltradas.length) {
         let msj = "No hay sesiones en esta sección.";
-        if (state.filtroRutina === "semana") msj = "📅 No tienes sesiones programadas para esta semana en curso. Revisa la pestaña '⏳ Pendientes' o '🗓️ Mes'.";
-        else if (state.filtroRutina === "pendientes") msj = "🎉 ¡Estás al día! No tienes entrenamientos pendientes.";
+        if (state.filtroRutina === "semana") msj = "📅 No tienes sesiones programadas para esta semana. Revisa '⏳ Pendientes' o '🗓️ Mes'.";
         container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`;
         return;
       }
@@ -1129,6 +1192,7 @@
       document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active"));
       if (btn) btn.classList.add("active");
       if (tab === 'calculadora') { setTimeout(() => renderChart(), 50); }
+      if (tab === 'rutinas') { setTimeout(() => renderVolumenChart(), 50); }
     }
   </script>
 </body>
