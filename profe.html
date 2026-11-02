@@ -17,116 +17,145 @@
     .brand-container { display: flex; align-items: center; gap: 8px; }
     header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--accent); margin: 0; }
     
+    #loginCoachScreen { max-width: 400px; margin: 70px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+    #loginCoachScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--accent); margin-bottom: 8px; font-size: 1.5rem; }
+    #loginCoachScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+
     .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
     .card h2 { font-size: 1.15rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); }
     
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
     
-    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-align: left; }
     input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.95rem; margin-bottom: 12px; }
     textarea { resize: vertical; min-height: 80px; }
     
     button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; font-size: 1rem; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
     button.btn-success { background: var(--accent); color: #000; }
-    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 8px 12px; }
+    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 12px; font-size: 0.8rem; }
     
     .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
     .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
     
-    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
-    .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Pantalla de carga inicial -->
-  <div id="loadingOverlay">
-    <div class="spinner"></div>
-    <h3 style="color:var(--primary); font-family:'Montserrat', sans-serif; font-style:italic;">Conectando con la Base de Datos...</h3>
-    <p style="color:var(--muted); font-size:0.85rem; margin-top:5px;">Sincronizando atletas y videoteca</p>
+  <!-- PANTALLA DE BLOQUEO PARA EL ENTRENADOR -->
+  <div id="loginCoachScreen">
+    <img src="./logo.png" alt="E-TRAIN" style="max-height: 90px; margin-bottom: 12px;" onerror="this.style.display='none'">
+    <h2>MODO ENTRENADOR</h2>
+    <p>Acceso exclusivo de administración.</p>
+    <div>
+      <label>Clave Maestra</label>
+      <input type="password" id="inputCoachPass" placeholder="Ingresa tu clave secreta..." onkeypress="if(event.key === 'Enter') verificarProfe()" />
+    </div>
+    <button class="btn btn-success" id="btnLoginCoach" onclick="verificarProfe()">Desbloquear Panel</button>
+    <div id="coachError" style="color:var(--danger); font-size:0.85rem; margin-top:12px;"></div>
+    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 12px;">
+      <a href="./index.html" style="color: var(--muted); font-size: 0.8rem; text-decoration: none;">← Volver a la App de Atletas</a>
+    </div>
   </div>
 
-  <header>
-    <div class="brand-container">
-      <img src="./logo.png" alt="Logo" style="max-height: 32px;" onerror="this.style.display='none'">
-      <h1>E-TRAIN | Panel Profe</h1>
-    </div>
-  </header>
+  <!-- PANEL DE CONTROL (OCULTO HASTA PONER LA CLAVE) -->
+  <div id="panelContainer" class="hidden">
+    <header>
+      <div class="brand-container">
+        <img src="./logo.png" alt="Logo" style="max-height: 32px;" onerror="this.style.display='none'">
+        <h1>E-TRAIN | Panel Profe</h1>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="./index.html" class="btn btn-outline" style="text-decoration:none;">Ver App Atletas</a>
+        <button class="btn btn-outline" onclick="salirProfe()" style="border-color:var(--danger); color:var(--danger);">Salir</button>
+      </div>
+    </header>
 
-  <main class="container">
-    <div class="card">
-      <h2>1. Configuración de la Sesión</h2>
-      <div class="grid-2">
-        <div>
-          <label>Atleta / Alumno</label>
-          <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
+    <main class="container">
+      <div class="card">
+        <h2>1. Configuración de la Sesión</h2>
+        <div class="grid-2">
+          <div>
+            <label>Atleta / Alumno</label>
+            <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
+          </div>
+          <div>
+            <label>Fecha del Entrenamiento</label>
+            <input type="date" id="inputFecha" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>Tipo de Sesión (Ej: Fuerza, Pasadas, Regenerativo)</label>
+            <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series Largas" />
+          </div>
+          <div>
+            <label>Volumen Total (Opcional)</label>
+            <input type="text" id="inputVolumen" placeholder="Ej: 6 km totales / 60 min" />
+          </div>
         </div>
         <div>
-          <label>Fecha del Entrenamiento</label>
-          <input type="date" id="inputFecha" />
+          <label>Indicaciones del Profe (Objetivo del día, técnica, etc.)</label>
+          <textarea id="inputIndicaciones" placeholder="Ej: Hoy cuidá la técnica en las bajadas. Hacé una buena entrada en calor de 15 min antes de empezar los bloques."></textarea>
         </div>
       </div>
-      <div class="grid-2">
-        <div>
-          <label>Tipo de Sesión (Ej: Fuerza, Pasadas, Regenerativo)</label>
-          <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series Largas" />
-        </div>
-        <div>
-          <label>Volumen Total (Opcional)</label>
-          <input type="text" id="inputVolumen" placeholder="Ej: 6 km totales / 60 min" />
-        </div>
-      </div>
-      <div>
-        <label>Indicaciones del Profe (Objetivo del día, técnica, etc.)</label>
-        <textarea id="inputIndicaciones" placeholder="Ej: Hoy cuidá la técnica en las bajadas. Hacé una buena entrada en calor de 15 min antes de empezar los bloques."></textarea>
-      </div>
-    </div>
 
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
-        <h2 style="border:none; margin:0; padding:0;">2. Bloques y Ejercicios</h2>
-        <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
+          <h2 style="border:none; margin:0; padding:0;">2. Bloques y Ejercicios</h2>
+          <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
+        </div>
+        
+        <div id="bloquesContainer"></div>
+        
+        <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio a la lista</button>
       </div>
-      
-      <div id="bloquesContainer">
-        <!-- Los ejercicios se inyectarán aquí -->
-      </div>
-      
-      <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio a la lista</button>
-    </div>
 
-    <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA AL ATLETA</button>
-    <div id="mensajeResultado" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
-  </main>
+      <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA AL ATLETA</button>
+      <div id="mensajeResultado" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+    </main>
+  </div>
 
   <datalist id="listaEjercicios"></datalist>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
     let contadorBloques = 0;
+    let claveGuardada = "";
 
-    window.addEventListener("DOMContentLoaded", async () => {
-      // Establece la fecha de hoy por defecto
+    window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
-      await cargarDatosDelServidor();
-      agregarBloque(); // Agrega el primer bloque vacío por defecto
+      const savedPass = localStorage.getItem("etrain_coach_pass");
+      if (savedPass) {
+        document.getElementById("inputCoachPass").value = savedPass;
+        verificarProfe();
+      }
     });
 
-    async function cargarDatosDelServidor() {
+    async function verificarProfe() {
+      const pass = document.getElementById("inputCoachPass").value.trim();
+      const errDiv = document.getElementById("coachError");
+      const btn = document.getElementById("btnLoginCoach");
+      if (!pass) { errDiv.textContent = "Ingresa la clave maestra."; return; }
+
+      errDiv.textContent = "";
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
       try {
         const cacheBuster = new Date().getTime();
-        const res = await fetch(`${API_URL}?modo=profe&cb=${cacheBuster}`);
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(pass)}&cb=${cacheBuster}`);
         const data = await res.json();
         
         if (data.status === "success") {
-          // Llenar selector de atletas
+          claveGuardada = pass;
+          localStorage.setItem("etrain_coach_pass", pass);
+
           const selectAtleta = document.getElementById("selectAtleta");
+          selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
           data.atletas.forEach(a => {
             const opt = document.createElement("option");
             opt.value = a.email;
@@ -134,21 +163,32 @@
             selectAtleta.appendChild(opt);
           });
 
-          // Llenar datalist de ejercicios (para autocompletado)
           const datalist = document.getElementById("listaEjercicios");
+          datalist.innerHTML = "";
           data.ejercicios.forEach(ej => {
             const opt = document.createElement("option");
             opt.value = ej;
             datalist.appendChild(opt);
           });
 
-          document.getElementById("loadingOverlay").classList.add("hidden");
+          document.getElementById("loginCoachScreen").classList.add("hidden");
+          document.getElementById("panelContainer").classList.remove("hidden");
+          if (contadorBloques === 0) agregarBloque();
         } else {
-          alert("Error al cargar la base de datos.");
+          errDiv.textContent = data.message || "Clave incorrecta.";
+          btn.disabled = false;
+          btn.textContent = "Desbloquear Panel";
         }
       } catch (err) {
-        alert("Error de conexión. Revisa tu internet.");
+        errDiv.textContent = "Error de conexión con el servidor.";
+        btn.disabled = false;
+        btn.textContent = "Desbloquear Panel";
       }
+    }
+
+    function salirProfe() {
+      localStorage.removeItem("etrain_coach_pass");
+      location.reload();
     }
 
     function agregarBloque() {
@@ -200,13 +240,10 @@
       if (bloque) bloque.remove();
     }
 
-    // Convertir YYYY-MM-DD a DD/MM/YYYY para Google Sheets
     function formatFechaEnvio(fechaYYYYMMDD) {
       if (!fechaYYYYMMDD) return "";
       const partes = fechaYYYYMMDD.split("-");
-      if (partes.length === 3) {
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-      }
+      if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
       return fechaYYYYMMDD;
     }
 
@@ -221,7 +258,6 @@
       if (!fechaRaw) return alert("Por favor, selecciona la fecha.");
       if (!tipo) return alert("Por favor, ponle un nombre/tipo a la sesión.");
 
-      // Recopilar todos los bloques (ejercicios)
       const bloquesNodes = document.querySelectorAll(".bloque-row");
       if (bloquesNodes.length === 0) return alert("Debes agregar al menos un ejercicio a la rutina.");
 
@@ -232,7 +268,6 @@
         const id = nodo.id.replace("bloque-", "");
         const ej = document.getElementById(`ejercicio-${id}`).value.trim();
         const ser = document.getElementById(`series-${id}`).value.trim();
-        
         if (!ej || !ser) faltaData = true;
 
         bloques.push({
@@ -255,6 +290,7 @@
 
       const payload = {
         action: "asignarRutina",
+        pass: claveGuardada,
         email: email,
         fecha: formatFechaEnvio(fechaRaw),
         tipoSesion: tipo,
@@ -277,26 +313,26 @@
           btn.style.background = "var(--primary)";
           btn.textContent = "✅ ¡Rutina Asignada con Éxito!";
           
-          // Limpiar el formulario para cargar otra
           document.getElementById("inputTipoSesion").value = "";
           document.getElementById("inputVolumen").value = "";
           document.getElementById("inputIndicaciones").value = "";
           document.getElementById("bloquesContainer").innerHTML = "";
-          agregarBloque(); // Agregar un bloque vacío nuevo
+          agregarBloque();
           
           setTimeout(() => {
             btn.className = "btn btn-success";
             btn.style.background = "";
+            btn.disabled = false;
             btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
-          }, 3000);
+          }, 2500);
         } else {
-          throw new Error("Respuesta no exitosa");
+          throw new Error(result.message || "Error al guardar");
         }
       } catch (error) {
         btn.disabled = false;
         btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
         msj.style.color = "var(--danger)";
-        msj.textContent = "❌ Hubo un error al enviar. Intenta de nuevo.";
+        msj.textContent = "❌ Error al enviar: " + error.message;
       }
     }
   </script>
