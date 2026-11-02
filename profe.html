@@ -40,6 +40,17 @@
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
     .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
     
+    /* Estilos para selección múltiple de atletas y plantillas */
+    .template-bar { background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .template-bar select { margin-bottom: 0; flex: 1; min-width: 200px; border-color: var(--accent); }
+    .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 12px; }
+    .atleta-check-item { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.9rem; cursor: pointer; }
+    .atleta-check-item:last-child { border-bottom: none; }
+    .atleta-check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent); }
+    .mode-switch { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
+    .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .mode-switch button.active { background: var(--primary); color: #fff; }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -61,7 +72,7 @@
     </div>
   </div>
 
-  <!-- PANEL DE CONTROL (OCULTO HASTA PONER LA CLAVE) -->
+  <!-- PANEL DE CONTROL -->
   <div id="panelContainer" class="hidden">
     <header>
       <div class="brand-container">
@@ -77,16 +88,49 @@
     <main class="container">
       <div class="card">
         <h2>1. Configuración de la Sesión</h2>
+
+        <!-- BARRA DE PLANTILLAS RÁPIDAS -->
+        <div class="template-bar">
+          <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Cargar Plantilla Base:</div>
+          <select id="selectPlantilla" onchange="cargarPlantilla()">
+            <option value="">-- Elegir plantilla pre-armada --</option>
+            <option value="run_vam">🏃‍♂️ Running: Pasadas Cortas (Intermitente VAM)</option>
+            <option value="run_umbral">🏃‍♂️ Running: Series de Umbral (1000m)</option>
+            <option value="run_fondo">🌲 Running: Fondo Continuo Regenerativo</option>
+            <option value="gym_inf">🏋️‍♂️ Fuerza: Tren Inferior & Core</option>
+            <option value="gym_full">💪 Fuerza: Full Body Funcional</option>
+          </select>
+        </div>
+
         <div class="grid-2">
           <div>
-            <label>Atleta / Alumno</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label>Destinatario(s)</label>
+              <div class="mode-switch">
+                <button type="button" id="btnModoIndividual" class="active" onclick="cambiarModoAsignacion('individual')">👤 Individual</button>
+                <button type="button" id="btnModoGrupal" onclick="cambiarModoAsignacion('grupal')">👥 Grupal</button>
+              </div>
+            </div>
+
+            <!-- Selector Individual -->
             <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
+
+            <!-- Selector Grupal (Checkboxes) -->
+            <div id="contenedorGrupal" class="hidden">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
+                <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
+                <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar todos</a>
+              </div>
+              <div class="multi-atleta-box" id="listaCheckAtletas"></div>
+            </div>
           </div>
+
           <div>
-            <label>Fecha del Entrenamiento</label>
+            <label style="margin-top: 6px;">Fecha del Entrenamiento</label>
             <input type="date" id="inputFecha" />
           </div>
         </div>
+
         <div class="grid-2">
           <div>
             <label>Tipo de Sesión (Ej: Fuerza, Pasadas, Regenerativo)</label>
@@ -114,7 +158,7 @@
         <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio a la lista</button>
       </div>
 
-      <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA AL ATLETA</button>
+      <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA</button>
       <div id="mensajeResultado" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
     </main>
   </div>
@@ -125,6 +169,63 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
     let contadorBloques = 0;
     let claveGuardada = "";
+    let modoAsignacion = "individual";
+
+    // CATÁLOGO DE PLANTILLAS PRE-ARMADAS
+    const PLANTILLAS = {
+      run_vam: {
+        tipo: "Running - Potencia Aeróbica (VAM)",
+        volumen: "45 min / 7 km aprox",
+        indicaciones: "Mantener el ritmo parejo en todas las pasadas sin caer al final. La micropausa es trote muy suave o caminata.",
+        bloques: [
+          { orden: "Bloque 1", ejercicio: "Entrada en Calor (Trote + Movilidad)", series: "15 min", carga: "65% VAM", micro: "-", macro: "2'" },
+          { orden: "Principal", ejercicio: "Pasadas de 400m en Pista/Calle", series: "2 x 6 x 400m", carga: "100% VAM", micro: "1'", macro: "3'" },
+          { orden: "Vuelta a la calma", ejercicio: "Trote Regenerativo + Elongación", series: "10 min", carga: "60% VAM", micro: "-", macro: "-" }
+        ]
+      },
+      run_umbral: {
+        tipo: "Running - Series de Umbral",
+        volumen: "8 a 10 km totales",
+        indicaciones: "Ritmo fuerte pero controlado (sensación de poder sostener el diálogo cortado). Hidratar bien entre bloques.",
+        bloques: [
+          { orden: "Bloque 1", ejercicio: "Trote de Activación + Rectas", series: "15 min + 4x80m", carga: "70% VAM", micro: "1'", macro: "2'" },
+          { orden: "Principal", ejercicio: "Series de 1000m", series: "5 x 1000m", carga: "90% VAM", micro: "2'", macro: "-" },
+          { orden: "Final", ejercicio: "Trote Suave Descontracturante", series: "10 min", carga: "65% VAM", micro: "-", macro: "-" }
+        ]
+      },
+      run_fondo: {
+        tipo: "Running - Fondo Regenerativo",
+        volumen: "50 a 60 min",
+        indicaciones: "El objetivo de hoy es sumar volumen aeróbico sin fatiga muscular. No correr más rápido de lo pautado aunque te sientas con energía.",
+        bloques: [
+          { orden: "Único", ejercicio: "Fondo Continuo en Zona 1 / Zona 2", series: "50 min continuos", carga: "70% VAM", micro: "-", macro: "-" },
+          { orden: "Post", ejercicio: "Movilidad y Elongación General", series: "10 min", carga: "Libre", micro: "-", macro: "-" }
+        ]
+      },
+      gym_inf: {
+        tipo: "Fuerza - Tren Inferior & Core",
+        volumen: "50 min",
+        indicaciones: "Priorizar la velocidad de ejecución en la fase concéntrica (subir rápido, bajar controlado en 2 segundos).",
+        bloques: [
+          { orden: "Activación", ejercicio: "Plancha Frontal + Puentes de Glúteo", series: "3 x 30'' + 15 reps", carga: "Peso Corporal", micro: "30''", macro: "1'" },
+          { orden: "A1", ejercicio: "Sentadilla", series: "4 x 6", carga: "75% 1RM", micro: "-", macro: "2'" },
+          { orden: "B1", ejercicio: "Peso Muerto", series: "4 x 6", carga: "75% 1RM", micro: "1'", macro: "2'" },
+          { orden: "B2", ejercicio: "Estocadas Búlgaras con Mancuernas", series: "3 x 8 c/pierna", carga: "RPE 8", micro: "1'", macro: "2'" },
+          { orden: "C1", ejercicio: "Elevación de Gemelos en Escalón", series: "3 x 15", carga: "Controlado", micro: "45''", macro: "-" }
+        ]
+      },
+      gym_full: {
+        tipo: "Fuerza - Full Body Funcional",
+        volumen: "60 min",
+        indicaciones: "Trabajamos en superseries (pasás del ejercicio 1 al 2 sin descanso, y recién descansás en la macropausa).",
+        bloques: [
+          { orden: "A1", ejercicio: "Sentadilla", series: "4 x 8", carga: "70% 1RM", micro: "0''", macro: "2'" },
+          { orden: "A2", ejercicio: "Press de Banca", series: "4 x 8", carga: "70% 1RM", micro: "2'", macro: "-" },
+          { orden: "B1", ejercicio: "Hip Thrust", series: "3 x 10", carga: "75% 1RM", micro: "0''", macro: "90''" },
+          { orden: "B2", ejercicio: "Remo con Mancuerna a un brazo", series: "3 x 10 c/lado", carga: "RPE 8", micro: "90''", macro: "-" }
+        ]
+      }
+    };
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
@@ -155,12 +256,22 @@
           localStorage.setItem("etrain_coach_pass", pass);
 
           const selectAtleta = document.getElementById("selectAtleta");
+          const checkContainer = document.getElementById("listaCheckAtletas");
           selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
+          checkContainer.innerHTML = '';
+
           data.atletas.forEach(a => {
+            // Opción para selector individual
             const opt = document.createElement("option");
             opt.value = a.email;
             opt.textContent = `${a.nombre} (${a.email})`;
             selectAtleta.appendChild(opt);
+
+            // Checkbox para selector grupal
+            const label = document.createElement("label");
+            label.className = "atleta-check-item";
+            label.innerHTML = `<input type="checkbox" class="check-atleta" value="${a.email}"> <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">(${a.email})</small></span>`;
+            checkContainer.appendChild(label);
           });
 
           const datalist = document.getElementById("listaEjercicios");
@@ -191,9 +302,55 @@
       location.reload();
     }
 
-    function agregarBloque() {
+    function cambiarModoAsignacion(modo) {
+      modoAsignacion = modo;
+      const btnInd = document.getElementById("btnModoIndividual");
+      const btnGrup = document.getElementById("btnModoGrupal");
+      const selInd = document.getElementById("selectAtleta");
+      const contGrup = document.getElementById("contenedorGrupal");
+
+      if (modo === "individual") {
+        btnInd.classList.add("active");
+        btnGrup.classList.remove("active");
+        selInd.classList.remove("hidden");
+        contGrup.classList.add("hidden");
+      } else {
+        btnGrup.classList.add("active");
+        btnInd.classList.remove("active");
+        selInd.classList.add("hidden");
+        contGrup.classList.remove("hidden");
+      }
+    }
+
+    function marcarTodos(estado) {
+      document.querySelectorAll(".check-atleta").forEach(chk => chk.checked = estado);
+    }
+
+    function cargarPlantilla() {
+      const key = document.getElementById("selectPlantilla").value;
+      if (!key || !PLANTILLAS[key]) return;
+
+      const p = PLANTILLAS[key];
+      document.getElementById("inputTipoSesion").value = p.tipo;
+      document.getElementById("inputVolumen").value = p.volumen;
+      document.getElementById("inputIndicaciones").value = p.indicaciones;
+
+      document.getElementById("bloquesContainer").innerHTML = "";
+      contadorBloques = 0;
+
+      p.bloques.forEach(b => agregarBloque(b));
+    }
+
+    function agregarBloque(datos = null) {
       contadorBloques++;
       const id = contadorBloques;
+      const ordenVal = datos ? datos.orden : "";
+      const ejVal = datos ? datos.ejercicio : "";
+      const serVal = datos ? datos.series : "";
+      const carVal = datos ? datos.carga : "";
+      const micVal = datos ? datos.micro : "";
+      const macVal = datos ? datos.macro : "";
+
       const html = `
         <div class="bloque-row" id="bloque-${id}">
           <div class="bloque-header">
@@ -203,31 +360,31 @@
           <div class="grid-2">
             <div>
               <label>Orden / Letra (Ej: A1, B, Principal)</label>
-              <input type="text" id="orden-${id}" placeholder="A1" style="margin-bottom:8px;">
+              <input type="text" id="orden-${id}" value="${ordenVal}" placeholder="A1" style="margin-bottom:8px;">
             </div>
             <div>
               <label>Ejercicio (Buscá en tu videoteca)</label>
-              <input type="text" id="ejercicio-${id}" list="listaEjercicios" placeholder="Escribí para buscar..." style="margin-bottom:8px;">
+              <input type="text" id="ejercicio-${id}" value="${ejVal}" list="listaEjercicios" placeholder="Escribí para buscar..." style="margin-bottom:8px;">
             </div>
           </div>
           <div class="grid-2">
             <div>
               <label>Series y Reps / Distancia</label>
-              <input type="text" id="series-${id}" placeholder="Ej: 4x10 o 5 x 1000m">
+              <input type="text" id="series-${id}" value="${serVal}" placeholder="Ej: 4x10 o 5 x 1000m">
             </div>
             <div>
               <label>Carga / Ritmo (%)</label>
-              <input type="text" id="carga-${id}" placeholder="Ej: 70% 1RM o 4:30/km">
+              <input type="text" id="carga-${id}" value="${carVal}" placeholder="Ej: 70% 1RM o 85% VAM">
             </div>
           </div>
           <div class="grid-2">
             <div>
               <label>Micropausa (Entre reps)</label>
-              <input type="text" id="micro-${id}" placeholder="Ej: 1' o 30''">
+              <input type="text" id="micro-${id}" value="${micVal}" placeholder="Ej: 1' o 30''">
             </div>
             <div>
               <label>Macropausa (Entre series)</label>
-              <input type="text" id="macro-${id}" placeholder="Ej: 2' 30'' o Libre">
+              <input type="text" id="macro-${id}" value="${macVal}" placeholder="Ej: 2' 30'' o Libre">
             </div>
           </div>
         </div>
@@ -248,13 +405,20 @@
     }
 
     async function enviarRutina() {
-      const email = document.getElementById("selectAtleta").value;
+      let destinatarios = [];
+      if (modoAsignacion === "individual") {
+        const emailUnico = document.getElementById("selectAtleta").value;
+        if (emailUnico) destinatarios.push(emailUnico);
+      } else {
+        document.querySelectorAll(".check-atleta:checked").forEach(chk => destinatarios.push(chk.value));
+      }
+
       const fechaRaw = document.getElementById("inputFecha").value;
       const tipo = document.getElementById("inputTipoSesion").value.trim();
       const vol = document.getElementById("inputVolumen").value.trim();
       const ind = document.getElementById("inputIndicaciones").value.trim();
 
-      if (!email) return alert("Por favor, selecciona un atleta.");
+      if (destinatarios.length === 0) return alert("Por favor, selecciona al menos un atleta.");
       if (!fechaRaw) return alert("Por favor, selecciona la fecha.");
       if (!tipo) return alert("Por favor, ponle un nombre/tipo a la sesión.");
 
@@ -285,52 +449,56 @@
       const btn = document.getElementById("btnGuardarRutina");
       const msj = document.getElementById("mensajeResultado");
       btn.disabled = true;
-      btn.textContent = "⏳ Enviando a Google Sheets...";
       msj.textContent = "";
 
-      const payload = {
-        action: "asignarRutina",
-        pass: claveGuardada,
-        email: email,
-        fecha: formatFechaEnvio(fechaRaw),
-        tipoSesion: tipo,
-        volumen: vol,
-        indicaciones: ind,
-        bloques: bloques
-      };
-
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === "success") {
-          btn.className = "btn";
-          btn.style.background = "var(--primary)";
-          btn.textContent = "✅ ¡Rutina Asignada con Éxito!";
+        for (let i = 0; i < destinatarios.length; i++) {
+          const emailActual = destinatarios[i];
+          btn.textContent = `⏳ Enviando (${i + 1}/${destinatarios.length})...`;
+
+          const payload = {
+            action: "asignarRutina",
+            pass: claveGuardada,
+            email: emailActual,
+            fecha: formatFechaEnvio(fechaRaw),
+            tipoSesion: tipo,
+            volumen: vol,
+            indicaciones: ind,
+            bloques: bloques
+          };
+
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
           
-          document.getElementById("inputTipoSesion").value = "";
-          document.getElementById("inputVolumen").value = "";
-          document.getElementById("inputIndicaciones").value = "";
-          document.getElementById("bloquesContainer").innerHTML = "";
-          agregarBloque();
-          
-          setTimeout(() => {
-            btn.className = "btn btn-success";
-            btn.style.background = "";
-            btn.disabled = false;
-            btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
-          }, 2500);
-        } else {
-          throw new Error(result.message || "Error al guardar");
+          const result = await response.json();
+          if (result.status !== "success") throw new Error(result.message || "Error al guardar");
         }
+
+        btn.className = "btn";
+        btn.style.background = "var(--primary)";
+        btn.textContent = `✅ ¡Asignada a ${destinatarios.length} atleta(s)!`;
+        
+        document.getElementById("selectPlantilla").value = "";
+        document.getElementById("inputTipoSesion").value = "";
+        document.getElementById("inputVolumen").value = "";
+        document.getElementById("inputIndicaciones").value = "";
+        document.getElementById("bloquesContainer").innerHTML = "";
+        contadorBloques = 0;
+        agregarBloque();
+        
+        setTimeout(() => {
+          btn.className = "btn btn-success";
+          btn.style.background = "";
+          btn.disabled = false;
+          btn.textContent = "🚀 ASIGNAR RUTINA";
+        }, 2500);
+
       } catch (error) {
         btn.disabled = false;
-        btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
+        btn.textContent = "🚀 ASIGNAR RUTINA";
         msj.style.color = "var(--danger)";
         msj.textContent = "❌ Error al enviar: " + error.message;
       }
