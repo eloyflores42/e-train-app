@@ -188,6 +188,38 @@
           <table id="tablaVAM" style="margin-top: 12px;"><thead><tr><th>Zona</th><th>% VAM</th><th>Velocidad</th><th>Ritmo</th></tr></thead><tbody id="zonasTableBodyVAM"></tbody></table>
           <table id="tablaFC" class="hidden" style="margin-top: 12px;"><thead><tr><th>Zona</th><th>% FC (Karvonen)</th><th>Rango / Pulsaciones</th></tr></thead><tbody id="zonasTableBodyFC"></tbody></table>
         </div>
+        
+        <!-- NUEVA TARJETA: MARCAS PERSONALES -->
+        <div class="card">
+          <h2>🏃‍♂️ Mis Tiempos (Personal Bests)</h2>
+          <div class="grid-3">
+            <div>
+              <label>Distancia</label>
+              <select id="pbDistancia" onchange="previewPBRitmo()">
+                <option value="3k">3 km</option>
+                <option value="5k">5 km</option>
+                <option value="10k">10 km</option>
+                <option value="21k">21 km (Media Maratón)</option>
+                <option value="42k">42 km (Maratón)</option>
+              </select>
+            </div>
+            <div style="grid-column: span 2;">
+              <label>Tiempo (Hs : Min : Seg)</label>
+              <div style="display:flex; gap:6px;">
+                <input type="number" id="pbHs" placeholder="Hs" min="0" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
+                <input type="number" id="pbMin" placeholder="Min" min="0" max="59" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
+                <input type="number" id="pbSeg" placeholder="Seg" min="0" max="59" oninput="previewPBRitmo()" style="padding:8px; text-align:center;">
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:0.9rem;">Ritmo Promedio: <strong id="previewPBRitmoText" style="color:var(--accent);">-</strong></div>
+          <button class="btn btn-outline" style="margin-top:10px;" id="btnGuardarPB" onclick="guardarPB()">Guardar Marca</button>
+          
+          <table style="margin-top: 16px;">
+            <thead><tr><th>Distancia</th><th>Mejor Tiempo</th><th>Ritmo</th></tr></thead>
+            <tbody id="pbTableBody"></tbody>
+          </table>
+        </div>
 
         <div class="card">
           <h2>Test de Fuerza (Calculadora 1RM)</h2>
@@ -261,6 +293,7 @@
         celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
+      pbs: { "3k": null, "5k": null, "10k": null, "21k": null, "42k": null }, // Nuevo estado para las marcas
       historialRaw: [],
       sesionesAgrupadas: [], videoteca: [], pagos: [],
       filtroRutina: "pendientes"
@@ -269,27 +302,17 @@
     function formatSimpleDate(val) {
       if (!val || val === "-") return "";
       const str = String(val).trim();
-      
       if (str.includes("T") && str.includes("-")) {
-        const partes = str.split("T")[0].split("-");
-        return `${partes[2]}/${partes[1]}/${partes[0]}`; 
+        const partes = str.split("T")[0].split("-"); return `${partes[2]}/${partes[1]}/${partes[0]}`; 
       }
-      
       const regexFecha = /(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/;
       const coincidencia = str.match(regexFecha);
       if (coincidencia) {
-        const dia = coincidencia[1].padStart(2, '0');
-        const mes = coincidencia[2].padStart(2, '0');
-        let anio = coincidencia[3];
-        if (anio.length === 2) anio = "20" + anio;
-        return `${dia}/${mes}/${anio}`;
+        const dia = coincidencia[1].padStart(2, '0'); const mes = coincidencia[2].padStart(2, '0');
+        let anio = coincidencia[3]; if (anio.length === 2) anio = "20" + anio; return `${dia}/${mes}/${anio}`;
       }
-      
       const d = new Date(str);
-      if (!isNaN(d.getTime()) && !str.includes("/")) {
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
-      }
-      
+      if (!isNaN(d.getTime()) && !str.includes("/")) return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
       return str;
     }
 
@@ -343,15 +366,33 @@
           donante: data.perfil["Donante"] || "", alergias: data.perfil["Alergias / Lesiones"] || ""
         };
       }
+      
+      state.pbs = { "3k": null, "5k": null, "10k": null, "21k": null, "42k": null };
+      
       if (Array.isArray(data.historial)) {
         state.historialRaw = data.historial;
         data.historial.forEach(h => {
           const tipo = String(h["Ejercicio o Test"] || "").trim();
-          const in1 = parseNum(h["Métrica 1"]); const in2 = parseNum(h["Métrica 2"], 1); const resCalc = parseNum(h["Marca Calculada"]);
-          if (state.rms[tipo] && in1 > 0) { state.rms[tipo] = { peso: in1, reps: in2, rm: resCalc > 0 ? resCalc : calcBrzycki(in1, in2) }; } 
-          else if (tipo.includes("Cooper") && in1 > 0) { state.perfil.cooperMetros = in1; }
+          const in1 = h["Métrica 1"]; // En marcas es el tiempo texto, en RM es peso
+          const in2 = parseNum(h["Métrica 2"]); // En marcas son los segundos totales, en RM repeticiones
+          const resCalcStr = h["Marca Calculada"];
+          const resCalc = parseNum(resCalcStr);
+          
+          if (state.rms[tipo] && parseNum(in1) > 0) { 
+            state.rms[tipo] = { peso: parseNum(in1), reps: in2, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2) }; 
+          } 
+          else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
+          else if (tipo.startsWith("Marca PB ")) {
+            const distKey = tipo.replace("Marca PB ", "");
+            if (state.pbs[distKey] !== undefined) {
+              if (!state.pbs[distKey] || in2 < state.pbs[distKey].segundos) {
+                state.pbs[distKey] = { tiempo: in1, segundos: in2, ritmo: resCalcStr };
+              }
+            }
+          }
         });
       }
+      
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
         data.rutinas.forEach(r => {
@@ -359,7 +400,6 @@
           const displayFecha = typeof rawFecha === 'string' && rawFecha.includes("/") ? rawFecha : rawFecha;
           const tipo = r["Tipo de Sesión"] || "Sesión"; 
           const key = `${rawFecha}__${tipo}`;
-          
           const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
 
           if (!mapa.has(key)) { 
@@ -367,13 +407,10 @@
               fechaRaw: rawFecha, fechaDisplay: displayFecha, tipo, 
               volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", 
               completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", 
-              indicacionesProfe: notaProfeRow,
-              bloques: [] 
+              indicacionesProfe: notaProfeRow, bloques: [] 
             }); 
           } else {
-            if (!mapa.get(key).indicacionesProfe && notaProfeRow) {
-              mapa.get(key).indicacionesProfe = notaProfeRow;
-            }
+            if (!mapa.get(key).indicacionesProfe && notaProfeRow) mapa.get(key).indicacionesProfe = notaProfeRow;
           }
 
           mapa.get(key).bloques.push({
@@ -388,13 +425,11 @@
       
       if (Array.isArray(data.pagos)) {
         state.pagos = data.pagos.map(p => ({
-          ...p,
-          "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), 
-          "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
+          ...p, "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
         }));
       }
 
-      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
     }
 
     function actualizarUIPerfil() {
@@ -410,7 +445,7 @@
       document.getElementById("inputClinica").value = state.perfil.clinica; document.getElementById("inputSangre").value = state.perfil.sangre;
       document.getElementById("inputDonante").value = state.perfil.donante; document.getElementById("inputAlergias").value = state.perfil.alergias;
       
-      previewTestResistencia(); previewTestFuerza();
+      previewTestResistencia(); previewTestFuerza(); previewPBRitmo();
     }
 
     function syncSeguroAtleta() {
@@ -441,8 +476,7 @@
     async function guardarDatosPersonales() {
       syncSeguroAtleta();
       if (!state.perfil.celular || !state.perfil.emergencia) {
-        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia. Son obligatorios por tu seguridad antes de guardar.");
-        return;
+        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia. Son obligatorios por tu seguridad antes de guardar."); return;
       }
       if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
       await guardarPerfilEnSheets(null, null); alert("Ficha Médica guardada con éxito.");
@@ -459,22 +493,78 @@
       const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
       let resCalc = 0;
       if (tipo.includes("5 Min")) { 
-        resCalc = +((dist / 1000) * 12).toFixed(2); 
-        document.getElementById("inputVAM").value = resCalc; 
-        state.perfil.vam = resCalc;
-        recalcularZonas(); 
-      } 
-      else { resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); }
+        resCalc = +((dist / 1000) * 12).toFixed(2); document.getElementById("inputVAM").value = resCalc; state.perfil.vam = resCalc; recalcularZonas(); 
+      } else { 
+        resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); 
+      }
       
-      const hoy = new Date();
-      const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-      state.historialRaw.push({
-        "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc
-      });
-      document.getElementById("chartSelector").value = tipo;
-      renderChart();
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc });
+      document.getElementById("chartSelector").value = tipo; renderChart();
 
       await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
+    }
+    
+    // --- LÓGICA DE MARCAS PERSONALES ---
+    function previewPBRitmo() {
+      const distVal = document.getElementById("pbDistancia").value;
+      const distKm = parseFloat(distVal.replace("k", ""));
+      const hs = parseInt(document.getElementById("pbHs").value || 0);
+      const min = parseInt(document.getElementById("pbMin").value || 0);
+      const seg = parseInt(document.getElementById("pbSeg").value || 0);
+      
+      const totalMinutos = (hs * 60) + min + (seg / 60);
+      if (totalMinutos > 0 && distKm > 0) {
+        const ritmoDecimal = totalMinutos / distKm;
+        const rMin = Math.floor(ritmoDecimal);
+        const rSeg = Math.round((ritmoDecimal - rMin) * 60);
+        const rSegStr = rSeg < 10 ? "0" + rSeg : rSeg;
+        document.getElementById("previewPBRitmoText").textContent = `${rMin}:${rSegStr} /km`;
+      } else {
+        document.getElementById("previewPBRitmoText").textContent = "-";
+      }
+    }
+
+    async function guardarPB() {
+      const distKey = document.getElementById("pbDistancia").value;
+      const hs = parseInt(document.getElementById("pbHs").value || 0);
+      const min = parseInt(document.getElementById("pbMin").value || 0);
+      const seg = parseInt(document.getElementById("pbSeg").value || 0);
+      
+      const totalSegundos = (hs * 3600) + (min * 60) + seg;
+      if (totalSegundos === 0) { alert("Ingresá un tiempo válido (minutos y segundos)."); return; }
+      
+      let tiempoStr = "";
+      if (hs > 0) tiempoStr += `${hs}h `;
+      tiempoStr += `${min}m `;
+      if (seg > 0 || (hs === 0 && min === 0)) tiempoStr += `${seg}s`;
+      tiempoStr = tiempoStr.trim();
+      
+      const ritmoStr = document.getElementById("previewPBRitmoText").textContent;
+      
+      if (!state.pbs[distKey] || totalSegundos < state.pbs[distKey].segundos) {
+        state.pbs[distKey] = { tiempo: tiempoStr, segundos: totalSegundos, ritmo: ritmoStr };
+        renderPBTable();
+      }
+
+      const tipoStr = "Marca PB " + distKey;
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipoStr, "Métrica 1": tiempoStr, "Métrica 2": totalSegundos, "Marca Calculada": ritmoStr });
+
+      await guardarPerfilEnSheets({ categoria: "Running PB", tipo: tipoStr, input1: tiempoStr, input2: totalSegundos, resultado: ritmoStr }, "btnGuardarPB");
+    }
+
+    function renderPBTable() {
+      const distancias = ["3k", "5k", "10k", "21k", "42k"];
+      let html = "";
+      distancias.forEach(d => {
+        if (state.pbs[d]) {
+          html += `<tr><td><strong>${d.toUpperCase()}</strong></td><td style="color:var(--accent); font-weight:700;">${state.pbs[d].tiempo}</td><td>${state.pbs[d].ritmo}</td></tr>`;
+        } else {
+          html += `<tr><td><strong>${d.toUpperCase()}</strong></td><td style="color:var(--muted);">-</td><td style="color:var(--muted);">-</td></tr>`;
+        }
+      });
+      document.getElementById("pbTableBody").innerHTML = html;
     }
 
     function previewTestFuerza() {
@@ -487,21 +577,15 @@
       const rm = +(calcBrzycki(p, r).toFixed(1)); state.rms[tipo] = { peso: p, reps: r, rm: rm };
       renderRMTable(); renderRutinas();
 
-      const hoy = new Date();
-      const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-      state.historialRaw.push({
-        "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm
-      });
-      document.getElementById("chartSelector").value = tipo;
-      renderChart();
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm });
+      document.getElementById("chartSelector").value = tipo; renderChart();
 
       await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
     }
 
     function renderChart() {
-      const canvas = document.getElementById("evolucionChart");
-      const emptyMsg = document.getElementById("chartEmptyMsg");
-      const selector = document.getElementById("chartSelector");
+      const canvas = document.getElementById("evolucionChart"); const emptyMsg = document.getElementById("chartEmptyMsg"); const selector = document.getElementById("chartSelector");
       if (!canvas || !selector) return;
 
       const filtro = selector.value;
@@ -512,35 +596,22 @@
         return tipoH === filtro.toLowerCase();
       });
 
-      if (chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null;
-      }
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
       if (!registros.length) {
-        canvas.parentElement.classList.add("hidden");
-        emptyMsg.classList.remove("hidden");
-        return;
+        canvas.parentElement.classList.add("hidden"); emptyMsg.classList.remove("hidden"); return;
       }
+      canvas.parentElement.classList.remove("hidden"); emptyMsg.classList.add("hidden");
 
-      canvas.parentElement.classList.remove("hidden");
-      emptyMsg.classList.add("hidden");
-
-      const labels = [];
-      const valores = [];
-
+      const labels = []; const valores = [];
       registros.forEach(r => {
         const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || Object.values(r)[0] || "-";
         labels.push(formatSimpleDate(fechaRaw));
 
-        const in1 = parseNum(r["Métrica 1"]);
-        const in2 = parseNum(r["Métrica 2"], 1);
-        const marca = parseNum(r["Marca Calculada"]);
-
+        const in1 = parseNum(r["Métrica 1"]); const in2 = parseNum(r["Métrica 2"], 1); const marca = parseNum(r["Marca Calculada"]);
         let valFinal = marca;
         if (filtro.includes("Cooper")) {
-          const metros = in1 > 300 ? in1 : marca;
-          valFinal = +(calcCooperVO2(metros).toFixed(1));
+          const metros = in1 > 300 ? in1 : marca; valFinal = +(calcCooperVO2(metros).toFixed(1));
         } else if (filtro.includes("5 Min")) {
           valFinal = marca > 0 ? marca : +(((in1 / 1000) * 12).toFixed(2));
         } else {
@@ -555,30 +626,15 @@
         data: {
           labels: labels,
           datasets: [{
-            label: selector.options[selector.selectedIndex].text,
-            data: valores,
-            borderColor: "#10b981",
-            backgroundColor: "rgba(16, 185, 129, 0.15)",
-            borderWidth: 3,
-            pointBackgroundColor: "#3b82f6",
-            pointBorderColor: "#fff",
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            fill: true,
-            tension: 0.3
+            label: selector.options[selector.selectedIndex].text, data: valores,
+            borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.15)", borderWidth: 3,
+            pointBackgroundColor: "#3b82f6", pointBorderColor: "#fff", pointRadius: 5, pointHoverRadius: 7, fill: true, tension: 0.3
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { labels: { color: "#f8fafc", font: { size: 12, weight: "600" } } },
-            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1, padding: 10 }
-          },
-          scales: {
-            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
-            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }
-          }
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: "#f8fafc", font: { size: 12, weight: "600" } } }, tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1, padding: 10 } },
+          scales: { x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }, y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } } }
         }
       });
     }
@@ -595,25 +651,19 @@
 
     function recalcularZonas() {
       const vam = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5; 
-      const fcr = parseNum(document.getElementById("inputFCR").value, 52);
-      const fcmax = parseNum(document.getElementById("inputFCMax").value, 188);
-      const fcReserva = fcmax - fcr;
-      
+      const fcr = parseNum(document.getElementById("inputFCR").value, 52); const fcmax = parseNum(document.getElementById("inputFCMax").value, 188); const fcReserva = fcmax - fcr;
       state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
       document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
       
       const zonas = [ { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 }, { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 } ];
-      
       document.getElementById("zonasTableBodyVAM").innerHTML = zonas.map(z => {
         const vel = vam * z.p; return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:600;">${kmhToPace(vel)}</td></tr>`;
       }).join("");
 
       document.getElementById("zonasTableBodyFC").innerHTML = zonas.map((z, idx) => {
-        const latidos = Math.round((fcReserva * z.p) + fcr);
-        const latidosAnteriores = idx === 0 ? Math.round((fcReserva * 0.50) + fcr) : Math.round((fcReserva * zonas[idx-1].p) + fcr);
+        const latidos = Math.round((fcReserva * z.p) + fcr); const latidosAnteriores = idx === 0 ? Math.round((fcReserva * 0.50) + fcr) : Math.round((fcReserva * zonas[idx-1].p) + fcr);
         return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td style="color:var(--accent); font-weight:600;">${latidosAnteriores} - ${latidos} ppm</td></tr>`;
       }).join("");
-      
       renderRutinas();
     }
 
@@ -622,8 +672,7 @@
     }
 
     function enriquecerCarga(ejercicio, cargaRaw) {
-      if (!cargaRaw || cargaRaw === "-") return "Libre";
-      const texto = `${ejercicio} ${cargaRaw}`.toLowerCase();
+      if (!cargaRaw || cargaRaw === "-") return "Libre"; const texto = `${ejercicio} ${cargaRaw}`.toLowerCase();
       const matchRM = cargaRaw.match(/(\d+)\s*%\s*1rm/i);
       if (matchRM) {
         const pct = parseFloat(matchRM[1]) / 100; let refKey = null;
@@ -632,30 +681,21 @@
       }
       const matchVam = cargaRaw.match(/(\d+)\s*%\s*vam/i);
       if (matchVam) {
-        const vamParaCalculo = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5;
-        const vel = vamParaCalculo * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
+        const vamParaCalculo = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5; const vel = vamParaCalculo * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
       }
       return cargaRaw;
     }
 
     function filtrarRutinas(filtro) {
-      state.filtroRutina = filtro;
-      document.querySelectorAll("#tab-rutinas .tab-btn").forEach(b => b.classList.remove("active"));
-      document.getElementById(`filtro-${filtro}`).classList.add("active");
-      renderRutinas();
+      state.filtroRutina = filtro; document.querySelectorAll("#tab-rutinas .tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`filtro-${filtro}`).classList.add("active"); renderRutinas();
     }
 
     function toggleSesion(idx) {
-      const body = document.getElementById(`rutina-body-${idx}`);
-      const icon = document.getElementById(`rutina-icon-${idx}`);
+      const body = document.getElementById(`rutina-body-${idx}`); const icon = document.getElementById(`rutina-icon-${idx}`);
       if (!body) return;
-      if (body.classList.contains("hidden")) {
-        body.classList.remove("hidden");
-        if (icon) icon.textContent = "▲";
-      } else {
-        body.classList.add("hidden");
-        if (icon) icon.textContent = "▼";
-      }
+      if (body.classList.contains("hidden")) { body.classList.remove("hidden"); if (icon) icon.textContent = "▲"; } 
+      else { body.classList.add("hidden"); if (icon) icon.textContent = "▼"; }
     }
 
     function renderRutinas() {
@@ -663,28 +703,19 @@
       if (!state.sesionesAgrupadas.length) { container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`; return; }
       
       const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
-      
       const sesionesFiltradas = sesionesConIndice.filter(s => {
         if (state.filtroRutina === "pendientes") return s.completado !== "Sí";
-        if (state.filtroRutina === "completadas") return s.completado === "Sí";
-        return true;
+        if (state.filtroRutina === "completadas") return s.completado === "Sí"; return true;
       });
 
       if (!sesionesFiltradas.length) {
         const msj = state.filtroRutina === "pendientes" ? "🎉 ¡Estás al día! No tienes entrenamientos pendientes." : "No hay sesiones en esta sección.";
-        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`;
-        return;
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`; return;
       }
 
       container.innerHTML = sesionesFiltradas.map(s => {
-        const idx = s.originalIdx;
-        const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && s.completado === "Sí");
-
-        const notaProfeHtml = s.indicacionesProfe ? `
-          <div class="coach-notes">
-            <strong>📢 Indicaciones del Profe:</strong>
-            ${s.indicacionesProfe}
-          </div>` : "";
+        const idx = s.originalIdx; const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && s.completado === "Sí");
+        const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
 
         const bloquesHtml = s.bloques.map(b => {
           const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
@@ -694,12 +725,7 @@
           }
           return `<div class="bloque-item">
               <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
-              <div class="bloque-meta">
-                <span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span>
-                <span><i>Carga:</i> <strong>${cargaCalculada}</strong></span>
-                <span><i>Micro:</i> <strong>${b.micropausa}</strong></span>
-                <span><i>Macro:</i> <strong>${b.macropausa}</strong></span>
-              </div>
+              <div class="bloque-meta"><span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span><span><i>Carga:</i> <strong>${cargaCalculada}</strong></span><span><i>Micro:</i> <strong>${b.micropausa}</strong></span><span><i>Macro:</i> <strong>${b.macropausa}</strong></span></div>
             </div>`;
         }).join("");
 
@@ -707,54 +733,30 @@
 
         return `<div class="card" style="background:#152033; margin-bottom:14px;">
             <div class="rutina-header" onclick="toggleSesion(${idx})">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span>
-                <strong>${s.tipo}</strong>
-                ${badgeEstado}
-              </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span>
-                <span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span>
-              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong>${s.tipo}</strong>${badgeEstado}</div>
+              <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.82rem; color:var(--muted);">${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
             </div>
             
             <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
-              ${notaProfeHtml}
-              ${bloquesHtml}
+              ${notaProfeHtml} ${bloquesHtml}
               <div class="grid-3" style="margin-top:12px; align-items:end;">
                 <div><label>RPE (0-10)</label><input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" /></div>
-                <div><label>Estado</label><select id="comp-${idx}">
-                  <option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option>
-                  <option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option>
-                  <option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option>
-                </select></div>
+                <div><label>Estado</label><select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select></div>
                 <div><button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button></div>
               </div>
-              <div style="margin-top: 10px;">
-                <label>Nota para el Profe (molestias, sueño, clima, etc.)</label>
-                <textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea>
-              </div>
+              <div style="margin-top: 10px;"><label>Nota para el Profe (molestias, sueño, clima, etc.)</label><textarea id="nota-${idx}" placeholder="Ej: Dormí mal, o tuve que acortar por lluvia...">${s.notaAtleta || ""}</textarea></div>
             </div>
           </div>`;
       }).join("");
     }
 
     async function registrarRPE(idx) {
-      const s = state.sesionesAgrupadas[idx]; 
-      s.rpe = document.getElementById(`rpe-${idx}`).value; 
-      s.completado = document.getElementById(`comp-${idx}`).value;
-      s.notaAtleta = document.getElementById(`nota-${idx}`).value;
-
+      const s = state.sesionesAgrupadas[idx]; s.rpe = document.getElementById(`rpe-${idx}`).value; s.completado = document.getElementById(`comp-${idx}`).value; s.notaAtleta = document.getElementById(`nota-${idx}`).value;
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        btn.textContent = "✔ Guardado"; 
-        setTimeout(() => { 
-          btn.textContent = "Guardar"; 
-          btn.disabled = false; 
-          renderRutinas(); 
-        }, 1200);
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; renderRutinas(); }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
@@ -785,9 +787,7 @@
       document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
       document.getElementById(`tab-${tab}`).classList.remove("hidden");
       document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active");
-      if (tab === 'calculadora') {
-        setTimeout(() => renderChart(), 50);
-      }
+      if (tab === 'calculadora') { setTimeout(() => renderChart(), 50); }
     }
   </script>
 </body>
