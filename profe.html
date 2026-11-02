@@ -137,14 +137,22 @@
             </div>
             <div>
               <label>Fecha del Entrenamiento</label>
-              <input type="date" id="inputFecha" onchange="verificarSiEsEdicion()" />
+              <input type="date" id="inputFecha" onchange="comprobarRutinaExistenteFecha()" />
             </div>
           </div>
 
-          <div class="grid-2">
+          <!-- Selector rápido de sesiones ya cargadas para este atleta -->
+          <div id="wrapperSelectorSesionExistente" class="hidden" style="margin-top: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); padding: 10px; border-radius: 8px;">
+            <label style="color: var(--primary);">⚠️ Este atleta ya tiene entrenamientos en esta fecha. Selecciona uno para editarlo o carga uno nuevo:</label>
+            <select id="selectSesionExistente" onchange="poblarDatosSesionSeleccionada()">
+              <option value="">-- Cargar rutina existente para editar --</option>
+            </select>
+          </div>
+
+          <div class="grid-2" style="margin-top: 12px;">
             <div>
               <label>Tipo de Sesión</label>
-              <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series" oninput="verificarSiEsEdicion()" />
+              <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series" />
             </div>
             <div>
               <label>Volumen Total</label>
@@ -367,8 +375,9 @@
       document.getElementById("contenedorGrupal").classList.toggle("hidden", modo !== "grupal");
       if (modo === "grupal") {
         document.getElementById("btnBorrarRutina").classList.add("hidden");
+        document.getElementById("wrapperSelectorSesionExistente").classList.add("hidden");
       } else {
-        verificarSiEsEdicion();
+        comprobarRutinaExistenteFecha();
       }
     }
 
@@ -386,12 +395,15 @@
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
       p.bloques.forEach(b => agregarBloque(b));
-      verificarSiEsEdicion();
     }
 
     async function cargarRutinasAtletaSeleccionado() {
       const email = document.getElementById("selectAtleta").value;
-      if (!email) { cacheRutinasAtletaActual = []; verificarSiEsEdicion(); return; }
+      if (!email) { 
+        cacheRutinasAtletaActual = []; 
+        document.getElementById("wrapperSelectorSesionExistente").classList.add("hidden");
+        return; 
+      }
       try {
         const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=0000`);
         const data = await res.json();
@@ -399,7 +411,7 @@
       } catch (e) {
         cacheRutinasAtletaActual = [];
       }
-      verificarSiEsEdicion();
+      comprobarRutinaExistenteFecha();
     }
 
     function formatFechaInput(fechaStr) {
@@ -411,33 +423,87 @@
       return fechaStr.split("T")[0];
     }
 
-    function verificarSiEsEdicion() {
+    function comprobarRutinaExistenteFecha() {
       if (modoAsignacion !== "individual") return;
-      const email = document.getElementById("selectAtleta").value;
       const fechaRaw = document.getElementById("inputFecha").value;
-      const tipo = document.getElementById("inputTipoSesion").value.trim().toLowerCase();
+      const wrapper = document.getElementById("wrapperSelectorSesionExistente");
+      const selectSesion = document.getElementById("selectSesionExistente");
       const btnBorrar = document.getElementById("btnBorrarRutina");
       const btnGuardar = document.getElementById("btnGuardarRutina");
 
-      if (!email || !fechaRaw || !tipo) {
+      if (!fechaRaw || !cacheRutinasAtletaActual.length) {
+        wrapper.classList.add("hidden");
         btnBorrar.classList.add("hidden");
         btnGuardar.textContent = "🚀 ASIGNAR RUTINA";
         return;
       }
 
       const fechaFmt = formatFechaInput(fechaRaw);
-      const encontrada = cacheRutinasAtletaActual.some(r => {
-        let fR = formatFechaInput(r["Fecha"]);
-        let tR = String(r["Tipo de Sesión"] || "").trim().toLowerCase();
-        return fR === fechaFmt && tR === tipo;
-      });
+      // Filtramos las rutinas que coincidan con la fecha seleccionada
+      const rutinasFecha = cacheRutinasAtletaActual.filter(r => formatFechaInput(r["Fecha"]) === fechaFmt);
 
-      if (encontrada) {
-        btnBorrar.classList.remove("hidden");
-        btnGuardar.textContent = "✏️ Actualizar Rutina";
+      if (rutinasFecha.length > 0) {
+        wrapper.classList.remove("hidden");
+        selectSesion.innerHTML = '<option value="">-- Cargar rutina existente para editar --</option>';
+        
+        // Agrupamos por tipo de sesión único en esa fecha
+        const tiposUnicos = [...new Set(rutinasFecha.map(r => r["Tipo de Sesión"]))];
+        tiposUnicos.forEach(tipo => {
+          const opt = document.createElement("option");
+          opt.value = tipo;
+          opt.textContent = `📋 ${tipo}`;
+          selectSesion.appendChild(opt);
+        });
       } else {
+        wrapper.classList.add("hidden");
+        selectSesion.innerHTML = '<option value="">-- Cargar rutina existente para editar --</option>';
         btnBorrar.classList.add("hidden");
         btnGuardar.textContent = "🚀 ASIGNAR RUTINA";
+      }
+    }
+
+    function poblarDatosSesionSeleccionada() {
+      const tipoSeleccionado = document.getElementById("selectSesionExistente").value;
+      const btnBorrar = document.getElementById("btnBorrarRutina");
+      const btnGuardar = document.getElementById("btnGuardarRutina");
+
+      if (!tipoSeleccionado) {
+        document.getElementById("inputTipoSesion").value = "";
+        document.getElementById("inputVolumen").value = "";
+        document.getElementById("inputIndicaciones").value = "";
+        document.getElementById("bloquesContainer").innerHTML = "";
+        contadorBloques = 0;
+        agregarBloque();
+        btnBorrar.classList.add("hidden");
+        btnGuardar.textContent = "🚀 ASIGNAR RUTINA";
+        return;
+      }
+
+      const fechaFmt = formatFechaInput(document.getElementById("inputFecha").value);
+      const filasRutina = cacheRutinasAtletaActual.filter(r => formatFechaInput(r["Fecha"]) === fechaFmt && r["Tipo de Sesión"] === tipoSeleccionado);
+
+      if (filasRutina.length > 0) {
+        const primera = filasRutina[0];
+        document.getElementById("inputTipoSesion").value = primera["Tipo de Sesión"] || "";
+        document.getElementById("inputVolumen").value = primera["Volumen Sesión"] || "";
+        document.getElementById("inputIndicaciones").value = primera["Indicaciones del Profe"] || primera["Indicaciones"] || "";
+
+        document.getElementById("bloquesContainer").innerHTML = "";
+        contadorBloques = 0;
+
+        filasRutina.forEach(f => {
+          agregarBloque({
+            orden: f["Orden / Bloque"] || "",
+            ejercicio: f["Ejercicio"] || "",
+            series: f["Series y Repeticiones"] || "",
+            carga: f["Carga / Intensidad"] || "",
+            micro: f["Micropausa"] || "",
+            macro: f["Macropausa"] || ""
+          });
+        });
+
+        btnBorrar.classList.remove("hidden");
+        btnGuardar.textContent = "✏️ Actualizar Rutina";
       }
     }
 
@@ -567,7 +633,7 @@
     async function borrarRutinaActual() {
       const email = document.getElementById("selectAtleta").value;
       const fechaRaw = document.getElementById("inputFecha").value;
-      const tipo = document.getElementById("inputTipoSesion").value.trim();
+      const tipo = document.getElementById("selectSesionExistente").value || document.getElementById("inputTipoSesion").value.trim();
       if (!email || !fechaRaw || !tipo) return;
 
       if (!confirm(`¿Estás seguro de borrar la rutina "${tipo}" del día ${formatFechaEnvio(fechaRaw)}?`)) return;
@@ -577,6 +643,10 @@
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         alert("Rutina eliminada correctamente.");
         document.getElementById("inputTipoSesion").value = "";
+        document.getElementById("inputVolumen").value = "";
+        document.getElementById("inputIndicaciones").value = "";
+        document.getElementById("bloquesContainer").innerHTML = "";
+        agregarBloque();
         cargarRutinasAtletaSeleccionado();
       } catch (e) {
         alert("Error al borrar la rutina.");
