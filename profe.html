@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-TRAIN | Panel Profe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
+      --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; --text: #f8fafc; --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
+    
+    header { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .brand-container { display: flex; align-items: center; gap: 8px; }
+    header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--accent); margin: 0; }
+    
+    .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    .card h2 { font-size: 1.15rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); }
+    
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+    
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.95rem; margin-bottom: 12px; }
+    textarea { resize: vertical; min-height: 80px; }
+    
+    button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; font-size: 1rem; }
+    button.btn:disabled { opacity: 0.6; cursor: wait; }
+    button.btn-success { background: var(--accent); color: #000; }
+    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 8px 12px; }
+    
+    .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
+    .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
+    
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+    .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de carga inicial -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <h3 style="color:var(--primary); font-family:'Montserrat', sans-serif; font-style:italic;">Conectando con la Base de Datos...</h3>
+    <p style="color:var(--muted); font-size:0.85rem; margin-top:5px;">Sincronizando atletas y videoteca</p>
+  </div>
+
+  <header>
+    <div class="brand-container">
+      <img src="./logo.png" alt="Logo" style="max-height: 32px;" onerror="this.style.display='none'">
+      <h1>E-TRAIN | Panel Profe</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h2>1. Configuración de la Sesión</h2>
+      <div class="grid-2">
+        <div>
+          <label>Atleta / Alumno</label>
+          <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
+        </div>
+        <div>
+          <label>Fecha del Entrenamiento</label>
+          <input type="date" id="inputFecha" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label>Tipo de Sesión (Ej: Fuerza, Pasadas, Regenerativo)</label>
+          <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series Largas" />
+        </div>
+        <div>
+          <label>Volumen Total (Opcional)</label>
+          <input type="text" id="inputVolumen" placeholder="Ej: 6 km totales / 60 min" />
+        </div>
+      </div>
+      <div>
+        <label>Indicaciones del Profe (Objetivo del día, técnica, etc.)</label>
+        <textarea id="inputIndicaciones" placeholder="Ej: Hoy cuidá la técnica en las bajadas. Hacé una buena entrada en calor de 15 min antes de empezar los bloques."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
+        <h2 style="border:none; margin:0; padding:0;">2. Bloques y Ejercicios</h2>
+        <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
+      </div>
+      
+      <div id="bloquesContainer">
+        <!-- Los ejercicios se inyectarán aquí -->
+      </div>
+      
+      <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio a la lista</button>
+    </div>
+
+    <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA AL ATLETA</button>
+    <div id="mensajeResultado" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+  </main>
+
+  <datalist id="listaEjercicios"></datalist>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
+    let contadorBloques = 0;
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      // Establece la fecha de hoy por defecto
+      document.getElementById("inputFecha").valueAsDate = new Date();
+      await cargarDatosDelServidor();
+      agregarBloque(); // Agrega el primer bloque vacío por defecto
+    });
+
+    async function cargarDatosDelServidor() {
+      try {
+        const cacheBuster = new Date().getTime();
+        const res = await fetch(`${API_URL}?modo=profe&cb=${cacheBuster}`);
+        const data = await res.json();
+        
+        if (data.status === "success") {
+          // Llenar selector de atletas
+          const selectAtleta = document.getElementById("selectAtleta");
+          data.atletas.forEach(a => {
+            const opt = document.createElement("option");
+            opt.value = a.email;
+            opt.textContent = `${a.nombre} (${a.email})`;
+            selectAtleta.appendChild(opt);
+          });
+
+          // Llenar datalist de ejercicios (para autocompletado)
+          const datalist = document.getElementById("listaEjercicios");
+          data.ejercicios.forEach(ej => {
+            const opt = document.createElement("option");
+            opt.value = ej;
+            datalist.appendChild(opt);
+          });
+
+          document.getElementById("loadingOverlay").classList.add("hidden");
+        } else {
+          alert("Error al cargar la base de datos.");
+        }
+      } catch (err) {
+        alert("Error de conexión. Revisa tu internet.");
+      }
+    }
+
+    function agregarBloque() {
+      contadorBloques++;
+      const id = contadorBloques;
+      const html = `
+        <div class="bloque-row" id="bloque-${id}">
+          <div class="bloque-header">
+            <span style="font-weight:bold; color:var(--primary);">Ejercicio #${id}</span>
+            <button class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar Ejercicio">✖</button>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Orden / Letra (Ej: A1, B, Principal)</label>
+              <input type="text" id="orden-${id}" placeholder="A1" style="margin-bottom:8px;">
+            </div>
+            <div>
+              <label>Ejercicio (Buscá en tu videoteca)</label>
+              <input type="text" id="ejercicio-${id}" list="listaEjercicios" placeholder="Escribí para buscar..." style="margin-bottom:8px;">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Series y Reps / Distancia</label>
+              <input type="text" id="series-${id}" placeholder="Ej: 4x10 o 5 x 1000m">
+            </div>
+            <div>
+              <label>Carga / Ritmo (%)</label>
+              <input type="text" id="carga-${id}" placeholder="Ej: 70% 1RM o 4:30/km">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Micropausa (Entre reps)</label>
+              <input type="text" id="micro-${id}" placeholder="Ej: 1' o 30''">
+            </div>
+            <div>
+              <label>Macropausa (Entre series)</label>
+              <input type="text" id="macro-${id}" placeholder="Ej: 2' 30'' o Libre">
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById("bloquesContainer").insertAdjacentHTML('beforeend', html);
+    }
+
+    function eliminarBloque(id) {
+      const bloque = document.getElementById(`bloque-${id}`);
+      if (bloque) bloque.remove();
+    }
+
+    // Convertir YYYY-MM-DD a DD/MM/YYYY para Google Sheets
+    function formatFechaEnvio(fechaYYYYMMDD) {
+      if (!fechaYYYYMMDD) return "";
+      const partes = fechaYYYYMMDD.split("-");
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return fechaYYYYMMDD;
+    }
+
+    async function enviarRutina() {
+      const email = document.getElementById("selectAtleta").value;
+      const fechaRaw = document.getElementById("inputFecha").value;
+      const tipo = document.getElementById("inputTipoSesion").value.trim();
+      const vol = document.getElementById("inputVolumen").value.trim();
+      const ind = document.getElementById("inputIndicaciones").value.trim();
+
+      if (!email) return alert("Por favor, selecciona un atleta.");
+      if (!fechaRaw) return alert("Por favor, selecciona la fecha.");
+      if (!tipo) return alert("Por favor, ponle un nombre/tipo a la sesión.");
+
+      // Recopilar todos los bloques (ejercicios)
+      const bloquesNodes = document.querySelectorAll(".bloque-row");
+      if (bloquesNodes.length === 0) return alert("Debes agregar al menos un ejercicio a la rutina.");
+
+      const bloques = [];
+      let faltaData = false;
+
+      bloquesNodes.forEach(nodo => {
+        const id = nodo.id.replace("bloque-", "");
+        const ej = document.getElementById(`ejercicio-${id}`).value.trim();
+        const ser = document.getElementById(`series-${id}`).value.trim();
+        
+        if (!ej || !ser) faltaData = true;
+
+        bloques.push({
+          orden: document.getElementById(`orden-${id}`).value.trim() || "-",
+          ejercicio: ej,
+          series: ser,
+          carga: document.getElementById(`carga-${id}`).value.trim() || "-",
+          micropausa: document.getElementById(`micro-${id}`).value.trim() || "-",
+          macropausa: document.getElementById(`macro-${id}`).value.trim() || "-"
+        });
+      });
+
+      if (faltaData) return alert("Por favor, asegúrate de que todos los ejercicios tengan al menos el Nombre y las Series/Repeticiones.");
+
+      const btn = document.getElementById("btnGuardarRutina");
+      const msj = document.getElementById("mensajeResultado");
+      btn.disabled = true;
+      btn.textContent = "⏳ Enviando a Google Sheets...";
+      msj.textContent = "";
+
+      const payload = {
+        action: "asignarRutina",
+        email: email,
+        fecha: formatFechaEnvio(fechaRaw),
+        tipoSesion: tipo,
+        volumen: vol,
+        indicaciones: ind,
+        bloques: bloques
+      };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          btn.className = "btn";
+          btn.style.background = "var(--primary)";
+          btn.textContent = "✅ ¡Rutina Asignada con Éxito!";
+          
+          // Limpiar el formulario para cargar otra
+          document.getElementById("inputTipoSesion").value = "";
+          document.getElementById("inputVolumen").value = "";
+          document.getElementById("inputIndicaciones").value = "";
+          document.getElementById("bloquesContainer").innerHTML = "";
+          agregarBloque(); // Agregar un bloque vacío nuevo
+          
+          setTimeout(() => {
+            btn.className = "btn btn-success";
+            btn.style.background = "";
+            btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
+          }, 3000);
+        } else {
+          throw new Error("Respuesta no exitosa");
+        }
+      } catch (error) {
+        btn.disabled = false;
+        btn.textContent = "🚀 ASIGNAR RUTINA AL ATLETA";
+        msj.style.color = "var(--danger)";
+        msj.textContent = "❌ Hubo un error al enviar. Intenta de nuevo.";
+      }
+    }
+  </script>
+</body>
+</html>
