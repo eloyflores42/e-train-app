@@ -23,7 +23,6 @@
 
     .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
     
-    /* Pestañas de Navegación del Panel Profe */
     .coach-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
     .coach-tab-btn { flex: 1; padding: 10px 6px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-align: center; }
     .coach-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -96,7 +95,6 @@
     </header>
 
     <main class="container">
-      <!-- PESTAÑAS DE NAVEGACIÓN -->
       <div class="coach-tabs">
         <button class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
         <button class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alta Alumnos & Pagos</button>
@@ -227,7 +225,6 @@
     let contadorBloques = 0;
     let claveGuardada = "";
     let modoAsignacion = "individual";
-    let cacheAtletasGlobal = [];
     let cacheRutinasAtletaActual = [];
 
     const PLANTILLAS = {
@@ -305,7 +302,6 @@
         if (data.status === "success") {
           claveGuardada = pass;
           localStorage.setItem("etrain_coach_pass", pass);
-          cacheAtletasGlobal = data.atletas;
 
           const selectAtleta = document.getElementById("selectAtleta");
           const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
@@ -397,7 +393,7 @@
       const email = document.getElementById("selectAtleta").value;
       if (!email) { cacheRutinasAtletaActual = []; verificarSiEsEdicion(); return; }
       try {
-        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=0000`); // pin falso solo para pedir sus rutinas públicas
+        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=0000`);
         const data = await res.json();
         cacheRutinasAtletaActual = data.rutinas || [];
       } catch (e) {
@@ -604,7 +600,7 @@
           document.getElementById("nuevoEmail").value = "";
           document.getElementById("nuevoPin").value = "";
           document.getElementById("nuevoCelular").value = "";
-          verificarProfe(); // Recarga la lista
+          verificarProfe();
         } else {
           alert("Error: " + json.message);
         }
