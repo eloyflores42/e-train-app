@@ -22,10 +22,17 @@
     #loginCoachScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
 
     .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+    
+    /* Pestañas de Navegación del Panel Profe */
+    .coach-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+    .coach-tab-btn { flex: 1; padding: 10px 6px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-align: center; }
+    .coach-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
     .card h2 { font-size: 1.15rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); }
     
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
     
     label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-align: left; }
     input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.95rem; margin-bottom: 12px; }
@@ -36,11 +43,14 @@
     button.btn-success { background: var(--accent); color: #000; }
     button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 12px; font-size: 0.8rem; }
     
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 8px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+
     .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
     .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
     
-    /* Estilos para selección múltiple de atletas y plantillas */
     .template-bar { background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .template-bar select { margin-bottom: 0; flex: 1; min-width: 200px; border-color: var(--accent); }
     .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 12px; }
@@ -56,7 +66,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE BLOQUEO PARA EL ENTRENADOR -->
+  <!-- LOGIN PROFE -->
   <div id="loginCoachScreen">
     <img src="./logo.png" alt="E-TRAIN" style="max-height: 90px; margin-bottom: 12px;" onerror="this.style.display='none'">
     <h2>MODO ENTRENADOR</h2>
@@ -72,7 +82,7 @@
     </div>
   </div>
 
-  <!-- PANEL DE CONTROL -->
+  <!-- PANEL PRINCIPAL -->
   <div id="panelContainer" class="hidden">
     <header>
       <div class="brand-container">
@@ -86,80 +96,127 @@
     </header>
 
     <main class="container">
-      <div class="card">
-        <h2>1. Configuración de la Sesión</h2>
-
-        <!-- BARRA DE PLANTILLAS RÁPIDAS -->
-        <div class="template-bar">
-          <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Cargar Plantilla Base:</div>
-          <select id="selectPlantilla" onchange="cargarPlantilla()">
-            <option value="">-- Elegir plantilla pre-armada --</option>
-            <option value="run_vam">🏃‍♂️ Running: Pasadas Cortas (Intermitente VAM)</option>
-            <option value="run_umbral">🏃‍♂️ Running: Series de Umbral (1000m)</option>
-            <option value="run_fondo">🌲 Running: Fondo Continuo Regenerativo</option>
-            <option value="gym_inf">🏋️‍♂️ Fuerza: Tren Inferior & Core</option>
-            <option value="gym_full">💪 Fuerza: Full Body Funcional</option>
-          </select>
-        </div>
-
-        <div class="grid-2">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label>Destinatario(s)</label>
-              <div class="mode-switch">
-                <button type="button" id="btnModoIndividual" class="active" onclick="cambiarModoAsignacion('individual')">👤 Individual</button>
-                <button type="button" id="btnModoGrupal" onclick="cambiarModoAsignacion('grupal')">👥 Grupal</button>
-              </div>
-            </div>
-
-            <!-- Selector Individual -->
-            <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
-
-            <!-- Selector Grupal (Checkboxes) -->
-            <div id="contenedorGrupal" class="hidden">
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
-                <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
-                <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar todos</a>
-              </div>
-              <div class="multi-atleta-box" id="listaCheckAtletas"></div>
-            </div>
-          </div>
-
-          <div>
-            <label style="margin-top: 6px;">Fecha del Entrenamiento</label>
-            <input type="date" id="inputFecha" />
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div>
-            <label>Tipo de Sesión (Ej: Fuerza, Pasadas, Regenerativo)</label>
-            <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series Largas" />
-          </div>
-          <div>
-            <label>Volumen Total (Opcional)</label>
-            <input type="text" id="inputVolumen" placeholder="Ej: 6 km totales / 60 min" />
-          </div>
-        </div>
-        <div>
-          <label>Indicaciones del Profe (Objetivo del día, técnica, etc.)</label>
-          <textarea id="inputIndicaciones" placeholder="Ej: Hoy cuidá la técnica en las bajadas. Hacé una buena entrada en calor de 15 min antes de empezar los bloques."></textarea>
-        </div>
+      <!-- PESTAÑAS DE NAVEGACIÓN -->
+      <div class="coach-tabs">
+        <button class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
+        <button class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alta Alumnos & Pagos</button>
       </div>
 
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
-          <h2 style="border:none; margin:0; padding:0;">2. Bloques y Ejercicios</h2>
-          <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
-        </div>
-        
-        <div id="bloquesContainer"></div>
-        
-        <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio a la lista</button>
-      </div>
+      <!-- SECCIÓN 1: ASIGNAR RUTINA -->
+      <section id="coach-sec-asignar">
+        <div class="card">
+          <h2>Configuración de la Sesión</h2>
 
-      <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA</button>
-      <div id="mensajeResultado" style="text-align:center; margin-top:15px; font-weight:bold;"></div>
+          <div class="template-bar">
+            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Plantillas Pre-armadas:</div>
+            <select id="selectPlantilla" onchange="cargarPlantilla()">
+              <option value="">-- Elegir plantilla base --</option>
+              <option value="run_vam">🏃‍♂️ Pasadas Cortas (VAM)</option>
+              <option value="run_umbral">🏃‍♂️ Series de Umbral (1000m)</option>
+              <option value="run_fondo">🌲 Fondo Regenerativo</option>
+              <option value="gym_inf">🏋️‍♂️ Fuerza: Tren Inferior & Core</option>
+              <option value="gym_full">💪 Fuerza: Full Body Funcional</option>
+            </select>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label>Destinatario(s)</label>
+                <div class="mode-switch">
+                  <button type="button" id="btnModoIndividual" class="active" onclick="cambiarModoAsignacion('individual')">👤 Individual</button>
+                  <button type="button" id="btnModoGrupal" onclick="cambiarModoAsignacion('grupal')">👥 Grupal</button>
+                </div>
+              </div>
+              <select id="selectAtleta" onchange="cargarRutinasAtletaSeleccionado()"><option value="">Seleccionar atleta...</option></select>
+              <div id="contenedorGrupal" class="hidden">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
+                  <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
+                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar todos</a>
+                </div>
+                <div class="multi-atleta-box" id="listaCheckAtletas"></div>
+              </div>
+            </div>
+            <div>
+              <label>Fecha del Entrenamiento</label>
+              <input type="date" id="inputFecha" onchange="verificarSiEsEdicion()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label>Tipo de Sesión</label>
+              <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series" oninput="verificarSiEsEdicion()" />
+            </div>
+            <div>
+              <label>Volumen Total</label>
+              <input type="text" id="inputVolumen" placeholder="Ej: 8 km" />
+            </div>
+          </div>
+          <div>
+            <label>Indicaciones del Profe</label>
+            <textarea id="inputIndicaciones" placeholder="Objetivo del día..."></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
+            <h2 style="border:none; margin:0; padding:0;">Ejercicios de la Sesión</h2>
+            <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
+          </div>
+          <div id="bloquesContainer"></div>
+          <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio</button>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+          <button class="btn btn-success" id="btnGuardarRutina" onclick="enviarRutina()" style="flex:2; font-size: 1.1rem; padding: 15px;">🚀 ASIGNAR RUTINA</button>
+          <button class="btn btn-outline hidden" id="btnBorrarRutina" onclick="borrarRutinaActual()" style="flex:1; border-color:var(--danger); color:var(--danger);">🗑️ Borrar Rutina</button>
+        </div>
+        <div id="mensajeResultado" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
+      </section>
+
+      <!-- SECCIÓN 2: ALTA DE ALUMNOS Y PAGOS -->
+      <section id="coach-sec-alumnos" class="hidden">
+        <div class="card">
+          <h2>➕ Dar de Alta Nuevo Atleta</h2>
+          <div class="grid-2">
+            <div><label>Nombre y Apellido</label><input type="text" id="nuevoNombre" placeholder="Juan Pérez"></div>
+            <div><label>Correo Electrónico</label><input type="email" id="nuevoEmail" placeholder="juan@gmail.com"></div>
+          </div>
+          <div class="grid-2">
+            <div><label>PIN de Acceso (Ej: DNI)</label><input type="text" id="nuevoPin" placeholder="1234"></div>
+            <div><label>Celular</label><input type="text" id="nuevoCelular" placeholder="223..."></div>
+          </div>
+          <button class="btn btn-success" onclick="crearAtleta()">💾 Registrar Nuevo Atleta</button>
+        </div>
+
+        <div class="card">
+          <h2>💳 Gestionar Membresía / Pagos</h2>
+          <div class="grid-2">
+            <div>
+              <label>Seleccionar Atleta</label>
+              <select id="pagoSelectAtleta" onchange="cargarDatosPagoAtleta()"><option value="">Elegir atleta...</option></select>
+            </div>
+            <div>
+              <label>Periodo / Mes</label>
+              <input type="text" id="pagoPeriodo" placeholder="Ej: noviembre 2026">
+            </div>
+          </div>
+          <div class="grid-3">
+            <div><label>Monto</label><input type="text" id="pagoMonto" value="$15.000"></div>
+            <div>
+              <label>Estado</label>
+              <select id="pagoEstado">
+                <option value="Pagado">Pagado</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Vencido">Vencido</option>
+              </select>
+            </div>
+            <div><label>Vencimiento</label><input type="date" id="pagoVenc"></div>
+          </div>
+          <button class="btn" onclick="guardarPagoAtleta()">💾 Guardar Estado de Cuota</button>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -170,65 +227,59 @@
     let contadorBloques = 0;
     let claveGuardada = "";
     let modoAsignacion = "individual";
+    let cacheAtletasGlobal = [];
+    let cacheRutinasAtletaActual = [];
 
-    // CATÁLOGO DE PLANTILLAS PRE-ARMADAS
     const PLANTILLAS = {
       run_vam: {
         tipo: "Running - Potencia Aeróbica (VAM)",
         volumen: "45 min / 7 km aprox",
-        indicaciones: "Mantener el ritmo parejo en todas las pasadas sin caer al final. La micropausa es trote muy suave o caminata.",
+        indicaciones: "Mantener el ritmo parejo en todas las pasadas sin caer al final.",
         bloques: [
           { orden: "Bloque 1", ejercicio: "Entrada en Calor (Trote + Movilidad)", series: "15 min", carga: "65% VAM", micro: "-", macro: "2'" },
-          { orden: "Principal", ejercicio: "Pasadas de 400m en Pista/Calle", series: "2 x 6 x 400m", carga: "100% VAM", micro: "1'", macro: "3'" },
-          { orden: "Vuelta a la calma", ejercicio: "Trote Regenerativo + Elongación", series: "10 min", carga: "60% VAM", micro: "-", macro: "-" }
+          { orden: "Principal", ejercicio: "Pasadas de 400m en Pista/Calle", series: "2 x 6 x 400m", carga: "100% VAM", micro: "1'", macro: "3'" }
         ]
       },
       run_umbral: {
         tipo: "Running - Series de Umbral",
         volumen: "8 a 10 km totales",
-        indicaciones: "Ritmo fuerte pero controlado (sensación de poder sostener el diálogo cortado). Hidratar bien entre bloques.",
+        indicaciones: "Ritmo fuerte pero controlado.",
         bloques: [
-          { orden: "Bloque 1", ejercicio: "Trote de Activación + Rectas", series: "15 min + 4x80m", carga: "70% VAM", micro: "1'", macro: "2'" },
-          { orden: "Principal", ejercicio: "Series de 1000m", series: "5 x 1000m", carga: "90% VAM", micro: "2'", macro: "-" },
-          { orden: "Final", ejercicio: "Trote Suave Descontracturante", series: "10 min", carga: "65% VAM", micro: "-", macro: "-" }
+          { orden: "Bloque 1", ejercicio: "Trote de Activación + Rectas", series: "15 min", carga: "70% VAM", micro: "1'", macro: "2'" },
+          { orden: "Principal", ejercicio: "Series de 1000m", series: "5 x 1000m", carga: "90% VAM", micro: "2'", macro: "-" }
         ]
       },
       run_fondo: {
         tipo: "Running - Fondo Regenerativo",
-        volumen: "50 a 60 min",
-        indicaciones: "El objetivo de hoy es sumar volumen aeróbico sin fatiga muscular. No correr más rápido de lo pautado aunque te sientas con energía.",
+        volumen: "50 min",
+        indicaciones: "Objetivo aeróbico sin fatiga muscular.",
         bloques: [
-          { orden: "Único", ejercicio: "Fondo Continuo en Zona 1 / Zona 2", series: "50 min continuos", carga: "70% VAM", micro: "-", macro: "-" },
-          { orden: "Post", ejercicio: "Movilidad y Elongación General", series: "10 min", carga: "Libre", micro: "-", macro: "-" }
+          { orden: "Único", ejercicio: "Fondo Continuo en Zona 1 / Zona 2", series: "50 min continuos", carga: "70% VAM", micro: "-", macro: "-" }
         ]
       },
       gym_inf: {
         tipo: "Fuerza - Tren Inferior & Core",
         volumen: "50 min",
-        indicaciones: "Priorizar la velocidad de ejecución en la fase concéntrica (subir rápido, bajar controlado en 2 segundos).",
+        indicaciones: "Velocidad de ejecución en fase concéntrica.",
         bloques: [
-          { orden: "Activación", ejercicio: "Plancha Frontal + Puentes de Glúteo", series: "3 x 30'' + 15 reps", carga: "Peso Corporal", micro: "30''", macro: "1'" },
           { orden: "A1", ejercicio: "Sentadilla", series: "4 x 6", carga: "75% 1RM", micro: "-", macro: "2'" },
-          { orden: "B1", ejercicio: "Peso Muerto", series: "4 x 6", carga: "75% 1RM", micro: "1'", macro: "2'" },
-          { orden: "B2", ejercicio: "Estocadas Búlgaras con Mancuernas", series: "3 x 8 c/pierna", carga: "RPE 8", micro: "1'", macro: "2'" },
-          { orden: "C1", ejercicio: "Elevación de Gemelos en Escalón", series: "3 x 15", carga: "Controlado", micro: "45''", macro: "-" }
+          { orden: "B1", ejercicio: "Peso Muerto", series: "4 x 6", carga: "75% 1RM", micro: "1'", macro: "2'" }
         ]
       },
       gym_full: {
         tipo: "Fuerza - Full Body Funcional",
         volumen: "60 min",
-        indicaciones: "Trabajamos en superseries (pasás del ejercicio 1 al 2 sin descanso, y recién descansás en la macropausa).",
+        indicaciones: "Trabajo en superseries.",
         bloques: [
           { orden: "A1", ejercicio: "Sentadilla", series: "4 x 8", carga: "70% 1RM", micro: "0''", macro: "2'" },
-          { orden: "A2", ejercicio: "Press de Banca", series: "4 x 8", carga: "70% 1RM", micro: "2'", macro: "-" },
-          { orden: "B1", ejercicio: "Hip Thrust", series: "3 x 10", carga: "75% 1RM", micro: "0''", macro: "90''" },
-          { orden: "B2", ejercicio: "Remo con Mancuerna a un brazo", series: "3 x 10 c/lado", carga: "RPE 8", micro: "90''", macro: "-" }
+          { orden: "A2", ejercicio: "Press de Banca", series: "4 x 8", carga: "70% 1RM", micro: "2'", macro: "-" }
         ]
       }
     };
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
+      document.getElementById("pagoVenc").valueAsDate = new Date();
       const savedPass = localStorage.getItem("etrain_coach_pass");
       if (savedPass) {
         document.getElementById("inputCoachPass").value = savedPass;
@@ -254,20 +305,23 @@
         if (data.status === "success") {
           claveGuardada = pass;
           localStorage.setItem("etrain_coach_pass", pass);
+          cacheAtletasGlobal = data.atletas;
 
           const selectAtleta = document.getElementById("selectAtleta");
+          const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
           const checkContainer = document.getElementById("listaCheckAtletas");
+          
           selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
+          pagoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
           checkContainer.innerHTML = '';
 
           data.atletas.forEach(a => {
-            // Opción para selector individual
-            const opt = document.createElement("option");
-            opt.value = a.email;
-            opt.textContent = `${a.nombre} (${a.email})`;
-            selectAtleta.appendChild(opt);
+            const opt1 = document.createElement("option"); opt1.value = a.email; opt1.textContent = `${a.nombre} (${a.email})`;
+            selectAtleta.appendChild(opt1);
 
-            // Checkbox para selector grupal
+            const opt2 = document.createElement("option"); opt2.value = a.email; opt2.textContent = `${a.nombre} (${a.email})`;
+            pagoSelectAtleta.appendChild(opt2);
+
             const label = document.createElement("label");
             label.className = "atleta-check-item";
             label.innerHTML = `<input type="checkbox" class="check-atleta" value="${a.email}"> <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">(${a.email})</small></span>`;
@@ -277,10 +331,10 @@
           const datalist = document.getElementById("listaEjercicios");
           datalist.innerHTML = "";
           data.ejercicios.forEach(ej => {
-            const opt = document.createElement("option");
-            opt.value = ej;
-            datalist.appendChild(opt);
+            const opt = document.createElement("option"); opt.value = ej; datalist.appendChild(opt);
           });
+
+          window.pagosGlobalMap = data.pagos || {};
 
           document.getElementById("loginCoachScreen").classList.add("hidden");
           document.getElementById("panelContainer").classList.remove("hidden");
@@ -302,23 +356,23 @@
       location.reload();
     }
 
+    function cambiarSeccionCoach(sec, btn) {
+      document.querySelectorAll(".coach-tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("coach-sec-asignar").classList.toggle("hidden", sec !== "asignar");
+      document.getElementById("coach-sec-alumnos").classList.toggle("hidden", sec !== "alumnos");
+    }
+
     function cambiarModoAsignacion(modo) {
       modoAsignacion = modo;
-      const btnInd = document.getElementById("btnModoIndividual");
-      const btnGrup = document.getElementById("btnModoGrupal");
-      const selInd = document.getElementById("selectAtleta");
-      const contGrup = document.getElementById("contenedorGrupal");
-
-      if (modo === "individual") {
-        btnInd.classList.add("active");
-        btnGrup.classList.remove("active");
-        selInd.classList.remove("hidden");
-        contGrup.classList.add("hidden");
+      document.getElementById("btnModoIndividual").classList.toggle("active", modo === "individual");
+      document.getElementById("btnModoGrupal").classList.toggle("active", modo === "grupal");
+      document.getElementById("selectAtleta").classList.toggle("hidden", modo !== "individual");
+      document.getElementById("contenedorGrupal").classList.toggle("hidden", modo !== "grupal");
+      if (modo === "grupal") {
+        document.getElementById("btnBorrarRutina").classList.add("hidden");
       } else {
-        btnGrup.classList.add("active");
-        btnInd.classList.remove("active");
-        selInd.classList.add("hidden");
-        contGrup.classList.remove("hidden");
+        verificarSiEsEdicion();
       }
     }
 
@@ -329,63 +383,88 @@
     function cargarPlantilla() {
       const key = document.getElementById("selectPlantilla").value;
       if (!key || !PLANTILLAS[key]) return;
-
       const p = PLANTILLAS[key];
       document.getElementById("inputTipoSesion").value = p.tipo;
       document.getElementById("inputVolumen").value = p.volumen;
       document.getElementById("inputIndicaciones").value = p.indicaciones;
-
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
-
       p.bloques.forEach(b => agregarBloque(b));
+      verificarSiEsEdicion();
+    }
+
+    async function cargarRutinasAtletaSeleccionado() {
+      const email = document.getElementById("selectAtleta").value;
+      if (!email) { cacheRutinasAtletaActual = []; verificarSiEsEdicion(); return; }
+      try {
+        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=0000`); // pin falso solo para pedir sus rutinas públicas
+        const data = await res.json();
+        cacheRutinasAtletaActual = data.rutinas || [];
+      } catch (e) {
+        cacheRutinasAtletaActual = [];
+      }
+      verificarSiEsEdicion();
+    }
+
+    function formatFechaInput(fechaStr) {
+      if (!fechaStr) return "";
+      if (fechaStr.includes("/")) {
+        const p = fechaStr.split(" ")[0].split("/");
+        if (p.length === 3) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+      }
+      return fechaStr.split("T")[0];
+    }
+
+    function verificarSiEsEdicion() {
+      if (modoAsignacion !== "individual") return;
+      const email = document.getElementById("selectAtleta").value;
+      const fechaRaw = document.getElementById("inputFecha").value;
+      const tipo = document.getElementById("inputTipoSesion").value.trim().toLowerCase();
+      const btnBorrar = document.getElementById("btnBorrarRutina");
+      const btnGuardar = document.getElementById("btnGuardarRutina");
+
+      if (!email || !fechaRaw || !tipo) {
+        btnBorrar.classList.add("hidden");
+        btnGuardar.textContent = "🚀 ASIGNAR RUTINA";
+        return;
+      }
+
+      const fechaFmt = formatFechaInput(fechaRaw);
+      const encontrada = cacheRutinasAtletaActual.some(r => {
+        let fR = formatFechaInput(r["Fecha"]);
+        let tR = String(r["Tipo de Sesión"] || "").trim().toLowerCase();
+        return fR === fechaFmt && tR === tipo;
+      });
+
+      if (encontrada) {
+        btnBorrar.classList.remove("hidden");
+        btnGuardar.textContent = "✏️ Actualizar Rutina";
+      } else {
+        btnBorrar.classList.add("hidden");
+        btnGuardar.textContent = "🚀 ASIGNAR RUTINA";
+      }
     }
 
     function agregarBloque(datos = null) {
       contadorBloques++;
       const id = contadorBloques;
-      const ordenVal = datos ? datos.orden : "";
-      const ejVal = datos ? datos.ejercicio : "";
-      const serVal = datos ? datos.series : "";
-      const carVal = datos ? datos.carga : "";
-      const micVal = datos ? datos.micro : "";
-      const macVal = datos ? datos.macro : "";
-
       const html = `
         <div class="bloque-row" id="bloque-${id}">
           <div class="bloque-header">
             <span style="font-weight:bold; color:var(--primary);">Ejercicio #${id}</span>
-            <button class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar Ejercicio">✖</button>
+            <button class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar">✖</button>
           </div>
           <div class="grid-2">
-            <div>
-              <label>Orden / Letra (Ej: A1, B, Principal)</label>
-              <input type="text" id="orden-${id}" value="${ordenVal}" placeholder="A1" style="margin-bottom:8px;">
-            </div>
-            <div>
-              <label>Ejercicio (Buscá en tu videoteca)</label>
-              <input type="text" id="ejercicio-${id}" value="${ejVal}" list="listaEjercicios" placeholder="Escribí para buscar..." style="margin-bottom:8px;">
-            </div>
+            <div><label>Orden / Letra</label><input type="text" id="orden-${id}" value="${datos ? datos.orden : ''}" placeholder="A1"></div>
+            <div><label>Ejercicio</label><input type="text" id="ejercicio-${id}" value="${datos ? datos.ejercicio : ''}" list="listaEjercicios" placeholder="Buscar..."></div>
           </div>
           <div class="grid-2">
-            <div>
-              <label>Series y Reps / Distancia</label>
-              <input type="text" id="series-${id}" value="${serVal}" placeholder="Ej: 4x10 o 5 x 1000m">
-            </div>
-            <div>
-              <label>Carga / Ritmo (%)</label>
-              <input type="text" id="carga-${id}" value="${carVal}" placeholder="Ej: 70% 1RM o 85% VAM">
-            </div>
+            <div><label>Series y Reps / Distancia</label><input type="text" id="series-${id}" value="${datos ? datos.series : ''}" placeholder="4x10"></div>
+            <div><label>Carga / Ritmo (%)</label><input type="text" id="carga-${id}" value="${datos ? datos.carga : ''}" placeholder="75% 1RM"></div>
           </div>
           <div class="grid-2">
-            <div>
-              <label>Micropausa (Entre reps)</label>
-              <input type="text" id="micro-${id}" value="${micVal}" placeholder="Ej: 1' o 30''">
-            </div>
-            <div>
-              <label>Macropausa (Entre series)</label>
-              <input type="text" id="macro-${id}" value="${macVal}" placeholder="Ej: 2' 30'' o Libre">
-            </div>
+            <div><label>Micropausa</label><input type="text" id="micro-${id}" value="${datos ? datos.micro : ''}" placeholder="1'"></div>
+            <div><label>Macropausa</label><input type="text" id="macro-${id}" value="${datos ? datos.macro : ''}" placeholder="2'"></div>
           </div>
         </div>
       `;
@@ -393,22 +472,22 @@
     }
 
     function eliminarBloque(id) {
-      const bloque = document.getElementById(`bloque-${id}`);
-      if (bloque) bloque.remove();
+      const b = document.getElementById(`bloque-${id}`);
+      if (b) b.remove();
     }
 
     function formatFechaEnvio(fechaYYYYMMDD) {
       if (!fechaYYYYMMDD) return "";
-      const partes = fechaYYYYMMDD.split("-");
-      if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      const p = fechaYYYYMMDD.split("-");
+      if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
       return fechaYYYYMMDD;
     }
 
     async function enviarRutina() {
       let destinatarios = [];
       if (modoAsignacion === "individual") {
-        const emailUnico = document.getElementById("selectAtleta").value;
-        if (emailUnico) destinatarios.push(emailUnico);
+        const e = document.getElementById("selectAtleta").value;
+        if (e) destinatarios.push(e);
       } else {
         document.querySelectorAll(".check-atleta:checked").forEach(chk => destinatarios.push(chk.value));
       }
@@ -418,22 +497,19 @@
       const vol = document.getElementById("inputVolumen").value.trim();
       const ind = document.getElementById("inputIndicaciones").value.trim();
 
-      if (destinatarios.length === 0) return alert("Por favor, selecciona al menos un atleta.");
-      if (!fechaRaw) return alert("Por favor, selecciona la fecha.");
-      if (!tipo) return alert("Por favor, ponle un nombre/tipo a la sesión.");
+      if (destinatarios.length === 0) return alert("Selecciona al menos un atleta.");
+      if (!fechaRaw || !tipo) return alert("Completa la fecha y el tipo de sesión.");
 
       const bloquesNodes = document.querySelectorAll(".bloque-row");
-      if (bloquesNodes.length === 0) return alert("Debes agregar al menos un ejercicio a la rutina.");
+      if (bloquesNodes.length === 0) return alert("Agrega al menos un ejercicio.");
 
       const bloques = [];
       let faltaData = false;
-
       bloquesNodes.forEach(nodo => {
         const id = nodo.id.replace("bloque-", "");
         const ej = document.getElementById(`ejercicio-${id}`).value.trim();
         const ser = document.getElementById(`series-${id}`).value.trim();
         if (!ej || !ser) faltaData = true;
-
         bloques.push({
           orden: document.getElementById(`orden-${id}`).value.trim() || "-",
           ejercicio: ej,
@@ -444,63 +520,130 @@
         });
       });
 
-      if (faltaData) return alert("Por favor, asegúrate de que todos los ejercicios tengan al menos el Nombre y las Series/Repeticiones.");
+      if (faltaData) return alert("Todos los ejercicios deben tener Nombre y Series.");
 
       const btn = document.getElementById("btnGuardarRutina");
       const msj = document.getElementById("mensajeResultado");
       btn.disabled = true;
-      msj.textContent = "";
 
       try {
+        const fechaFmt = formatFechaEnvio(fechaRaw);
         for (let i = 0; i < destinatarios.length; i++) {
-          const emailActual = destinatarios[i];
-          btn.textContent = `⏳ Enviando (${i + 1}/${destinatarios.length})...`;
-
+          btn.textContent = `⏳ Guardando (${i + 1}/${destinatarios.length})...`;
           const payload = {
             action: "asignarRutina",
             pass: claveGuardada,
-            email: emailActual,
-            fecha: formatFechaEnvio(fechaRaw),
+            email: destinatarios[i],
+            fecha: fechaFmt,
             tipoSesion: tipo,
             volumen: vol,
             indicaciones: ind,
-            bloques: bloques
+            bloques: bloques,
+            reemplazar: true,
+            fechaOriginal: fechaFmt,
+            tipoOriginal: tipo
           };
 
-          const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
+          const res = await fetch(API_URL, {
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
           });
-          
-          const result = await response.json();
-          if (result.status !== "success") throw new Error(result.message || "Error al guardar");
+          const json = await res.json();
+          if (json.status !== "success") throw new Error(json.message);
         }
 
-        btn.className = "btn";
         btn.style.background = "var(--primary)";
-        btn.textContent = `✅ ¡Asignada a ${destinatarios.length} atleta(s)!`;
-        
-        document.getElementById("selectPlantilla").value = "";
-        document.getElementById("inputTipoSesion").value = "";
-        document.getElementById("inputVolumen").value = "";
-        document.getElementById("inputIndicaciones").value = "";
-        document.getElementById("bloquesContainer").innerHTML = "";
-        contadorBloques = 0;
-        agregarBloque();
-        
+        btn.textContent = `✅ ¡Rutina Guardada con Éxito!`;
         setTimeout(() => {
-          btn.className = "btn btn-success";
           btn.style.background = "";
           btn.disabled = false;
           btn.textContent = "🚀 ASIGNAR RUTINA";
+          if (modoAsignacion === "individual") cargarRutinasAtletaSeleccionado();
         }, 2500);
 
-      } catch (error) {
+      } catch (err) {
         btn.disabled = false;
         btn.textContent = "🚀 ASIGNAR RUTINA";
         msj.style.color = "var(--danger)";
-        msj.textContent = "❌ Error al enviar: " + error.message;
+        msj.textContent = "❌ Error: " + err.message;
+      }
+    }
+
+    async function borrarRutinaActual() {
+      const email = document.getElementById("selectAtleta").value;
+      const fechaRaw = document.getElementById("inputFecha").value;
+      const tipo = document.getElementById("inputTipoSesion").value.trim();
+      if (!email || !fechaRaw || !tipo) return;
+
+      if (!confirm(`¿Estás seguro de borrar la rutina "${tipo}" del día ${formatFechaEnvio(fechaRaw)}?`)) return;
+
+      try {
+        const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: formatFechaEnvio(fechaRaw), tipo: tipo };
+        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        alert("Rutina eliminada correctamente.");
+        document.getElementById("inputTipoSesion").value = "";
+        cargarRutinasAtletaSeleccionado();
+      } catch (e) {
+        alert("Error al borrar la rutina.");
+      }
+    }
+
+    async function crearAtleta() {
+      const nombre = document.getElementById("nuevoNombre").value.trim();
+      const email = document.getElementById("nuevoEmail").value.trim();
+      const pin = document.getElementById("nuevoPin").value.trim();
+      const cel = document.getElementById("nuevoCelular").value.trim();
+      if (!nombre || !email || !pin) return alert("Completa al menos Nombre, Email y PIN.");
+
+      try {
+        const payload = { action: "crearAtleta", pass: claveGuardada, nombre: nombre, email: email, pin: pin, celular: cel, fechaNac: "", fotoUrl: "", vam: "", fcr: 52, fcmax: 188, emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" };
+        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert(`¡Atleta ${nombre} registrado con éxito!`);
+          document.getElementById("nuevoNombre").value = "";
+          document.getElementById("nuevoEmail").value = "";
+          document.getElementById("nuevoPin").value = "";
+          document.getElementById("nuevoCelular").value = "";
+          verificarProfe(); // Recarga la lista
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al dar de alta.");
+      }
+    }
+
+    function cargarDatosPagoAtleta() {
+      const email = document.getElementById("pagoSelectAtleta").value;
+      if (!email || !window.pagosGlobalMap || !window.pagosGlobalMap[email]) return;
+      const pgs = window.pagosGlobalMap[email];
+      if (pgs.length > 0) {
+        const ultimo = pgs[pgs.length - 1];
+        document.getElementById("pagoPeriodo").value = ultimo.periodo || "";
+        document.getElementById("pagoMonto").value = ultimo.monto || "$15.000";
+        document.getElementById("pagoEstado").value = ultimo.estado || "Pendiente";
+      }
+    }
+
+    async function guardarPagoAtleta() {
+      const email = document.getElementById("pagoSelectAtleta").value;
+      const periodo = document.getElementById("pagoPeriodo").value.trim();
+      const monto = document.getElementById("pagoMonto").value.trim();
+      const estado = document.getElementById("pagoEstado").value;
+      const vencRaw = document.getElementById("pagoVenc").value;
+
+      if (!email || !periodo) return alert("Selecciona un atleta e indica el periodo.");
+      try {
+        const payload = { action: "guardarPago", pass: claveGuardada, email: email, periodo: periodo, monto: monto, estado: estado, vencimiento: formatFechaEnvio(vencRaw) };
+        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert("¡Estado de cuota guardado con éxito!");
+        } else {
+          alert("Error al guardar pago.");
+        }
+      } catch (e) {
+        alert("Error de conexión.");
       }
     }
   </script>
