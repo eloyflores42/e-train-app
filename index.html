@@ -6,6 +6,9 @@
   <title>E-TRAIN | Plataforma Atletas</title>
   <link rel="manifest" href="./manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Inyectamos la tipografía deportiva Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
@@ -13,12 +16,16 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
+    
     header { background: var(--card); padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.15rem; letter-spacing: 0.5px; color: var(--primary); display: none; }
+    .brand-container { display: flex; align-items: center; gap: 12px; }
+    header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.35rem; letter-spacing: 0.5px; color: var(--primary); margin: 0; }
+    
     .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
     .container { max-width: 780px; margin: 0 auto; padding: 16px; }
     
     #loginScreen { max-width: 400px; margin: 60px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+    #loginScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--primary); margin-bottom: 8px; font-size: 1.8rem; letter-spacing: 1px; }
     #loginScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
     .form-group { margin-bottom: 14px; text-align: left; }
 
@@ -72,8 +79,9 @@
 <body>
 
   <div id="loginScreen">
-    <!-- LOGO EN PANTALLA DE INICIO APUNTANDO AL ARCHIVO LOCAL -->
-    <img src="./logo.png" alt="E-TRAIN Logo" style="max-height: 75px; margin-bottom: 15px;">
+    <!-- LOGO Y TEXTO EN PANTALLA DE INICIO (MÁS GRANDES) -->
+    <img src="./logo.png" alt="E-TRAIN Logo" style="max-height: 130px; margin-bottom: 15px;">
+    <h2>E-TRAIN</h2>
     <p>Ingresa con tu correo y tu PIN asignado.</p>
     <div class="form-group"><label>Correo Electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" /></div>
     <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" /></div>
@@ -83,8 +91,11 @@
 
   <div id="appContainer" class="hidden">
     <header>
-      <!-- LOGO EN BARRA SUPERIOR APUNTANDO AL ARCHIVO LOCAL -->
-      <img src="./logo.png" alt="E-TRAIN" style="max-height: 30px;">
+      <!-- LOGO Y TEXTO EN BARRA SUPERIOR (CONJUNTO DE MARCA) -->
+      <div class="brand-container">
+        <img src="./logo.png" alt="Logo" style="max-height: 45px;">
+        <h1>E-TRAIN</h1>
+      </div>
       <div class="user-info">
         <span id="headerAtletaNombre">Atleta</span>
         <button id="btnInstalarApp" class="btn btn-outline hidden" onclick="instalarPWA()" style="background: var(--accent); color: #000; border: none;">📲 Instalar</button>
