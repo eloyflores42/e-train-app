@@ -94,7 +94,6 @@
     </header>
 
     <main class="container">
-      <!-- 3 PESTAÑAS DEL PANEL PROFE -->
       <div class="coach-tabs">
         <button class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
         <button class="coach-tab-btn" onclick="cambiarSeccionCoach('gestion', this)">📋 Rutinas Asignadas</button>
@@ -421,7 +420,7 @@
       container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Buscando rutinas...</p>`;
 
       try {
-        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=0000`);
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}`);
         const data = await res.json();
         const rutinasRaw = data.rutinas || [];
 
@@ -430,7 +429,6 @@
           return;
         }
 
-        // Agrupamos por Fecha + Tipo de Sesión
         const mapaSesiones = new Map();
         rutinasRaw.forEach(r => {
           let fecha = r["Fecha"] || "";
@@ -486,10 +484,8 @@
       const s = cacheRutinasAtletaGestion[index];
       if (!s) return;
 
-      // Cambiamos a la pestaña de asignar
       cambiarSeccionCoach('asignar', document.querySelector('.coach-tab-btn'));
 
-      // Seteamos los datos en el formulario
       document.getElementById("selectAtleta").value = document.getElementById("gestionSelectAtleta").value;
       document.getElementById("inputFecha").value = formatFechaInput(s.fechaRaw);
       document.getElementById("inputTipoSesion").value = s.tipo;
