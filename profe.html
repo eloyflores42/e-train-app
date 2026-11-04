@@ -13,7 +13,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     
-    header { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    header { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
     .brand-container { display: flex; align-items: center; gap: 8px; }
     header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--accent); margin: 0; }
     
@@ -21,43 +21,80 @@
     #loginCoachScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--accent); margin-bottom: 8px; font-size: 1.5rem; }
     #loginCoachScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
 
-    .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+    .container { max-width: 880px; margin: 20px auto; padding: 0 16px; }
     
     .coach-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-    .coach-tab-btn { flex: 1; min-width: 120px; padding: 10px 6px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; text-align: center; }
+    .coach-tab-btn { flex: 1; min-width: 140px; padding: 10px 8px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; text-align: center; transition: 0.2s; }
     .coach-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-    .card h2 { font-size: 1.15rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); }
+    .card h2 { font-size: 1.12rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 10px; }
     
-    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-align: left; }
-    input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.95rem; margin-bottom: 12px; }
-    textarea { resize: vertical; min-height: 80px; }
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-align: left; }
+    input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.92rem; margin-bottom: 12px; }
+    textarea { resize: vertical; min-height: 75px; }
     
-    button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; font-size: 1rem; }
+    button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; font-size: 0.95rem; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
     button.btn-success { background: var(--accent); color: #000; }
+    button.btn-warning { background: var(--warning); color: #000; }
+    button.btn-danger { background: var(--danger); color: #fff; }
     button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 12px; font-size: 0.8rem; }
     
-    .rutina-card-admin { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: var(--primary); color: #fff; }
+    .rutina-card-admin { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .rutina-admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; cursor: pointer; }
+    .rutina-admin-body { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+    
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.73rem; font-weight: 700; background: var(--primary); color: #fff; }
+    .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-muted { background: rgba(148, 163, 184, 0.15); color: var(--muted); border: 1px solid var(--border); }
+
+    .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 8px 10px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 0.82rem; color: var(--text); }
+    .bloque-item-admin { background: #152033; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-top: 6px; font-size: 0.85rem; }
 
     .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
     .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
     
-    .template-bar { background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .template-bar { background: rgba(16, 185, 129, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .template-bar select { margin-bottom: 0; flex: 1; min-width: 200px; border-color: var(--accent); }
-    .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 12px; }
-    .atleta-check-item { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.9rem; cursor: pointer; }
+    
+    .vol-unified-group { display: flex; gap: 6px; }
+    .vol-unified-group input { flex: 2; }
+    .vol-unified-group select { flex: 1; min-width: 85px; }
+
+    .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 170px; overflow-y: auto; margin-bottom: 12px; }
+    .atleta-check-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.88rem; cursor: pointer; }
     .atleta-check-item:last-child { border-bottom: none; }
     .atleta-check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent); }
+    
     .mode-switch { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
     .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
     .mode-switch button.active { background: var(--primary); color: #fff; }
+
+    /* Filtros de Alumnos y Estado de Cuota */
+    .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .alumno-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .alumno-info h4 { font-size: 0.96rem; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .alumno-info p { font-size: 0.78rem; color: var(--muted); }
+    .alumno-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Modo Espejo y Barras de Volumen */
+    .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+    .kpi-box .kpi-val { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-top: 4px; }
+    .kpi-box .kpi-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; }
+    .bar-row { margin-bottom: 8px; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px; }
+    .bar-track { background: #0b1120; border-radius: 6px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .bar-fill { background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; border-radius: 6px; }
 
     .hidden { display: none !important; }
   </style>
@@ -68,7 +105,7 @@
   <div id="loginCoachScreen">
     <img src="./logo.png" alt="E-TRAIN" style="max-height: 90px; margin-bottom: 12px;" onerror="this.style.display='none'">
     <h2>MODO ENTRENADOR</h2>
-    <p>Acceso exclusivo de administración.</p>
+    <p>Acceso exclusivo de administración y planificación.</p>
     <div>
       <label>Clave Maestra</label>
       <input type="password" id="inputCoachPass" placeholder="Ingresa tu clave secreta..." onkeypress="if(event.key === 'Enter') verificarProfe()" />
@@ -88,39 +125,40 @@
         <h1>E-TRAIN | Panel Profe</h1>
       </div>
       <div style="display:flex; gap:8px;">
-        <a href="./index.html" class="btn btn-outline" style="text-decoration:none;">Ver App Atletas</a>
+        <button class="btn btn-outline" onclick="verificarProfe()" title="Recargar datos">🔄</button>
+        <a href="./index.html" class="btn btn-outline" style="text-decoration:none;">App Atletas</a>
         <button class="btn btn-outline" onclick="salirProfe()" style="border-color:var(--danger); color:var(--danger);">Salir</button>
       </div>
     </header>
 
     <main class="container">
       <div class="coach-tabs">
-        <button class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
-        <button class="coach-tab-btn" onclick="cambiarSeccionCoach('gestion', this)">📋 Rutinas Asignadas</button>
-        <button class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alumnos & Pagos</button>
+        <button id="tab-btn-asignar" class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
+        <button id="tab-btn-gestion" class="coach-tab-btn" onclick="cambiarSeccionCoach('gestion', this)">📋 Rutinas Asignadas</button>
+        <button id="tab-btn-alumnos" class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alumnos & Pagos</button>
+        <button id="tab-btn-espejo" class="coach-tab-btn" onclick="cambiarSeccionCoach('espejo', this)">🩺 Fichas & Espejo</button>
       </div>
 
-      <!-- SECCIÓN 1: ASIGNAR RUTINA -->
+      <!-- ================================================================== -->
+      <!-- SECCIÓN 1: ASIGNAR RUTINA                                          -->
+      <!-- ================================================================== -->
       <section id="coach-sec-asignar">
         <div class="card">
           <h2>Configuración de la Sesión</h2>
 
           <div class="template-bar">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Plantillas Pre-armadas:</div>
+            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Plantillas:</div>
             <select id="selectPlantilla" onchange="cargarPlantilla()">
-              <option value="">-- Elegir plantilla base --</option>
-              <option value="run_vam">🏃‍♂️ Pasadas Cortas (VAM)</option>
-              <option value="run_umbral">🏃‍♂️ Series de Umbral (1000m)</option>
-              <option value="run_fondo">🌲 Fondo Regenerativo</option>
-              <option value="gym_inf">🏋️‍♂️ Fuerza: Tren Inferior & Core</option>
-              <option value="gym_full">💪 Fuerza: Full Body Funcional</option>
+              <option value="">-- Elegir plantilla --</option>
             </select>
+            <button type="button" class="btn btn-outline" onclick="guardarPlantillaActual()" style="border-color:var(--accent); color:var(--accent);">💾 Guardar Plantilla</button>
+            <button type="button" id="btnBorrarPlantilla" class="btn btn-outline hidden" onclick="eliminarPlantillaSeleccionada()" style="border-color:var(--danger); color:var(--danger);">🗑️</button>
           </div>
 
           <div class="grid-2">
             <div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label>Destinatario(s)</label>
+                <label>Destinatario(s) Activos</label>
                 <div class="mode-switch">
                   <button type="button" id="btnModoIndividual" class="active" onclick="cambiarModoAsignacion('individual')">👤 Individual</button>
                   <button type="button" id="btnModoGrupal" onclick="cambiarModoAsignacion('grupal')">👥 Grupal</button>
@@ -130,7 +168,8 @@
               <div id="contenedorGrupal" class="hidden">
                 <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
                   <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
-                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar todos</a>
+                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--accent); text-decoration:none;" onclick="marcarAlDia(); return false;">💳 Solo cuotas al día</a>
+                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Ninguno</a>
                 </div>
                 <div class="multi-atleta-box" id="listaCheckAtletas"></div>
               </div>
@@ -141,27 +180,44 @@
             </div>
           </div>
 
-          <div class="grid-2" style="margin-top: 12px;">
+          <div class="grid-3" style="margin-top: 8px;">
             <div>
-              <label>Tipo de Sesión</label>
-              <input type="text" id="inputTipoSesion" placeholder="Ej: Running - Series" />
+              <label>Disciplina (Filtro)</label>
+              <select id="inputDisciplina" onchange="ajustarUnidadPorDisciplina()">
+                <option value="Running">🏃‍♂️ Running</option>
+                <option value="Fuerza">🏋️‍♂️ Fuerza / Gym</option>
+                <option value="Mixto">⚡ Funcional / Mixto</option>
+              </select>
             </div>
             <div>
-              <label>Volumen Total</label>
-              <input type="text" id="inputVolumen" placeholder="Ej: 8 km" />
+              <label>Nombre / Tipo de Sesión</label>
+              <input type="text" id="inputTipoSesion" placeholder="Ej: Pasadas VAM / Tren Inferior" />
+            </div>
+            <div>
+              <label>Volumen Total (Valor + Unidad)</label>
+              <div class="vol-unified-group">
+                <input type="number" step="0.1" id="inputVolumenValor" placeholder="Ej: 8" />
+                <select id="inputVolumenUnidad">
+                  <option value="km">km</option>
+                  <option value="min">min</option>
+                  <option value="series">series</option>
+                  <option value="kg">kg</option>
+                </select>
+              </div>
             </div>
           </div>
+
           <div>
             <label>Indicaciones del Profe</label>
-            <textarea id="inputIndicaciones" placeholder="Objetivo del día..."></textarea>
+            <textarea id="inputIndicaciones" placeholder="Objetivo del día, zonas de trabajo o cuidados..."></textarea>
           </div>
         </div>
 
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
-            <h2 style="border:none; margin:0; padding:0;">Ejercicios de la Sesión</h2>
+          <h2>
+            <span>Ejercicios de la Sesión</span>
             <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
-          </div>
+          </h2>
           <div id="bloquesContainer"></div>
           <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio</button>
         </div>
@@ -170,7 +226,9 @@
         <div id="mensajeResultado" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
       </section>
 
-      <!-- SECCIÓN 2: RUTINAS ASIGNADAS (GESTOR / VISOR) -->
+      <!-- ================================================================== -->
+      <!-- SECCIÓN 2: RUTINAS ASIGNADAS (CON DESPLEGABLE)                     -->
+      <!-- ================================================================== -->
       <section id="coach-sec-gestion" class="hidden">
         <div class="card">
           <h2>🔍 Consultar Rutinas de un Atleta</h2>
@@ -180,36 +238,46 @@
               <select id="gestionSelectAtleta" onchange="cargarRutinasParaGestionar()"><option value="">Elegir atleta...</option></select>
             </div>
             <div>
-              <button class="btn btn-outline" onclick="cargarRutinasParaGestionar()" style="width:100%;">🔄 Actualizar Lista</button>
+              <button class="btn btn-outline" onclick="cargarRutinasParaGestionar()" style="width:100%; padding:10px;">🔄 Actualizar Lista</button>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <h2>📋 Listado de Sesiones Cargadas</h2>
+          <h2>📋 Listado de Sesiones Cargadas (Toca una tarjeta para desplegar)</h2>
           <div id="gestionListaContainer">
             <p style="color: var(--muted); text-align: center; padding: 20px;">Selecciona un atleta arriba para ver sus rutinas cargadas.</p>
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN 3: ALTA DE ALUMNOS Y PAGOS -->
+      <!-- ================================================================== -->
+      <!-- SECCIÓN 3: ALUMNOS, FILTROS DE CUOTA Y BAJAS                       -->
+      <!-- ================================================================== -->
       <section id="coach-sec-alumnos" class="hidden">
+        <!-- LISTADO CON FILTROS DE CUOTA Y BAJAS -->
         <div class="card">
-          <h2>➕ Dar de Alta Nuevo Atleta</h2>
-          <div class="grid-2">
-            <div><label>Nombre y Apellido</label><input type="text" id="nuevoNombre" placeholder="Juan Pérez"></div>
-            <div><label>Correo Electrónico</label><input type="email" id="nuevoEmail" placeholder="juan@gmail.com"></div>
+          <h2>
+            <span>📊 Estado de Alumnos y Cuotas</span>
+            <span id="contadorTotalAlumnos" style="font-size:0.8rem; color:var(--muted);"></span>
+          </h2>
+
+          <div class="filter-pills">
+            <button class="filter-pill active" onclick="filtrarListadoAlumnos('todos', this)" id="pill-todos">Activos</button>
+            <button class="filter-pill" onclick="filtrarListadoAlumnos('activa', this)" id="pill-activa">✅ Cuota al Día</button>
+            <button class="filter-pill" onclick="filtrarListadoAlumnos('por_vencer', this)" id="pill-por_vencer">⚠️ Por Vencer (≤5d)</button>
+            <button class="filter-pill" onclick="filtrarListadoAlumnos('vencida', this)" id="pill-vencida">❌ Vencida / Pendiente</button>
+            <button class="filter-pill" onclick="filtrarListadoAlumnos('baja', this)" id="pill-baja">🚫 Dados de Baja</button>
           </div>
-          <div class="grid-2">
-            <div><label>PIN de Acceso (Ej: DNI)</label><input type="text" id="nuevoPin" placeholder="1234"></div>
-            <div><label>Celular</label><input type="text" id="nuevoCelular" placeholder="223..."></div>
-          </div>
-          <button class="btn btn-success" onclick="crearAtleta()">💾 Registrar Nuevo Atleta</button>
+
+          <input type="text" id="buscadorAlumnosInput" placeholder="🔎 Buscar por nombre o correo..." oninput="renderizarListadoAlumnos()" style="margin-bottom: 14px;" />
+
+          <div id="contenedorListadoAlumnos"></div>
         </div>
 
-        <div class="card">
-          <h2>💳 Gestionar Membresía / Pagos</h2>
+        <!-- GESTIÓN DE PAGO / MEMBRESÍA -->
+        <div class="card" id="cardGestionPagos">
+          <h2>💳 Registrar / Actualizar Cuota</h2>
           <div class="grid-2">
             <div>
               <label>Seleccionar Atleta</label>
@@ -217,11 +285,11 @@
             </div>
             <div>
               <label>Periodo / Mes</label>
-              <input type="text" id="pagoPeriodo" placeholder="Ej: noviembre 2026">
+              <input type="text" id="pagoPeriodo" placeholder="Ej: Noviembre 2026">
             </div>
           </div>
           <div class="grid-3">
-            <div><label>Monto</label><input type="text" id="pagoMonto" value="$15.000"></div>
+            <div><label>Monto</label><input type="text" id="pagoMonto" value="$20.000"></div>
             <div>
               <label>Estado</label>
               <select id="pagoEstado">
@@ -230,9 +298,144 @@
                 <option value="Vencido">Vencido</option>
               </select>
             </div>
-            <div><label>Vencimiento</label><input type="date" id="pagoVenc"></div>
+            <div><label>Fecha de Vencimiento</label><input type="date" id="pagoVenc"></div>
           </div>
           <button class="btn" onclick="guardarPagoAtleta()">💾 Guardar Estado de Cuota</button>
+        </div>
+
+        <!-- ALTA DE NUEVO ATLETA -->
+        <div class="card">
+          <h2>➕ Dar de Alta Nuevo Atleta</h2>
+          <div class="grid-2">
+            <div><label>Nombre y Apellido</label><input type="text" id="nuevoNombre" placeholder="Juan Pérez"></div>
+            <div><label>Correo Electrónico</label><input type="email" id="nuevoEmail" placeholder="juan@gmail.com"></div>
+          </div>
+          <div class="grid-3">
+            <div><label>PIN Inicial (Temporal)</label><input type="text" id="nuevoPin" value="1234" placeholder="1234"></div>
+            <div><label>Fecha de Nacimiento</label><input type="date" id="nuevoFechaNac"></div>
+            <div><label>Celular</label><input type="text" id="nuevoCelular" placeholder="223..."></div>
+          </div>
+          <button class="btn btn-success" onclick="crearAtleta()">💾 Registrar Nuevo Atleta</button>
+        </div>
+      </section>
+
+      <!-- ================================================================== -->
+      <!-- SECCIÓN 4: FICHAS DE ALUMNOS, EDAD Y MODO ESPEJO                   -->
+      <!-- ================================================================== -->
+      <section id="coach-sec-espejo" class="hidden">
+        <div class="card">
+          <h2>🩺 Seleccionar Atleta para Supervisión (Ficha & Modo Espejo)</h2>
+          <div class="grid-2" style="align-items: end;">
+            <div>
+              <label>Atleta</label>
+              <select id="espejoSelectAtleta" onchange="cargarFichaYEspejoAtleta()"><option value="">Elegir atleta...</option></select>
+            </div>
+            <div>
+              <button class="btn btn-outline" onclick="cargarFichaYEspejoAtleta()" style="width:100%; padding:10px;">🔄 Sincronizar Datos del Atleta</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="contenedorContenidoEspejo" class="hidden">
+          <!-- TARJETA 1: RESUMEN FISIOLÓGICO Y EDAD EN TIEMPO REAL -->
+          <div class="card">
+            <h2>
+              <span id="espejoTituloNombre">Ficha del Atleta</span>
+              <span id="espejoBadgeEdad" class="badge badge-ok" style="font-size:0.85rem;">Edad: --</span>
+            </h2>
+
+            <div id="alertaBiologicaEdad" class="coach-notes hidden" style="border-left-color: var(--warning); background: rgba(245, 158, 11, 0.12);"></div>
+
+            <div class="grid-4" style="margin-bottom: 16px;">
+              <div class="kpi-box">
+                <div class="kpi-lbl">Edad Actual</div>
+                <div class="kpi-val" id="kpiEdad">--</div>
+              </div>
+              <div class="kpi-box">
+                <div class="kpi-lbl">VAM Actual</div>
+                <div class="kpi-val" id="kpiVam">--</div>
+              </div>
+              <div class="kpi-box">
+                <div class="kpi-lbl">FC Reposo / Máx</div>
+                <div class="kpi-val" id="kpiFC">--</div>
+              </div>
+              <div class="kpi-box">
+                <div class="kpi-lbl">PIN de Acceso</div>
+                <div class="kpi-val" id="kpiPin" style="color:var(--primary);">--</div>
+              </div>
+            </div>
+
+            <!-- FORMULARIO EDITABLE DE FICHA MÉDICA Y PERSONAL DESDE EL PANEL PROFE -->
+            <div style="border-top: 1px solid var(--border); padding-top: 14px;">
+              <h3 style="font-size:0.95rem; color:var(--accent); margin-bottom:10px;">📋 Datos Personales, Médicos y PIN (Editables por el Profe)</h3>
+              <div class="grid-3">
+                <div><label>Nombre y Apellido</label><input type="text" id="fichaNombre"></div>
+                <div><label>Fecha de Nacimiento</label><input type="date" id="fichaFechaNac" onchange="actualizarVistaEdadEnVivo()"></div>
+                <div><label>PIN de Acceso</label><input type="text" id="fichaPin"></div>
+              </div>
+              <div class="grid-3">
+                <div><label>Celular</label><input type="text" id="fichaCelular"></div>
+                <div><label>VAM (km/h o ritmo)</label><input type="text" id="fichaVam"></div>
+                <div><label>Grupo Sanguíneo / Donante</label><input type="text" id="fichaSangre"></div>
+              </div>
+              <div class="grid-2">
+                <div><label>FC Reposo (ppm)</label><input type="number" id="fichaFcr"></div>
+                <div><label>FC Máxima (ppm)</label><input type="number" id="fichaFcmax"></div>
+              </div>
+              <div class="grid-2">
+                <div><label>Contacto de Emergencia</label><input type="text" id="fichaEmergencia"></div>
+                <div><label>Obra Social / Clínica</label><input type="text" id="fichaObraSocial"></div>
+              </div>
+              <div>
+                <label>Alergias, Lesiones u Observaciones Médicas (Ciclo / Menopausia / Antecedentes)</label>
+                <textarea id="fichaAlergias"></textarea>
+              </div>
+              <button class="btn btn-success" onclick="guardarFichaDesdeProfe()">💾 Guardar Cambios en la Ficha del Atleta</button>
+            </div>
+          </div>
+
+          <!-- TARJETA 2: MODO ESPEJO - PERIODIZACIÓN Y VOLUMEN SEMANAL -->
+          <div class="card">
+            <h2>
+              <span>📈 Modo Espejo: Periodización y Volumen por Semana</span>
+              <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.8rem;">
+                <option value="Running">🏃‍♂️ Solo Running (km)</option>
+                <option value="Fuerza">🏋️‍♂️ Solo Fuerza (series/min)</option>
+                <option value="Todas">🌐 Todas las Sesiones</option>
+              </select>
+            </h2>
+            <div id="espejoResumenSemanaActual" class="coach-notes" style="margin-bottom:14px;"></div>
+            <div id="espejoBarrasVolumen"></div>
+          </div>
+
+          <!-- TARJETA 3: MODO ESPEJO - TESTS Y EVALUACIONES -->
+          <div class="card">
+            <h2>
+              <span>⏱️ Historial de Tests y Evaluaciones del Atleta</span>
+              <button class="btn btn-outline" onclick="abrirCargaTestProfe()">+ Cargar Test al Atleta</button>
+            </h2>
+
+            <div id="formNuevoTestProfe" class="hidden" style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
+              <div class="grid-3">
+                <div><label>Categoría / Tipo</label><input type="text" id="testProfeTipo" placeholder="Ej: Running / Fuerza"></div>
+                <div><label>Prueba / Ejercicio</label><input type="text" id="testProfeEj" placeholder="Ej: Test 2000m / Sentadilla"></div>
+                <div><label>Resultado / Marca</label><input type="text" id="testProfeRes" placeholder="Ej: 8:20 / 90kg x 5"></div>
+              </div>
+              <div class="grid-2">
+                <div><label>VAM o 1RM Estimado</label><input type="text" id="testProfeEst" placeholder="Ej: 14.4 km/h / 101 kg"></div>
+                <div><label>Notas</label><input type="text" id="testProfeNotas" placeholder="Sensaciones o terreno..."></div>
+              </div>
+              <button class="btn btn-success" onclick="guardarTestDesdeProfe()">Guardar Evaluación</button>
+            </div>
+
+            <div id="espejoListaTests"></div>
+          </div>
+
+          <!-- TARJETA 4: MODO ESPEJO - FEEDBACK Y RPE RECIENTE -->
+          <div class="card">
+            <h2>💬 Últimos Feedbacks y RPE Registrados por el Atleta</h2>
+            <div id="espejoListaFeedback"></div>
+          </div>
         </div>
       </section>
     </main>
@@ -241,16 +444,25 @@
   <datalist id="listaEjercicios"></datalist>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec";
+    
     let contadorBloques = 0;
     let claveGuardada = "";
     let modoAsignacion = "individual";
+    let filtroAlumnosActual = "todos";
+    let listaAtletasGlobal = [];
+    let pagosGlobalMap = {};
     let cacheRutinasAtletaGestion = [];
+    let plantillasPersonalizadas = [];
+    let paqueteEspejoActual = null;
 
-    const PLANTILLAS = {
+    const PLANTILLAS_BASE = {
       run_vam: {
-        tipo: "Running - Potencia Aeróbica (VAM)",
-        volumen: "45 min / 7 km aprox",
+        nombre: "🏃‍♂️ Pasadas Cortas (VAM)",
+        disciplina: "Running",
+        tipo: "Potencia Aeróbica (VAM)",
+        volumenValor: "7",
+        volumenUnidad: "km",
         indicaciones: "Mantener el ritmo parejo en todas las pasadas sin caer al final.",
         bloques: [
           { orden: "Bloque 1", ejercicio: "Entrada en Calor (Trote + Movilidad)", series: "15 min", carga: "65% VAM", micro: "-", macro: "2'" },
@@ -258,8 +470,11 @@
         ]
       },
       run_umbral: {
-        tipo: "Running - Series de Umbral",
-        volumen: "8 a 10 km totales",
+        nombre: "🏃‍♂️ Series de Umbral (1000m)",
+        disciplina: "Running",
+        tipo: "Series de Umbral",
+        volumenValor: "9",
+        volumenUnidad: "km",
         indicaciones: "Ritmo fuerte pero controlado.",
         bloques: [
           { orden: "Bloque 1", ejercicio: "Trote de Activación + Rectas", series: "15 min", carga: "70% VAM", micro: "1'", macro: "2'" },
@@ -267,26 +482,35 @@
         ]
       },
       run_fondo: {
-        tipo: "Running - Fondo Regenerativo",
-        volumen: "50 min",
-        indicaciones: "Objetivo aeróbico sin fatiga muscular.",
+        nombre: "🌲 Fondo Regenerativo",
+        disciplina: "Running",
+        tipo: "Fondo Regenerativo",
+        volumenValor: "10",
+        volumenUnidad: "km",
+        indicaciones: "Objetivo aeróbico en Zona 1 / Zona 2 sin fatiga muscular.",
         bloques: [
-          { orden: "Único", ejercicio: "Fondo Continuo en Zona 1 / Zona 2", series: "50 min continuos", carga: "70% VAM", micro: "-", macro: "-" }
+          { orden: "Único", ejercicio: "Fondo Continuo Z1/Z2", series: "50 min continuos", carga: "70% VAM", micro: "-", macro: "-" }
         ]
       },
       gym_inf: {
-        tipo: "Fuerza - Tren Inferior & Core",
-        volumen: "50 min",
-        indicaciones: "Velocidad de ejecución en fase concéntrica.",
+        nombre: "🏋️‍♂️ Fuerza: Tren Inferior & Core",
+        disciplina: "Fuerza",
+        tipo: "Tren Inferior & Core",
+        volumenValor: "16",
+        volumenUnidad: "series",
+        indicaciones: "Velocidad máxima de ejecución en fase concéntrica.",
         bloques: [
           { orden: "A1", ejercicio: "Sentadilla", series: "4 x 6", carga: "75% 1RM", micro: "-", macro: "2'" },
           { orden: "B1", ejercicio: "Peso Muerto", series: "4 x 6", carga: "75% 1RM", micro: "1'", macro: "2'" }
         ]
       },
       gym_full: {
-        tipo: "Fuerza - Full Body Funcional",
-        volumen: "60 min",
-        indicaciones: "Trabajo en superseries.",
+        nombre: "💪 Fuerza: Full Body Funcional",
+        disciplina: "Fuerza",
+        tipo: "Full Body Funcional",
+        volumenValor: "50",
+        volumenUnidad: "min",
+        indicaciones: "Trabajo en superseries dinámicas.",
         bloques: [
           { orden: "A1", ejercicio: "Sentadilla", series: "4 x 8", carga: "70% 1RM", micro: "0''", macro: "2'" },
           { orden: "A2", ejercicio: "Press de Banca", series: "4 x 8", carga: "70% 1RM", micro: "2'", macro: "-" }
@@ -297,12 +521,54 @@
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
       document.getElementById("pagoVenc").valueAsDate = new Date();
+      const localPl = localStorage.getItem("etrain_custom_templates");
+      if (localPl) {
+        try { plantillasPersonalizadas = JSON.parse(localPl); } catch(e) {}
+      }
+      renderizarSelectorPlantillas();
+
       const savedPass = localStorage.getItem("etrain_coach_pass");
       if (savedPass) {
         document.getElementById("inputCoachPass").value = savedPass;
         verificarProfe();
       }
     });
+
+    function ajustarUnidadPorDisciplina() {
+      const disc = document.getElementById("inputDisciplina").value;
+      const selectUnidad = document.getElementById("inputVolumenUnidad");
+      if (disc === "Running") selectUnidad.value = "km";
+      else if (disc === "Fuerza") selectUnidad.value = "series";
+      else selectUnidad.value = "min";
+    }
+
+    function renderizarSelectorPlantillas() {
+      const sel = document.getElementById("selectPlantilla");
+      sel.innerHTML = '<option value="">-- Elegir plantilla --</option>';
+
+      const grpBase = document.createElement("optgroup");
+      grpBase.label = "Plantillas Predefinidas";
+      Object.keys(PLANTILLAS_BASE).forEach(k => {
+        const opt = document.createElement("option");
+        opt.value = "base__" + k;
+        opt.textContent = PLANTILLAS_BASE[k].nombre;
+        grpBase.appendChild(opt);
+      });
+      sel.appendChild(grpBase);
+
+      if (plantillasPersonalizadas.length > 0) {
+        const grpCustom = document.createElement("optgroup");
+        grpCustom.label = "⭐ Mis Plantillas Guardadas";
+        plantillasPersonalizadas.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = "custom__" + p.id;
+          opt.textContent = `⭐ [${p.disciplina}] ${p.nombre}`;
+          grpCustom.appendChild(opt);
+        });
+        sel.appendChild(grpCustom);
+      }
+      document.getElementById("btnBorrarPlantilla").classList.add("hidden");
+    }
 
     async function verificarProfe() {
       const pass = document.getElementById("inputCoachPass").value.trim();
@@ -323,39 +589,22 @@
           claveGuardada = pass;
           localStorage.setItem("etrain_coach_pass", pass);
 
-          const selectAtleta = document.getElementById("selectAtleta");
-          const gestionSelectAtleta = document.getElementById("gestionSelectAtleta");
-          const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
-          const checkContainer = document.getElementById("listaCheckAtletas");
-          
-          selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
-          gestionSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
-          pagoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
-          checkContainer.innerHTML = '';
+          listaAtletasGlobal = data.atletas || [];
+          pagosGlobalMap = data.pagos || {};
 
-          data.atletas.forEach(a => {
-            const opt1 = document.createElement("option"); opt1.value = a.email; opt1.textContent = `${a.nombre} (${a.email})`;
-            selectAtleta.appendChild(opt1);
-
-            const opt2 = document.createElement("option"); opt2.value = a.email; opt2.textContent = `${a.nombre} (${a.email})`;
-            gestionSelectAtleta.appendChild(opt2);
-
-            const opt3 = document.createElement("option"); opt3.value = a.email; opt3.textContent = `${a.nombre} (${a.email})`;
-            pagoSelectAtleta.appendChild(opt3);
-
-            const label = document.createElement("label");
-            label.className = "atleta-check-item";
-            label.innerHTML = `<input type="checkbox" class="check-atleta" value="${a.email}"> <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">(${a.email})</small></span>`;
-            checkContainer.appendChild(label);
-          });
+          if (Array.isArray(data.plantillas) && data.plantillas.length > 0) {
+            plantillasPersonalizadas = data.plantillas;
+            localStorage.setItem("etrain_custom_templates", JSON.stringify(plantillasPersonalizadas));
+          }
+          renderizarSelectorPlantillas();
+          poblarSelectoresAtletas();
+          renderizarListadoAlumnos();
 
           const datalist = document.getElementById("listaEjercicios");
           datalist.innerHTML = "";
-          data.ejercicios.forEach(ej => {
+          (data.ejercicios || []).forEach(ej => {
             const opt = document.createElement("option"); opt.value = ej; datalist.appendChild(opt);
           });
-
-          window.pagosGlobalMap = data.pagos || {};
 
           document.getElementById("loginCoachScreen").classList.add("hidden");
           document.getElementById("panelContainer").classList.remove("hidden");
@@ -372,6 +621,496 @@
       }
     }
 
+    function poblarSelectoresAtletas() {
+      const selectAtleta = document.getElementById("selectAtleta");
+      const gestionSelectAtleta = document.getElementById("gestionSelectAtleta");
+      const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
+      const espejoSelectAtleta = document.getElementById("espejoSelectAtleta");
+      const checkContainer = document.getElementById("listaCheckAtletas");
+      
+      selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
+      gestionSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
+      pagoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
+      espejoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
+      checkContainer.innerHTML = '';
+
+      listaAtletasGlobal.forEach(a => {
+        const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
+        const infoCuota = evaluarEstadoCuotaAtleta(a.email);
+        const edad = calcularEdadExacta(a.fechaNac);
+        const edadTxt = edad !== null ? ` • ${edad} años` : "";
+
+        // En asignación de rutinas solo mostramos atletas Activos
+        if (!esBaja) {
+          const opt1 = document.createElement("option");
+          opt1.value = a.email;
+          opt1.textContent = `${a.nombre}${edadTxt} [${infoCuota.labelCorto}]`;
+          selectAtleta.appendChild(opt1);
+
+          const label = document.createElement("label");
+          label.className = "atleta-check-item";
+          label.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" class="check-atleta" data-cuota="${infoCuota.codigo}" value="${a.email}">
+              <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">${edadTxt}</small></span>
+            </div>
+            <span class="badge ${infoCuota.badgeClass}">${infoCuota.labelCorto}</span>
+          `;
+          checkContainer.appendChild(label);
+        }
+
+        // En Gestión, Pagos y Espejo mostramos todos (indicando si está de baja)
+        const sufijoBaja = esBaja ? " [DE BAJA]" : "";
+        [gestionSelectAtleta, pagoSelectAtleta, espejoSelectAtleta].forEach(sel => {
+          const opt = document.createElement("option");
+          opt.value = a.email;
+          opt.textContent = `${a.nombre}${edadTxt}${sufijoBaja}`;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    // ========================================================================
+    // CÁLCULO DE EDAD Y EVALUACIÓN DE CUOTA (Activa / Por Vencer / Vencida)
+    // ========================================================================
+    function calcularEdadExacta(fechaStr) {
+      if (!fechaStr) return null;
+      let anio, mes, dia;
+      const limpia = String(fechaStr).trim().split("T")[0].split(" ")[0];
+      if (limpia.includes("/")) {
+        const p = limpia.split("/");
+        if (p.length !== 3) return null;
+        dia = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; anio = parseInt(p[2], 10);
+      } else if (limpia.includes("-")) {
+        const p = limpia.split("-");
+        if (p.length !== 3) return null;
+        if (p[0].length === 4) {
+          anio = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; dia = parseInt(p[2], 10);
+        } else {
+          dia = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; anio = parseInt(p[2], 10);
+        }
+      } else return null;
+
+      if (isNaN(anio) || anio < 1920) return null;
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - anio;
+      const m = hoy.getMonth() - mes;
+      if (m < 0 || (m === 0 && hoy.getDate() < dia)) edad--;
+      return edad >= 0 ? edad : null;
+    }
+
+    function parsearFechaDDMMYYYY(str) {
+      if (!str) return null;
+      const limpia = String(str).trim().split("T")[0].split(" ")[0];
+      if (limpia.includes("/")) {
+        const p = limpia.split("/");
+        if (p.length === 3) return new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
+      }
+      if (limpia.includes("-")) {
+        const p = limpia.split("-");
+        if (p.length === 3 && p[0].length === 4) return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+      }
+      return null;
+    }
+
+    function evaluarEstadoCuotaAtleta(email) {
+      const em = String(email || "").trim().toLowerCase();
+      const pagos = pagosGlobalMap[em] || [];
+      if (!pagos.length) {
+        return { codigo: "vencida", label: "Sin pagos registrados", labelCorto: "Sin cuota", badgeClass: "badge-danger", ultimo: null };
+      }
+
+      const ultimo = pagos[pagos.length - 1];
+      const est = String(ultimo.estado || "").toLowerCase();
+      const fechaVenc = parsearFechaDDMMYYYY(ultimo.vencimiento);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      if (est === "vencido") {
+        return { codigo: "vencida", label: `Vencida (${ultimo.periodo || "-"})`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+      }
+
+      if (fechaVenc) {
+        const diffDias = Math.ceil((fechaVenc - hoy) / (1000 * 60 * 60 * 24));
+        if (diffDias < 0) {
+          return { codigo: "vencida", label: `Venció el ${ultimo.vencimiento}`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+        }
+        if (diffDias <= 5) {
+          return { codigo: "por_vencer", label: `Vence en ${diffDias}d (${ultimo.vencimiento})`, labelCorto: `Vence ${diffDias}d`, badgeClass: "badge-warn", ultimo };
+        }
+      }
+
+      if (est === "pendiente") {
+        return { codigo: "vencida", label: `Pendiente (${ultimo.periodo || "-"})`, labelCorto: "Pendiente", badgeClass: "badge-warn", ultimo };
+      }
+
+      return { codigo: "activa", label: `Al día (${ultimo.periodo || "-"} • Vence ${ultimo.vencimiento || "-"})`, labelCorto: "Al día", badgeClass: "badge-ok", ultimo };
+    }
+
+    // ========================================================================
+    // LISTADO DE ALUMNOS CON FILTROS DE CUOTA Y BAJAS (Bloque 2)
+    // ========================================================================
+    function filtrarListadoAlumnos(filtro, btn) {
+      filtroAlumnosActual = filtro;
+      document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      renderizarListadoAlumnos();
+    }
+
+    function renderizarListadoAlumnos() {
+      const cont = document.getElementById("contenedorListadoAlumnos");
+      const q = (document.getElementById("buscadorAlumnosInput").value || "").trim().toLowerCase();
+
+      let cActivos = 0, cAlDia = 0, cPorVencer = 0, cVencida = 0, cBaja = 0;
+
+      const filtrados = listaAtletasGlobal.filter(a => {
+        const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
+        const cuota = evaluarEstadoCuotaAtleta(a.email);
+
+        if (esBaja) {
+          cBaja++;
+        } else {
+          cActivos++;
+          if (cuota.codigo === "activa") cAlDia++;
+          else if (cuota.codigo === "por_vencer") cPorVencer++;
+          else cVencida++;
+        }
+
+        if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q)) return false;
+
+        if (filtroAlumnosActual === "baja") return esBaja;
+        if (esBaja) return false; // En cualquier otro filtro mostramos solo activos
+        if (filtroAlumnosActual === "todos") return true;
+        return cuota.codigo === filtroAlumnosActual;
+      });
+
+      document.getElementById("pill-todos").textContent = `Activos (${cActivos})`;
+      document.getElementById("pill-activa").textContent = `✅ Cuota al Día (${cAlDia})`;
+      document.getElementById("pill-por_vencer").textContent = `⚠️ Por Vencer (${cPorVencer})`;
+      document.getElementById("pill-vencida").textContent = `❌ Vencida / Pend. (${cVencida})`;
+      document.getElementById("pill-baja").textContent = `🚫 De Baja (${cBaja})`;
+      document.getElementById("contadorTotalAlumnos").textContent = `Mostrando ${filtrados.length} de ${listaAtletasGlobal.length} registrados`;
+
+      if (!filtrados.length) {
+        cont.innerHTML = `<p style="color:var(--muted); text-align:center; padding:18px;">No hay atletas en esta categoría.</p>`;
+        return;
+      }
+
+      cont.innerHTML = filtrados.map(a => {
+        const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
+        const cuota = evaluarEstadoCuotaAtleta(a.email);
+        const edad = calcularEdadExacta(a.fechaNac);
+        const edadBadge = edad !== null ? `<span class="badge badge-muted">${edad} años</span>` : "";
+
+        return `
+          <div class="alumno-row" style="${esBaja ? 'opacity:0.65;' : ''}">
+            <div class="alumno-info">
+              <h4>
+                <span>${a.nombre}</span>
+                ${edadBadge}
+                <span class="badge ${esBaja ? 'badge-muted' : cuota.badgeClass}">${esBaja ? 'DE BAJA' : cuota.label}</span>
+              </h4>
+              <p>📧 ${a.email} | 📱 ${a.celular || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
+            </div>
+            <div class="alumno-actions">
+              <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${a.email}')">🩺 Ficha / Espejo</button>
+              <button class="btn btn-outline" onclick="seleccionarParaPago('${a.email}')" style="border-color:var(--accent); color:var(--accent);">💳 Cuota</button>
+              ${esBaja
+                ? `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${a.email}', 'Activo')" style="border-color:var(--accent); color:var(--accent);">♻️ Reactivar</button>`
+                : `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${a.email}', 'Baja')" style="border-color:var(--danger); color:var(--danger);">🚫 Dar Baja</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function seleccionarParaPago(email) {
+      const sel = document.getElementById("pagoSelectAtleta");
+      sel.value = email;
+      cargarDatosPagoAtleta();
+      document.getElementById("cardGestionPagos").scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function cambiarCondicionAtleta(email, nuevoEstado) {
+      const accionTxt = nuevoEstado === "Baja" ? "dar de BAJA (se ocultará al asignar rutinas)" : "REACTIVAR";
+      if (!confirm(`¿Confirmás ${accionTxt} a ${email}?`)) return;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "cambiarEstadoAtleta", pass: claveGuardada, email: email, estado: nuevoEstado })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          const idx = listaAtletasGlobal.findIndex(a => a.email.toLowerCase() === email.toLowerCase());
+          if (idx !== -1) listaAtletasGlobal[idx].estado = nuevoEstado;
+          poblarSelectoresAtletas();
+          renderizarListadoAlumnos();
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al cambiar estado del atleta.");
+      }
+    }
+
+    // ========================================================================
+    // FICHA MÉDICA, EDAD Y MODO ESPEJO (Bloque 3)
+    // ========================================================================
+    function irAEspejoDeAtleta(email) {
+      cambiarSeccionCoach('espejo', document.getElementById('tab-btn-espejo'));
+      document.getElementById("espejoSelectAtleta").value = email;
+      cargarFichaYEspejoAtleta();
+    }
+
+    async function cargarFichaYEspejoAtleta() {
+      const email = document.getElementById("espejoSelectAtleta").value;
+      const cont = document.getElementById("contenedorContenidoEspejo");
+      if (!email) {
+        cont.classList.add("hidden");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data.status !== "success") return alert(data.message || "Error al cargar espejo.");
+
+        paqueteEspejoActual = data;
+        const p = data.perfil || {};
+
+        document.getElementById("espejoTituloNombre").textContent = `🩺 ${p["Nombre"] || email}`;
+        document.getElementById("fichaNombre").value = p["Nombre"] || "";
+        document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || "");
+        document.getElementById("fichaPin").value = p["PIN"] || "";
+        document.getElementById("fichaCelular").value = p["Celular"] || "";
+        document.getElementById("fichaVam").value = p["VAM"] || "";
+        document.getElementById("fichaFcr").value = p["FC Reposo"] || "";
+        document.getElementById("fichaFcmax").value = p["FC Max"] || "";
+        document.getElementById("fichaEmergencia").value = p["Contacto Emergencia"] || "";
+        document.getElementById("fichaObraSocial").value = p["Obra Social"] || "";
+        document.getElementById("fichaSangre").value = `${p["Grupo Sanguíneo"] || ""} ${p["Donante"] ? '(' + p["Donante"] + ')' : ''}`.trim();
+        document.getElementById("fichaAlergias").value = p["Alergias / Observaciones"] || "";
+
+        document.getElementById("kpiVam").textContent = p["VAM"] || "-";
+        document.getElementById("kpiFC").textContent = `${p["FC Reposo"] || "-"} / ${p["FC Max"] || "-"}`;
+        document.getElementById("kpiPin").textContent = p["PIN"] || "-";
+
+        actualizarVistaEdadEnVivo();
+        renderizarGraficoVolumenEspejo();
+        renderizarTestsEspejo(data.tests || []);
+        renderizarFeedbackEspejo(data.feedback || []);
+
+        cont.classList.remove("hidden");
+      } catch (e) {
+        alert("Error de conexión al consultar Modo Espejo.");
+      }
+    }
+
+    function actualizarVistaEdadEnVivo() {
+      const fNac = document.getElementById("fichaFechaNac").value;
+      const edad = calcularEdadExacta(fNac);
+      const badge = document.getElementById("espejoBadgeEdad");
+      const kpiEdad = document.getElementById("kpiEdad");
+      const alertaBio = document.getElementById("alertaBiologicaEdad");
+
+      if (edad !== null) {
+        badge.textContent = `Edad: ${edad} años`;
+        kpiEdad.textContent = `${edad} años`;
+        if (edad >= 40 && edad <= 58) {
+          alertaBio.classList.remove("hidden");
+          alertaBio.innerHTML = `💡 <strong>Nota Fisiológica (${edad} años):</strong> Si es atleta mujer, considerar etapa de transición perimenopáusica / menopausia (priorizar fuerza estructural, control de carga articular y densidad mineral ósea).`;
+        } else {
+          alertaBio.classList.add("hidden");
+        }
+      } else {
+        badge.textContent = "Sin Fecha Nac.";
+        kpiEdad.textContent = "S/D";
+        alertaBio.classList.add("hidden");
+      }
+    }
+
+    async function guardarFichaDesdeProfe() {
+      const email = document.getElementById("espejoSelectAtleta").value;
+      if (!email) return;
+
+      const payload = {
+        action: "guardarPerfil",
+        email: email,
+        nombre: document.getElementById("fichaNombre").value.trim(),
+        fechaNac: formatFechaEnvio(document.getElementById("fichaFechaNac").value),
+        pin: document.getElementById("fichaPin").value.trim(),
+        celular: document.getElementById("fichaCelular").value.trim(),
+        vam: document.getElementById("fichaVam").value.trim(),
+        fcr: document.getElementById("fichaFcr").value.trim(),
+        fcmax: document.getElementById("fichaFcmax").value.trim(),
+        emergencia: document.getElementById("fichaEmergencia").value.trim(),
+        obraSocial: document.getElementById("fichaObraSocial").value.trim(),
+        sangre: document.getElementById("fichaSangre").value.trim(),
+        alergias: document.getElementById("fichaAlergias").value.trim()
+      };
+
+      try {
+        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert("✅ Ficha médica y datos del atleta actualizados correctamente.");
+          verificarProfe();
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al guardar la ficha.");
+      }
+    }
+
+    function obtenerLunesDeSemana(fechaObj) {
+      const d = new Date(fechaObj);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(d.setDate(diff));
+    }
+
+    function renderizarGraficoVolumenEspejo() {
+      if (!paqueteEspejoActual) return;
+      const rutinas = paqueteEspejoActual.rutinas || [];
+      const discFiltro = document.getElementById("espejoFiltroDisciplina").value;
+      const contBarras = document.getElementById("espejoBarrasVolumen");
+      const contResumen = document.getElementById("espejoResumenSemanaActual");
+
+      // Agrupar por sesión única (Fecha + Tipo)
+      const sesionesMap = new Map();
+      rutinas.forEach(r => {
+        const key = `${r["Fecha"]}__${r["Tipo de Sesión"]}`;
+        if (!sesionesMap.has(key)) sesionesMap.set(key, r);
+      });
+
+      const semanasMap = new Map();
+      sesionesMap.forEach(s => {
+        const fObj = parsearFechaDDMMYYYY(s["Fecha"]);
+        if (!fObj) return;
+
+        const tipo = String(s["Tipo de Sesión"] || "").toLowerCase();
+        const volStr = String(s["Volumen Sesión"] || "").toLowerCase();
+
+        if (discFiltro === "Running" && (tipo.includes("fuerza") || tipo.includes("gym") || volStr.includes("series"))) return;
+        if (discFiltro === "Fuerza" && (tipo.includes("running") || volStr.includes("km"))) return;
+
+        const match = volStr.match(/([\d.,]+)/);
+        const valor = match ? parseFloat(match[1].replace(",", ".")) : 0;
+
+        const lunes = obtenerLunesDeSemana(fObj);
+        const keySem = lunes.toISOString().split("T")[0];
+        const labelSem = `Semana del ${String(lunes.getDate()).padStart(2,'0')}/${String(lunes.getMonth()+1).padStart(2,'0')}`;
+
+        if (!semanasMap.has(keySem)) {
+          semanasMap.set(keySem, { key: keySem, label: labelSem, total: 0, sesiones: 0 });
+        }
+        const item = semanasMap.get(keySem);
+        item.total += valor;
+        item.sesiones += 1;
+      });
+
+      const semanasArr = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
+      if (!semanasArr.length) {
+        contResumen.innerHTML = `No hay sesiones registradas para el filtro <strong>${discFiltro}</strong>.`;
+        contBarras.innerHTML = "";
+        return;
+      }
+
+      const maxVol = Math.max(...semanasArr.map(s => s.total), 1);
+      const unidadRef = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
+      const ultimaSem = semanasArr[semanasArr.length - 1];
+
+      contResumen.innerHTML = `📌 <strong>Semana #${semanasArr.length} de Periodización Registrada (${ultimaSem.label}):</strong> Volumen acumulado de <strong>${ultimaSem.total.toFixed(1)} ${unidadRef}</strong> en ${ultimaSem.sesiones} sesión(es).`;
+
+      contBarras.innerHTML = semanasArr.map((s, idx) => {
+        const pct = Math.min(100, Math.round((s.total / maxVol) * 100));
+        return `
+          <div class="bar-row">
+            <div class="bar-label">
+              <span><strong>Sem ${idx + 1}:</strong> ${s.label} (${s.sesiones} ses.)</span>
+              <strong style="color:var(--accent);">${s.total.toFixed(1)} ${unidadRef}</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderizarTestsEspejo(tests) {
+      const cont = document.getElementById("espejoListaTests");
+      if (!tests.length) {
+        cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">El atleta aún no tiene evaluaciones cargadas.</p>`;
+        return;
+      }
+      cont.innerHTML = tests.slice().reverse().map(t => `
+        <div class="bloque-item-admin" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <span class="badge">${t["Fecha"] || "-"}</span>
+            <strong style="margin-left:6px;">${t["Ejercicio / Prueba"] || t["Tipo Test"] || "Test"}</strong>
+            <div style="font-size:0.78rem; color:var(--muted); margin-top:3px;">Notas: ${t["Notas"] || "-"}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:700; color:var(--accent);">Marca: ${t["Resultado / Marca"] || "-"}</div>
+            <div style="font-size:0.78rem; color:var(--primary);">Estimado: ${t["VAM / 1RM Estimado"] || "-"}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderizarFeedbackEspejo(feedbacks) {
+      const cont = document.getElementById("espejoListaFeedback");
+      if (!feedbacks.length) {
+        cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">Sin registros de RPE / Feedback todavía.</p>`;
+        return;
+      }
+      cont.innerHTML = feedbacks.slice(-10).reverse().map(f => `
+        <div class="bloque-item-admin">
+          <div style="display:flex; justify-content:space-between;">
+            <strong>${f["Fecha"] || "-"} • ${f["Tipo de Sesión"] || "Sesión"}</strong>
+            <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10 (${f["Duración (min)"] || "-"} min)</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
+        </div>
+      `).join("");
+    }
+
+    function abrirCargaTestProfe() {
+      document.getElementById("formNuevoTestProfe").classList.toggle("hidden");
+    }
+
+    async function guardarTestDesdeProfe() {
+      const email = document.getElementById("espejoSelectAtleta").value;
+      if (!email) return;
+      const payload = {
+        action: "guardarTest",
+        email: email,
+        tipoTest: document.getElementById("testProfeTipo").value.trim() || "Evaluación",
+        ejercicio: document.getElementById("testProfeEj").value.trim(),
+        resultado: document.getElementById("testProfeRes").value.trim(),
+        estimado: document.getElementById("testProfeEst").value.trim(),
+        notas: document.getElementById("testProfeNotas").value.trim()
+      };
+      if (!payload.ejercicio || !payload.resultado) return alert("Completa al menos la Prueba y el Resultado.");
+
+      try {
+        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const json = await res.json();
+        if (json.status === "success") {
+          document.getElementById("formNuevoTestProfe").classList.add("hidden");
+          cargarFichaYEspejoAtleta();
+        }
+      } catch (e) {
+        alert("Error al guardar evaluación.");
+      }
+    }
+
+    // ========================================================================
+    // NAVEGACIÓN, PLANTILLAS Y RUTINAS
+    // ========================================================================
     function salirProfe() {
       localStorage.removeItem("etrain_coach_pass");
       location.reload();
@@ -379,10 +1118,11 @@
 
     function cambiarSeccionCoach(sec, btn) {
       document.querySelectorAll(".coach-tab-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
+      if (btn) btn.classList.add("active");
       document.getElementById("coach-sec-asignar").classList.toggle("hidden", sec !== "asignar");
       document.getElementById("coach-sec-gestion").classList.toggle("hidden", sec !== "gestion");
       document.getElementById("coach-sec-alumnos").classList.toggle("hidden", sec !== "alumnos");
+      document.getElementById("coach-sec-espejo").classList.toggle("hidden", sec !== "espejo");
     }
 
     function cambiarModoAsignacion(modo) {
@@ -397,16 +1137,136 @@
       document.querySelectorAll(".check-atleta").forEach(chk => chk.checked = estado);
     }
 
+    function marcarAlDia() {
+      document.querySelectorAll(".check-atleta").forEach(chk => {
+        chk.checked = (chk.getAttribute("data-cuota") === "activa" || chk.getAttribute("data-cuota") === "por_vencer");
+      });
+    }
+
     function cargarPlantilla() {
-      const key = document.getElementById("selectPlantilla").value;
-      if (!key || !PLANTILLAS[key]) return;
-      const p = PLANTILLAS[key];
-      document.getElementById("inputTipoSesion").value = p.tipo;
-      document.getElementById("inputVolumen").value = p.volumen;
-      document.getElementById("inputIndicaciones").value = p.indicaciones;
+      const val = document.getElementById("selectPlantilla").value;
+      const btnBorrar = document.getElementById("btnBorrarPlantilla");
+      if (!val) {
+        btnBorrar.classList.add("hidden");
+        return;
+      }
+
+      let p = null;
+      if (val.startsWith("base__")) {
+        const key = val.replace("base__", "");
+        p = PLANTILLAS_BASE[key];
+        btnBorrar.classList.add("hidden");
+      } else if (val.startsWith("custom__")) {
+        const id = val.replace("custom__", "");
+        p = plantillasPersonalizadas.find(item => String(item.id) === String(id));
+        btnBorrar.classList.remove("hidden");
+      }
+
+      if (!p) return;
+
+      document.getElementById("inputDisciplina").value = p.disciplina || "Running";
+      document.getElementById("inputTipoSesion").value = p.tipo || "";
+      document.getElementById("inputVolumenValor").value = p.volumenValor || "";
+      document.getElementById("inputVolumenUnidad").value = p.volumenUnidad || "km";
+      document.getElementById("inputIndicaciones").value = p.indicaciones || "";
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
-      p.bloques.forEach(b => agregarBloque(b));
+      (p.bloques || []).forEach(b => agregarBloque({
+        orden: b.orden || b["Orden / Bloque"] || "",
+        ejercicio: b.ejercicio || b["Ejercicio"] || "",
+        series: b.series || b["Series y Repeticiones"] || "",
+        carga: b.carga || b["Carga / Intensidad"] || "",
+        micro: b.micro || b.micropausa || b["Micropausa"] || "",
+        macro: b.macro || b.macropausa || b["Macropausa"] || ""
+      }));
+    }
+
+    async function guardarPlantillaActual() {
+      const disc = document.getElementById("inputDisciplina").value;
+      const tipo = document.getElementById("inputTipoSesion").value.trim();
+      const volVal = document.getElementById("inputVolumenValor").value.trim();
+      const volUni = document.getElementById("inputVolumenUnidad").value;
+      const ind = document.getElementById("inputIndicaciones").value.trim();
+
+      if (!tipo) return alert("Escribe primero el Nombre / Tipo de Sesión para guardarla como plantilla.");
+
+      const bloquesNodes = document.querySelectorAll(".bloque-row");
+      if (bloquesNodes.length === 0) return alert("Agrega al menos un ejercicio.");
+
+      const nombrePlantilla = prompt("¿Con qué nombre querés guardar esta plantilla?", tipo);
+      if (!nombrePlantilla) return;
+
+      const bloques = [];
+      bloquesNodes.forEach(nodo => {
+        const id = nodo.id.replace("bloque-", "");
+        bloques.push({
+          orden: document.getElementById(`orden-${id}`).value.trim() || "-",
+          ejercicio: document.getElementById(`ejercicio-${id}`).value.trim() || "-",
+          series: document.getElementById(`series-${id}`).value.trim() || "-",
+          carga: document.getElementById(`carga-${id}`).value.trim() || "-",
+          micro: document.getElementById(`micro-${id}`).value.trim() || "-",
+          macro: document.getElementById(`macro-${id}`).value.trim() || "-"
+        });
+      });
+
+      const nuevaPl = {
+        id: "pl_" + new Date().getTime(),
+        nombre: nombrePlantilla.trim(),
+        disciplina: disc,
+        tipo: tipo,
+        volumenValor: volVal,
+        volumenUnidad: volUni,
+        indicaciones: ind,
+        bloques: bloques
+      };
+
+      plantillasPersonalizadas.push(nuevaPl);
+      localStorage.setItem("etrain_custom_templates", JSON.stringify(plantillasPersonalizadas));
+      renderizarSelectorPlantillas();
+      document.getElementById("selectPlantilla").value = "custom__" + nuevaPl.id;
+      document.getElementById("btnBorrarPlantilla").classList.remove("hidden");
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "guardarPlantilla",
+            pass: claveGuardada,
+            id: nuevaPl.id,
+            nombre: nuevaPl.nombre,
+            disciplina: nuevaPl.disciplina,
+            tipoSesion: nuevaPl.tipo,
+            volumenValor: nuevaPl.volumenValor,
+            volumenUnidad: nuevaPl.volumenUnidad,
+            indicaciones: nuevaPl.indicaciones,
+            bloques: nuevaPl.bloques
+          })
+        });
+        alert(`✅ Plantilla "${nuevaPl.nombre}" guardada en tu base de datos.`);
+      } catch (e) {
+        alert(`✅ Plantilla guardada localmente.`);
+      }
+    }
+
+    async function eliminarPlantillaSeleccionada() {
+      const val = document.getElementById("selectPlantilla").value;
+      if (!val.startsWith("custom__")) return;
+      const id = val.replace("custom__", "");
+      const pl = plantillasPersonalizadas.find(p => String(p.id) === String(id));
+      if (!pl || !confirm(`¿Eliminar la plantilla "${pl.nombre}"?`)) return;
+
+      plantillasPersonalizadas = plantillasPersonalizadas.filter(p => String(p.id) !== String(id));
+      localStorage.setItem("etrain_custom_templates", JSON.stringify(plantillasPersonalizadas));
+      renderizarSelectorPlantillas();
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "borrarPlantilla", pass: claveGuardada, id: id })
+        });
+      } catch (e) {}
     }
 
     async function cargarRutinasParaGestionar() {
@@ -450,48 +1310,96 @@
         const sesionesArray = Array.from(mapaSesiones.values());
         cacheRutinasAtletaGestion = sesionesArray;
 
-        container.innerHTML = sesionesArray.map((s, index) => `
-          <div class="rutina-card-admin">
-            <div>
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
-                <span class="badge">${s.fechaRaw}</span>
-                <strong style="font-size: 1rem; color: var(--text);">${s.tipo}</strong>
+        container.innerHTML = sesionesArray.map((s, index) => {
+          const bloquesHtml = s.bloques.map(b => `
+            <div class="bloque-item-admin">
+              <strong>${b["Orden / Bloque"] || "-"}: ${b["Ejercicio"] || "-"}</strong><br>
+              <span style="color: var(--muted); font-size: 0.78rem;">
+                Series/Reps: <strong>${b["Series y Repeticiones"] || "-"}</strong> | 
+                Carga: <strong>${b["Carga / Intensidad"] || "-"}</strong> | 
+                Micro: ${b["Micropausa"] || "-"} | Macro: ${b["Macropausa"] || "-"}
+              </span>
+            </div>
+          `).join("");
+
+          const indicacionHtml = s.indicaciones ? `<div class="coach-notes"><strong>📢 Indicaciones:</strong> ${s.indicaciones}</div>` : "";
+
+          return `
+            <div class="rutina-card-admin">
+              <div class="rutina-admin-header" onclick="toggleAdminRutina(${index})">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
+                    <span class="badge">${s.fechaRaw}</span>
+                    <strong style="font-size: 1rem; color: var(--text);">${s.tipo}</strong>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
+                </div>
+                <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
+                  <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
+                  <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion('${s.fechaRaw}', '${s.tipo}')" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
+                </div>
               </div>
-              <div style="font-size: 0.8rem; color: var(--muted);">Volumen: ${s.volumen} | Ejercicios: ${s.bloques.length}</div>
+
+              <div id="admin-rutina-body-${index}" class="rutina-admin-body hidden">
+                ${indicacionHtml}
+                ${bloquesHtml}
+              </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none;">✏️ Editar</button>
-              <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion('${s.fechaRaw}', '${s.tipo}')" style="border-color:var(--danger); color:var(--danger);">🗑️ Borrar</button>
-            </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
 
       } catch (e) {
         container.innerHTML = `<p style="color: var(--danger); text-align: center; padding: 20px;">Error al conectar con la base de datos.</p>`;
       }
     }
 
+    function toggleAdminRutina(index) {
+      const body = document.getElementById(`admin-rutina-body-${index}`);
+      if (body) body.classList.toggle("hidden");
+    }
+
     function formatFechaInput(fechaStr) {
       if (!fechaStr) return "";
-      if (fechaStr.includes("/")) {
-        const p = fechaStr.split(" ")[0].split("/");
+      const limpia = String(fechaStr).trim().split(" ")[0].split("T")[0];
+      if (limpia.includes("/")) {
+        const p = limpia.split("/");
         if (p.length === 3) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
       }
-      return fechaStr.split("T")[0];
+      return limpia;
     }
 
     function editarRutinaDesdeGestion(index) {
       const s = cacheRutinasAtletaGestion[index];
       if (!s) return;
 
-      cambiarSeccionCoach('asignar', document.querySelector('.coach-tab-btn'));
-
+      cambiarSeccionCoach('asignar', document.getElementById('tab-btn-asignar'));
       document.getElementById("selectAtleta").value = document.getElementById("gestionSelectAtleta").value;
       document.getElementById("inputFecha").value = formatFechaInput(s.fechaRaw);
-      document.getElementById("inputTipoSesion").value = s.tipo;
-      document.getElementById("inputVolumen").value = s.volumen !== "-" ? s.volumen : "";
-      document.getElementById("inputIndicaciones").value = s.indicaciones;
 
+      let disc = "Running";
+      let nombreLimpio = s.tipo;
+      if (s.tipo.toLowerCase().startsWith("fuerza")) {
+        disc = "Fuerza";
+        nombreLimpio = s.tipo.replace(/^fuerza\s*-\s*/i, "");
+      } else if (s.tipo.toLowerCase().startsWith("running")) {
+        disc = "Running";
+        nombreLimpio = s.tipo.replace(/^running\s*-\s*/i, "");
+      } else if (s.tipo.toLowerCase().startsWith("mixto") || s.tipo.toLowerCase().startsWith("funcional")) {
+        disc = "Mixto";
+        nombreLimpio = s.tipo.replace(/^(mixto|funcional)\s*-\s*/i, "");
+      }
+      document.getElementById("inputDisciplina").value = disc;
+      document.getElementById("inputTipoSesion").value = nombreLimpio;
+
+      const matchVol = String(s.volumen || "").match(/([\d.,]+)\s*(km|min|series|kg)?/i);
+      if (matchVol) {
+        document.getElementById("inputVolumenValor").value = matchVol[1].replace(",", ".");
+        if (matchVol[2]) document.getElementById("inputVolumenUnidad").value = matchVol[2].toLowerCase();
+      } else {
+        document.getElementById("inputVolumenValor").value = "";
+      }
+
+      document.getElementById("inputIndicaciones").value = s.indicaciones;
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
 
@@ -511,16 +1419,13 @@
 
     async function borrarRutinaDesdeGestion(fecha, tipo) {
       const email = document.getElementById("gestionSelectAtleta").value;
-      if (!email) return;
-
-      if (!confirm(`¿Estás seguro de eliminar la rutina "${tipo}" del día ${fecha}?`)) return;
+      if (!email || !confirm(`¿Eliminar la rutina "${tipo}" del día ${fecha}?`)) return;
 
       try {
         const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: fecha, tipo: tipo };
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
-          alert("Rutina eliminada correctamente.");
           cargarRutinasParaGestionar();
         } else {
           alert("Error al borrar la rutina.");
@@ -578,12 +1483,17 @@
       }
 
       const fechaRaw = document.getElementById("inputFecha").value;
-      const tipo = document.getElementById("inputTipoSesion").value.trim();
-      const vol = document.getElementById("inputVolumen").value.trim();
+      const disc = document.getElementById("inputDisciplina").value;
+      const tipoRaw = document.getElementById("inputTipoSesion").value.trim();
+      const volVal = document.getElementById("inputVolumenValor").value.trim();
+      const volUni = document.getElementById("inputVolumenUnidad").value;
       const ind = document.getElementById("inputIndicaciones").value.trim();
 
       if (destinatarios.length === 0) return alert("Selecciona al menos un atleta.");
-      if (!fechaRaw || !tipo) return alert("Completa la fecha y el tipo de sesión.");
+      if (!fechaRaw || !tipoRaw) return alert("Completa la fecha y el nombre de la sesión.");
+
+      const tipoFinal = tipoRaw.toLowerCase().startsWith(disc.toLowerCase()) ? tipoRaw : `${disc} - ${tipoRaw}`;
+      const volFinal = volVal ? `${volVal} ${volUni}` : "-";
 
       const bloquesNodes = document.querySelectorAll(".bloque-row");
       if (bloquesNodes.length === 0) return alert("Agrega al menos un ejercicio.");
@@ -620,13 +1530,13 @@
             pass: claveGuardada,
             email: destinatarios[i],
             fecha: fechaFmt,
-            tipoSesion: tipo,
-            volumen: vol,
+            tipoSesion: tipoFinal,
+            volumen: volFinal,
             indicaciones: ind,
             bloques: bloques,
             reemplazar: true,
             fechaOriginal: fechaFmt,
-            tipoOriginal: tipo
+            tipoOriginal: tipoFinal
           };
 
           const res = await fetch(API_URL, {
@@ -656,18 +1566,20 @@
       const nombre = document.getElementById("nuevoNombre").value.trim();
       const email = document.getElementById("nuevoEmail").value.trim();
       const pin = document.getElementById("nuevoPin").value.trim();
+      const fechaNac = formatFechaEnvio(document.getElementById("nuevoFechaNac").value);
       const cel = document.getElementById("nuevoCelular").value.trim();
       if (!nombre || !email || !pin) return alert("Completa al menos Nombre, Email y PIN.");
 
       try {
-        const payload = { action: "crearAtleta", pass: claveGuardada, nombre: nombre, email: email, pin: pin, celular: cel, fechaNac: "", fotoUrl: "", vam: "", fcr: 52, fcmax: 188, emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" };
+        const payload = { action: "crearAtleta", pass: claveGuardada, nombre: nombre, email: email, pin: pin, celular: cel, fechaNac: fechaNac, fotoUrl: "", vam: "", fcr: 52, fcmax: 188, emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" };
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
-          alert(`¡Atleta ${nombre} registrado con éxito!`);
+          alert(`¡Atleta ${nombre} registrado con éxito! PIN inicial: ${pin}`);
           document.getElementById("nuevoNombre").value = "";
           document.getElementById("nuevoEmail").value = "";
-          document.getElementById("nuevoPin").value = "";
+          document.getElementById("nuevoPin").value = "1234";
+          document.getElementById("nuevoFechaNac").value = "";
           document.getElementById("nuevoCelular").value = "";
           verificarProfe();
         } else {
@@ -679,14 +1591,15 @@
     }
 
     function cargarDatosPagoAtleta() {
-      const email = document.getElementById("pagoSelectAtleta").value;
-      if (!email || !window.pagosGlobalMap || !window.pagosGlobalMap[email]) return;
-      const pgs = window.pagosGlobalMap[email];
+      const email = document.getElementById("pagoSelectAtleta").value.toLowerCase();
+      if (!email || !pagosGlobalMap || !pagosGlobalMap[email]) return;
+      const pgs = pagosGlobalMap[email];
       if (pgs.length > 0) {
         const ultimo = pgs[pgs.length - 1];
         document.getElementById("pagoPeriodo").value = ultimo.periodo || "";
-        document.getElementById("pagoMonto").value = ultimo.monto || "$15.000";
+        document.getElementById("pagoMonto").value = ultimo.monto || "$20.000";
         document.getElementById("pagoEstado").value = ultimo.estado || "Pendiente";
+        if (ultimo.vencimiento) document.getElementById("pagoVenc").value = formatFechaInput(ultimo.vencimiento);
       }
     }
 
@@ -703,7 +1616,8 @@
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
-          alert("¡Estado de cuota guardado con éxito!");
+          alert("✅ ¡Estado de cuota guardado con éxito!");
+          verificarProfe();
         } else {
           alert("Error al guardar pago.");
         }
