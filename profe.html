@@ -78,7 +78,6 @@
     .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
     .mode-switch button.active { background: var(--primary); color: #fff; }
 
-    /* Filtros de Alumnos y Estado de Cuota */
     .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
     .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -87,9 +86,8 @@
     .alumno-info p { font-size: 0.78rem; color: var(--muted); }
     .alumno-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-    /* Modo Espejo y Barras de Volumen */
     .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-    .kpi-box .kpi-val { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-top: 4px; }
+    .kpi-box .kpi-val { font-size: 1.25rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
     .kpi-box .kpi-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; }
     .bar-row { margin-bottom: 8px; }
     .bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px; }
@@ -139,9 +137,7 @@
         <button id="tab-btn-espejo" class="coach-tab-btn" onclick="cambiarSeccionCoach('espejo', this)">🩺 Fichas & Espejo</button>
       </div>
 
-      <!-- ================================================================== -->
-      <!-- SECCIÓN 1: ASIGNAR RUTINA                                          -->
-      <!-- ================================================================== -->
+      <!-- SECCIÓN 1: ASIGNAR RUTINA -->
       <section id="coach-sec-asignar">
         <div class="card">
           <h2>Configuración de la Sesión</h2>
@@ -168,7 +164,7 @@
               <div id="contenedorGrupal" class="hidden">
                 <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
                   <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
-                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--accent); text-decoration:none;" onclick="marcarAlDia(); return false;">💳 Solo cuotas al día</a>
+                  <a href="#" onclick="marcarAlDia(); return false;" style="color:var(--accent); text-decoration:none;">💳 Solo cuotas al día</a>
                   <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Ninguno</a>
                 </div>
                 <div class="multi-atleta-box" id="listaCheckAtletas"></div>
@@ -226,9 +222,7 @@
         <div id="mensajeResultado" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
       </section>
 
-      <!-- ================================================================== -->
-      <!-- SECCIÓN 2: RUTINAS ASIGNADAS (CON DESPLEGABLE)                     -->
-      <!-- ================================================================== -->
+      <!-- SECCIÓN 2: RUTINAS ASIGNADAS -->
       <section id="coach-sec-gestion" class="hidden">
         <div class="card">
           <h2>🔍 Consultar Rutinas de un Atleta</h2>
@@ -251,11 +245,8 @@
         </div>
       </section>
 
-      <!-- ================================================================== -->
-      <!-- SECCIÓN 3: ALUMNOS, FILTROS DE CUOTA Y BAJAS                       -->
-      <!-- ================================================================== -->
+      <!-- SECCIÓN 3: ALUMNOS, FILTROS DE CUOTA Y BAJAS -->
       <section id="coach-sec-alumnos" class="hidden">
-        <!-- LISTADO CON FILTROS DE CUOTA Y BAJAS -->
         <div class="card">
           <h2>
             <span>📊 Estado de Alumnos y Cuotas</span>
@@ -285,11 +276,11 @@
             </div>
             <div>
               <label>Periodo / Mes</label>
-              <input type="text" id="pagoPeriodo" placeholder="Ej: Noviembre 2026">
+              <input type="text" id="pagoPeriodo" placeholder="Ej: noviembre 2026">
             </div>
           </div>
           <div class="grid-3">
-            <div><label>Monto</label><input type="text" id="pagoMonto" value="$20.000"></div>
+            <div><label>Monto</label><input type="text" id="pagoMonto" value="$15.000"></div>
             <div>
               <label>Estado</label>
               <select id="pagoEstado">
@@ -300,7 +291,7 @@
             </div>
             <div><label>Fecha de Vencimiento</label><input type="date" id="pagoVenc"></div>
           </div>
-          <button class="btn" onclick="guardarPagoAtleta()">💾 Guardar Estado de Cuota</button>
+          <button class="btn" id="btnGuardarPagoProfe" onclick="guardarPagoAtleta()">💾 Guardar Estado de Cuota</button>
         </div>
 
         <!-- ALTA DE NUEVO ATLETA -->
@@ -319,9 +310,7 @@
         </div>
       </section>
 
-      <!-- ================================================================== -->
-      <!-- SECCIÓN 4: FICHAS DE ALUMNOS, EDAD Y MODO ESPEJO                   -->
-      <!-- ================================================================== -->
+      <!-- SECCIÓN 4: FICHAS DE ALUMNOS, EDAD Y MODO ESPEJO -->
       <section id="coach-sec-espejo" class="hidden">
         <div class="card">
           <h2>🩺 Seleccionar Atleta para Supervisión (Ficha & Modo Espejo)</h2>
@@ -337,7 +326,6 @@
         </div>
 
         <div id="contenedorContenidoEspejo" class="hidden">
-          <!-- TARJETA 1: RESUMEN FISIOLÓGICO Y EDAD EN TIEMPO REAL -->
           <div class="card">
             <h2>
               <span id="espejoTituloNombre">Ficha del Atleta</span>
@@ -365,7 +353,6 @@
               </div>
             </div>
 
-            <!-- FORMULARIO EDITABLE DE FICHA MÉDICA Y PERSONAL DESDE EL PANEL PROFE -->
             <div style="border-top: 1px solid var(--border); padding-top: 14px;">
               <h3 style="font-size:0.95rem; color:var(--accent); margin-bottom:10px;">📋 Datos Personales, Médicos y PIN (Editables por el Profe)</h3>
               <div class="grid-3">
@@ -375,7 +362,7 @@
               </div>
               <div class="grid-3">
                 <div><label>Celular</label><input type="text" id="fichaCelular"></div>
-                <div><label>VAM (km/h o ritmo)</label><input type="text" id="fichaVam"></div>
+                <div><label>VAM (km/h)</label><input type="number" step="0.1" id="fichaVam" placeholder="Ej: 14.4"></div>
                 <div><label>Grupo Sanguíneo / Donante</label><input type="text" id="fichaSangre"></div>
               </div>
               <div class="grid-2">
@@ -394,7 +381,6 @@
             </div>
           </div>
 
-          <!-- TARJETA 2: MODO ESPEJO - PERIODIZACIÓN Y VOLUMEN SEMANAL -->
           <div class="card">
             <h2>
               <span>📈 Modo Espejo: Periodización y Volumen por Semana</span>
@@ -408,7 +394,6 @@
             <div id="espejoBarrasVolumen"></div>
           </div>
 
-          <!-- TARJETA 3: MODO ESPEJO - TESTS Y EVALUACIONES -->
           <div class="card">
             <h2>
               <span>⏱️ Historial de Tests y Evaluaciones del Atleta</span>
@@ -417,13 +402,13 @@
 
             <div id="formNuevoTestProfe" class="hidden" style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
               <div class="grid-3">
-                <div><label>Categoría / Tipo</label><input type="text" id="testProfeTipo" placeholder="Ej: Running / Fuerza"></div>
-                <div><label>Prueba / Ejercicio</label><input type="text" id="testProfeEj" placeholder="Ej: Test 2000m / Sentadilla"></div>
-                <div><label>Resultado / Marca</label><input type="text" id="testProfeRes" placeholder="Ej: 8:20 / 90kg x 5"></div>
+                <div><label>Categoría / Tipo</label><input type="text" id="testProfeTipo" placeholder="Ej: Resistencia / Fuerza"></div>
+                <div><label>Prueba / Ejercicio</label><input type="text" id="testProfeEj" placeholder="Ej: Test de 5 Min (VAM) / Sentadilla"></div>
+                <div><label>Resultado / Marca</label><input type="text" id="testProfeRes" placeholder="Ej: 1200 / 80"></div>
               </div>
               <div class="grid-2">
-                <div><label>VAM o 1RM Estimado</label><input type="text" id="testProfeEst" placeholder="Ej: 14.4 km/h / 101 kg"></div>
-                <div><label>Notas</label><input type="text" id="testProfeNotas" placeholder="Sensaciones o terreno..."></div>
+                <div><label>VAM o 1RM Estimado</label><input type="text" id="testProfeEst" placeholder="Ej: 14.4 / 90"></div>
+                <div><label>Notas</label><input type="text" id="testProfeNotas" placeholder="Sensaciones o repeticiones..."></div>
               </div>
               <button class="btn btn-success" onclick="guardarTestDesdeProfe()">Guardar Evaluación</button>
             </div>
@@ -431,7 +416,6 @@
             <div id="espejoListaTests"></div>
           </div>
 
-          <!-- TARJETA 4: MODO ESPEJO - FEEDBACK Y RPE RECIENTE -->
           <div class="card">
             <h2>💬 Últimos Feedbacks y RPE Registrados por el Atleta</h2>
             <div id="espejoListaFeedback"></div>
@@ -455,6 +439,8 @@
     let cacheRutinasAtletaGestion = [];
     let plantillasPersonalizadas = [];
     let paqueteEspejoActual = null;
+
+    const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
     const PLANTILLAS_BASE = {
       run_vam: {
@@ -517,6 +503,69 @@
         ]
       }
     };
+
+    // ========================================================================
+    // FUNCIONES SANITIZADORAS DE FECHAS, PERIODOS Y VAM (Anti GMT-0300)
+    // ========================================================================
+    function limpiarFechaVisual(val) {
+      if (!val || val === "-") return "";
+      const str = String(val).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const p = str.split("T")[0].split("-");
+        return `${p[2]}/${p[1]}/${p[0]}`;
+      }
+      const m = str.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+      if (m) {
+        const dia = m[1].padStart(2, "0");
+        const mes = m[2].padStart(2, "0");
+        const anio = m[3].length === 2 ? "20" + m[3] : m[3];
+        return `${dia}/${mes}/${anio}`;
+      }
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      }
+      return str;
+    }
+
+    function limpiarPeriodoVisual(val) {
+      if (!val) return "";
+      const str = String(val).trim();
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return `${MESES_NOMBRES[d.getMonth()]} ${d.getFullYear()}`;
+      }
+      const m = str.match(/^0?1\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const idx = parseInt(m[1], 10) - 1;
+        if (idx >= 0 && idx < 12) return `${MESES_NOMBRES[idx]} ${m[2]}`;
+      }
+      return str;
+    }
+
+    function limpiarVamVisual(val, testsArr = []) {
+      if (val) {
+        const str = String(val).trim();
+        if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+          const d = new Date(str);
+          if (!isNaN(d.getTime())) return `${d.getDate()}.${d.getMonth() + 1}`;
+        }
+        const mF = str.match(/^(\d{1,2})\/0?(\d{1,2})\/\d{4}$/);
+        if (mF) return `${parseInt(mF[1], 10)}.${parseInt(mF[2], 10)}`;
+        const n = parseFloat(str.replace(",", "."));
+        if (!isNaN(n) && n > 0 && n < 35) return String(n);
+      }
+      // Si no había VAM válida en el perfil, buscar en los tests del atleta
+      for (let i = testsArr.length - 1; i >= 0; i--) {
+        const t = testsArr[i];
+        const nom = String(t["Ejercicio / Prueba"] || t["Tipo Test"] || "").toLowerCase();
+        if (nom.includes("5 min") || nom.includes("vam")) {
+          const est = parseFloat(String(t["VAM / 1RM Estimado"] || "").replace(",", "."));
+          if (!isNaN(est) && est > 5 && est < 35) return String(est);
+        }
+      }
+      return "";
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
@@ -627,6 +676,9 @@
       const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
       const espejoSelectAtleta = document.getElementById("espejoSelectAtleta");
       const checkContainer = document.getElementById("listaCheckAtletas");
+
+      const prevPagoSel = pagoSelectAtleta.value;
+      const prevEspejoSel = espejoSelectAtleta.value;
       
       selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
       gestionSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
@@ -635,15 +687,15 @@
       checkContainer.innerHTML = '';
 
       listaAtletasGlobal.forEach(a => {
+        const emailNorm = String(a.email || "").trim().toLowerCase();
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
-        const infoCuota = evaluarEstadoCuotaAtleta(a.email);
+        const infoCuota = evaluarEstadoCuotaAtleta(emailNorm);
         const edad = calcularEdadExacta(a.fechaNac);
         const edadTxt = edad !== null ? ` • ${edad} años` : "";
 
-        // En asignación de rutinas solo mostramos atletas Activos
         if (!esBaja) {
           const opt1 = document.createElement("option");
-          opt1.value = a.email;
+          opt1.value = emailNorm;
           opt1.textContent = `${a.nombre}${edadTxt} [${infoCuota.labelCorto}]`;
           selectAtleta.appendChild(opt1);
 
@@ -651,7 +703,7 @@
           label.className = "atleta-check-item";
           label.innerHTML = `
             <div style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" class="check-atleta" data-cuota="${infoCuota.codigo}" value="${a.email}">
+              <input type="checkbox" class="check-atleta" data-cuota="${infoCuota.codigo}" value="${emailNorm}">
               <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">${edadTxt}</small></span>
             </div>
             <span class="badge ${infoCuota.badgeClass}">${infoCuota.labelCorto}</span>
@@ -659,37 +711,27 @@
           checkContainer.appendChild(label);
         }
 
-        // En Gestión, Pagos y Espejo mostramos todos (indicando si está de baja)
         const sufijoBaja = esBaja ? " [DE BAJA]" : "";
         [gestionSelectAtleta, pagoSelectAtleta, espejoSelectAtleta].forEach(sel => {
           const opt = document.createElement("option");
-          opt.value = a.email;
+          opt.value = emailNorm;
           opt.textContent = `${a.nombre}${edadTxt}${sufijoBaja}`;
           sel.appendChild(opt);
         });
       });
+
+      if (prevPagoSel) pagoSelectAtleta.value = prevPagoSel;
+      if (prevEspejoSel) espejoSelectAtleta.value = prevEspejoSel;
     }
 
-    // ========================================================================
-    // CÁLCULO DE EDAD Y EVALUACIÓN DE CUOTA (Activa / Por Vencer / Vencida)
-    // ========================================================================
     function calcularEdadExacta(fechaStr) {
       if (!fechaStr) return null;
-      let anio, mes, dia;
-      const limpia = String(fechaStr).trim().split("T")[0].split(" ")[0];
-      if (limpia.includes("/")) {
-        const p = limpia.split("/");
-        if (p.length !== 3) return null;
-        dia = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; anio = parseInt(p[2], 10);
-      } else if (limpia.includes("-")) {
-        const p = limpia.split("-");
-        if (p.length !== 3) return null;
-        if (p[0].length === 4) {
-          anio = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; dia = parseInt(p[2], 10);
-        } else {
-          dia = parseInt(p[0], 10); mes = parseInt(p[1], 10) - 1; anio = parseInt(p[2], 10);
-        }
-      } else return null;
+      const limpia = limpiarFechaVisual(fechaStr);
+      const p = limpia.split("/");
+      if (p.length !== 3) return null;
+      const dia = parseInt(p[0], 10);
+      const mes = parseInt(p[1], 10) - 1;
+      const anio = parseInt(p[2], 10);
 
       if (isNaN(anio) || anio < 1920) return null;
       const hoy = new Date();
@@ -701,14 +743,11 @@
 
     function parsearFechaDDMMYYYY(str) {
       if (!str) return null;
-      const limpia = String(str).trim().split("T")[0].split(" ")[0];
-      if (limpia.includes("/")) {
-        const p = limpia.split("/");
-        if (p.length === 3) return new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
-      }
-      if (limpia.includes("-")) {
-        const p = limpia.split("-");
-        if (p.length === 3 && p[0].length === 4) return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+      const limpia = limpiarFechaVisual(str);
+      const p = limpia.split("/");
+      if (p.length === 3) {
+        const d = new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
+        if (!isNaN(d.getTime())) return d;
       }
       return null;
     }
@@ -722,34 +761,33 @@
 
       const ultimo = pagos[pagos.length - 1];
       const est = String(ultimo.estado || "").toLowerCase();
-      const fechaVenc = parsearFechaDDMMYYYY(ultimo.vencimiento);
+      const perLimpio = limpiarPeriodoVisual(ultimo.periodo);
+      const vencLimpio = limpiarFechaVisual(ultimo.vencimiento);
+      const fechaVenc = parsearFechaDDMMYYYY(vencLimpio);
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
 
-      if (est === "vencido") {
-        return { codigo: "vencida", label: `Vencida (${ultimo.periodo || "-"})`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+      if (est.includes("vencid")) {
+        return { codigo: "vencida", label: `Vencida (${perLimpio || "-"})`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+      }
+
+      if (est.includes("pendient")) {
+        return { codigo: "vencida", label: `Pendiente (${perLimpio || "-"})`, labelCorto: "Pendiente", badgeClass: "badge-warn", ultimo };
       }
 
       if (fechaVenc) {
         const diffDias = Math.ceil((fechaVenc - hoy) / (1000 * 60 * 60 * 24));
         if (diffDias < 0) {
-          return { codigo: "vencida", label: `Venció el ${ultimo.vencimiento}`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+          return { codigo: "vencida", label: `Venció el ${vencLimpio}`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
         }
         if (diffDias <= 5) {
-          return { codigo: "por_vencer", label: `Vence en ${diffDias}d (${ultimo.vencimiento})`, labelCorto: `Vence ${diffDias}d`, badgeClass: "badge-warn", ultimo };
+          return { codigo: "por_vencer", label: `Vence en ${diffDias}d (${vencLimpio})`, labelCorto: `Vence ${diffDias}d`, badgeClass: "badge-warn", ultimo };
         }
       }
 
-      if (est === "pendiente") {
-        return { codigo: "vencida", label: `Pendiente (${ultimo.periodo || "-"})`, labelCorto: "Pendiente", badgeClass: "badge-warn", ultimo };
-      }
-
-      return { codigo: "activa", label: `Al día (${ultimo.periodo || "-"} • Vence ${ultimo.vencimiento || "-"})`, labelCorto: "Al día", badgeClass: "badge-ok", ultimo };
+      return { codigo: "activa", label: `Al día (${perLimpio || "-"}${vencLimpio ? ' • Vence ' + vencLimpio : ''})`, labelCorto: "Al día", badgeClass: "badge-ok", ultimo };
     }
 
-    // ========================================================================
-    // LISTADO DE ALUMNOS CON FILTROS DE CUOTA Y BAJAS (Bloque 2)
-    // ========================================================================
     function filtrarListadoAlumnos(filtro, btn) {
       filtroAlumnosActual = filtro;
       document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
@@ -779,7 +817,7 @@
         if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q)) return false;
 
         if (filtroAlumnosActual === "baja") return esBaja;
-        if (esBaja) return false; // En cualquier otro filtro mostramos solo activos
+        if (esBaja) return false;
         if (filtroAlumnosActual === "todos") return true;
         return cuota.codigo === filtroAlumnosActual;
       });
@@ -797,8 +835,9 @@
       }
 
       cont.innerHTML = filtrados.map(a => {
+        const emailNorm = String(a.email || "").trim().toLowerCase();
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
-        const cuota = evaluarEstadoCuotaAtleta(a.email);
+        const cuota = evaluarEstadoCuotaAtleta(emailNorm);
         const edad = calcularEdadExacta(a.fechaNac);
         const edadBadge = edad !== null ? `<span class="badge badge-muted">${edad} años</span>` : "";
 
@@ -813,11 +852,11 @@
               <p>📧 ${a.email} | 📱 ${a.celular || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
             </div>
             <div class="alumno-actions">
-              <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${a.email}')">🩺 Ficha / Espejo</button>
-              <button class="btn btn-outline" onclick="seleccionarParaPago('${a.email}')" style="border-color:var(--accent); color:var(--accent);">💳 Cuota</button>
+              <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${emailNorm}')">🩺 Ficha / Espejo</button>
+              <button class="btn btn-outline" onclick="seleccionarParaPago('${emailNorm}')" style="border-color:var(--accent); color:var(--accent);">💳 Cuota</button>
               ${esBaja
-                ? `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${a.email}', 'Activo')" style="border-color:var(--accent); color:var(--accent);">♻️ Reactivar</button>`
-                : `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${a.email}', 'Baja')" style="border-color:var(--danger); color:var(--danger);">🚫 Dar Baja</button>`
+                ? `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${emailNorm}', 'Activo')" style="border-color:var(--accent); color:var(--accent);">♻️ Reactivar</button>`
+                : `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${emailNorm}', 'Baja')" style="border-color:var(--danger); color:var(--danger);">🚫 Dar Baja</button>`
               }
             </div>
           </div>
@@ -827,7 +866,7 @@
 
     function seleccionarParaPago(email) {
       const sel = document.getElementById("pagoSelectAtleta");
-      sel.value = email;
+      sel.value = String(email || "").trim().toLowerCase();
       cargarDatosPagoAtleta();
       document.getElementById("cardGestionPagos").scrollIntoView({ behavior: "smooth" });
     }
@@ -857,11 +896,11 @@
     }
 
     // ========================================================================
-    // FICHA MÉDICA, EDAD Y MODO ESPEJO (Bloque 3)
+    // FICHA MÉDICA, EDAD Y MODO ESPEJO
     // ========================================================================
     function irAEspejoDeAtleta(email) {
       cambiarSeccionCoach('espejo', document.getElementById('tab-btn-espejo'));
-      document.getElementById("espejoSelectAtleta").value = email;
+      document.getElementById("espejoSelectAtleta").value = String(email || "").trim().toLowerCase();
       cargarFichaYEspejoAtleta();
     }
 
@@ -874,19 +913,21 @@
       }
 
       try {
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}`);
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         if (data.status !== "success") return alert(data.message || "Error al cargar espejo.");
 
         paqueteEspejoActual = data;
         const p = data.perfil || {};
+        const testsArr = data.tests || [];
+        const vamLimpia = limpiarVamVisual(p["VAM"] || p["VAM (km/h)"], testsArr);
 
         document.getElementById("espejoTituloNombre").textContent = `🩺 ${p["Nombre"] || email}`;
         document.getElementById("fichaNombre").value = p["Nombre"] || "";
-        document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || "");
+        document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || p["Fecha de Nacimiento"] || "");
         document.getElementById("fichaPin").value = p["PIN"] || "";
         document.getElementById("fichaCelular").value = p["Celular"] || "";
-        document.getElementById("fichaVam").value = p["VAM"] || "";
+        document.getElementById("fichaVam").value = vamLimpia;
         document.getElementById("fichaFcr").value = p["FC Reposo"] || "";
         document.getElementById("fichaFcmax").value = p["FC Max"] || "";
         document.getElementById("fichaEmergencia").value = p["Contacto Emergencia"] || "";
@@ -894,13 +935,13 @@
         document.getElementById("fichaSangre").value = `${p["Grupo Sanguíneo"] || ""} ${p["Donante"] ? '(' + p["Donante"] + ')' : ''}`.trim();
         document.getElementById("fichaAlergias").value = p["Alergias / Observaciones"] || "";
 
-        document.getElementById("kpiVam").textContent = p["VAM"] || "-";
+        document.getElementById("kpiVam").textContent = vamLimpia ? `${vamLimpia} km/h` : "-";
         document.getElementById("kpiFC").textContent = `${p["FC Reposo"] || "-"} / ${p["FC Max"] || "-"}`;
         document.getElementById("kpiPin").textContent = p["PIN"] || "-";
 
         actualizarVistaEdadEnVivo();
         renderizarGraficoVolumenEspejo();
-        renderizarTestsEspejo(data.tests || []);
+        renderizarTestsEspejo(testsArr);
         renderizarFeedbackEspejo(data.feedback || []);
 
         cont.classList.remove("hidden");
@@ -957,6 +998,7 @@
         const json = await res.json();
         if (json.status === "success") {
           alert("✅ Ficha médica y datos del atleta actualizados correctamente.");
+          cargarFichaYEspejoAtleta();
           verificarProfe();
         } else {
           alert("Error: " + json.message);
@@ -980,16 +1022,16 @@
       const contBarras = document.getElementById("espejoBarrasVolumen");
       const contResumen = document.getElementById("espejoResumenSemanaActual");
 
-      // Agrupar por sesión única (Fecha + Tipo)
       const sesionesMap = new Map();
       rutinas.forEach(r => {
-        const key = `${r["Fecha"]}__${r["Tipo de Sesión"]}`;
-        if (!sesionesMap.has(key)) sesionesMap.set(key, r);
+        const fLimpia = limpiarFechaVisual(r["Fecha"]);
+        const key = `${fLimpia}__${r["Tipo de Sesión"]}`;
+        if (!sesionesMap.has(key)) sesionesMap.set(key, { ...r, fechaLimpia: fLimpia });
       });
 
       const semanasMap = new Map();
       sesionesMap.forEach(s => {
-        const fObj = parsearFechaDDMMYYYY(s["Fecha"]);
+        const fObj = parsearFechaDDMMYYYY(s.fechaLimpia);
         if (!fObj) return;
 
         const tipo = String(s["Tipo de Sesión"] || "").toLowerCase();
@@ -1046,19 +1088,22 @@
         cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">El atleta aún no tiene evaluaciones cargadas.</p>`;
         return;
       }
-      cont.innerHTML = tests.slice().reverse().map(t => `
-        <div class="bloque-item-admin" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <div>
-            <span class="badge">${t["Fecha"] || "-"}</span>
-            <strong style="margin-left:6px;">${t["Ejercicio / Prueba"] || t["Tipo Test"] || "Test"}</strong>
-            <div style="font-size:0.78rem; color:var(--muted); margin-top:3px;">Notas: ${t["Notas"] || "-"}</div>
+      cont.innerHTML = tests.slice().reverse().map(t => {
+        const fechaLimpia = limpiarFechaVisual(t["Fecha"]) || "-";
+        return `
+          <div class="bloque-item-admin" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <span class="badge">${fechaLimpia}</span>
+              <strong style="margin-left:6px;">${t["Ejercicio / Prueba"] || t["Tipo Test"] || "Test"}</strong>
+              <div style="font-size:0.78rem; color:var(--muted); margin-top:3px;">${t["Notas"] || ""}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700; color:var(--accent);">Marca: ${t["Resultado / Marca"] || "-"}</div>
+              <div style="font-size:0.78rem; color:var(--primary);">Calculado: ${t["VAM / 1RM Estimado"] || "-"}</div>
+            </div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-weight:700; color:var(--accent);">Marca: ${t["Resultado / Marca"] || "-"}</div>
-            <div style="font-size:0.78rem; color:var(--primary);">Estimado: ${t["VAM / 1RM Estimado"] || "-"}</div>
-          </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function renderizarFeedbackEspejo(feedbacks) {
@@ -1067,15 +1112,18 @@
         cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">Sin registros de RPE / Feedback todavía.</p>`;
         return;
       }
-      cont.innerHTML = feedbacks.slice(-10).reverse().map(f => `
-        <div class="bloque-item-admin">
-          <div style="display:flex; justify-content:space-between;">
-            <strong>${f["Fecha"] || "-"} • ${f["Tipo de Sesión"] || "Sesión"}</strong>
-            <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10 (${f["Duración (min)"] || "-"} min)</span>
+      cont.innerHTML = feedbacks.slice(-10).reverse().map(f => {
+        const fechaLimpia = limpiarFechaVisual(f["Fecha"]) || "-";
+        return `
+          <div class="bloque-item-admin">
+            <div style="display:flex; justify-content:space-between;">
+              <strong>${fechaLimpia} • ${f["Tipo de Sesión"] || "Sesión"}</strong>
+              <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10 (${f["Duración (min)"] || "-"})</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
           </div>
-          <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function abrirCargaTestProfe() {
@@ -1108,9 +1156,6 @@
       }
     }
 
-    // ========================================================================
-    // NAVEGACIÓN, PLANTILLAS Y RUTINAS
-    // ========================================================================
     function salirProfe() {
       localStorage.removeItem("etrain_coach_pass");
       location.reload();
@@ -1280,7 +1325,7 @@
       container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Buscando rutinas...</p>`;
 
       try {
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}`);
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         const rutinasRaw = data.rutinas || [];
 
@@ -1291,8 +1336,7 @@
 
         const mapaSesiones = new Map();
         rutinasRaw.forEach(r => {
-          let fecha = r["Fecha"] || "";
-          if (fecha.includes("T")) fecha = fecha.split("T")[0].split("-").reverse().join("/");
+          const fecha = limpiarFechaVisual(r["Fecha"] || "");
           const tipo = r["Tipo de Sesión"] || "Sesión";
           const key = `${fecha}__${tipo}`;
           if (!mapaSesiones.has(key)) {
@@ -1360,7 +1404,7 @@
 
     function formatFechaInput(fechaStr) {
       if (!fechaStr) return "";
-      const limpia = String(fechaStr).trim().split(" ")[0].split("T")[0];
+      const limpia = limpiarFechaVisual(fechaStr);
       if (limpia.includes("/")) {
         const p = limpia.split("/");
         if (p.length === 3) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
@@ -1591,37 +1635,60 @@
     }
 
     function cargarDatosPagoAtleta() {
-      const email = document.getElementById("pagoSelectAtleta").value.toLowerCase();
-      if (!email || !pagosGlobalMap || !pagosGlobalMap[email]) return;
+      const email = document.getElementById("pagoSelectAtleta").value.trim().toLowerCase();
+      if (!email || !pagosGlobalMap || !pagosGlobalMap[email]) {
+        const hoy = new Date();
+        document.getElementById("pagoPeriodo").value = `${MESES_NOMBRES[hoy.getMonth()]} ${hoy.getFullYear()}`;
+        return;
+      }
       const pgs = pagosGlobalMap[email];
       if (pgs.length > 0) {
         const ultimo = pgs[pgs.length - 1];
-        document.getElementById("pagoPeriodo").value = ultimo.periodo || "";
-        document.getElementById("pagoMonto").value = ultimo.monto || "$20.000";
+        document.getElementById("pagoPeriodo").value = limpiarPeriodoVisual(ultimo.periodo) || "";
+        document.getElementById("pagoMonto").value = ultimo.monto || "$15.000";
         document.getElementById("pagoEstado").value = ultimo.estado || "Pendiente";
         if (ultimo.vencimiento) document.getElementById("pagoVenc").value = formatFechaInput(ultimo.vencimiento);
       }
     }
 
     async function guardarPagoAtleta() {
-      const email = document.getElementById("pagoSelectAtleta").value;
+      const email = document.getElementById("pagoSelectAtleta").value.trim().toLowerCase();
       const periodo = document.getElementById("pagoPeriodo").value.trim();
       const monto = document.getElementById("pagoMonto").value.trim();
       const estado = document.getElementById("pagoEstado").value;
       const vencRaw = document.getElementById("pagoVenc").value;
 
-      if (!email || !periodo) return alert("Selecciona un atleta e indica el periodo.");
+      if (!email) return alert("⚠️ Primero selecciona un atleta en el desplegable 'Seleccionar Atleta' (o toca el botón '💳 Cuota' al lado de su nombre arriba).");
+      if (!periodo) return alert("⚠️ Indica el Periodo / Mes (ej: noviembre 2026).");
+
+      const btn = document.getElementById("btnGuardarPagoProfe");
+      btn.disabled = true;
+      btn.textContent = "⏳ Guardando cuota...";
+
       try {
-        const payload = { action: "guardarPago", pass: claveGuardada, email: email, periodo: periodo, monto: monto, estado: estado, vencimiento: formatFechaEnvio(vencRaw) };
+        const payload = {
+          action: "guardarPago",
+          pass: claveGuardada,
+          email: email,
+          periodo: periodo,
+          monto: monto,
+          estado: estado,
+          vencimiento: formatFechaEnvio(vencRaw)
+        };
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
+        btn.disabled = false;
+        btn.textContent = "💾 Guardar Estado de Cuota";
+
         if (json.status === "success") {
-          alert("✅ ¡Estado de cuota guardado con éxito!");
+          alert("✅ ¡Estado de cuota actualizado con éxito!");
           verificarProfe();
         } else {
-          alert("Error al guardar pago.");
+          alert("Error al guardar pago: " + (json.message || ""));
         }
       } catch (e) {
+        btn.disabled = false;
+        btn.textContent = "💾 Guardar Estado de Cuota";
         alert("Error de conexión.");
       }
     }
