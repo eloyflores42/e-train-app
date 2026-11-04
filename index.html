@@ -111,7 +111,7 @@
     <h2>E-TRAIN</h2>
     <p>Ingresa con tu correo y tu PIN asignado.</p>
     <div class="form-group"><label>Correo Electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" /></div>
-    <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" /></div>
+    <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" onkeypress="if(event.key === 'Enter') iniciarSesion()" /></div>
     <button class="btn" onclick="iniciarSesion()" id="btnLoginBtn">Ingresar a la App</button>
     <div id="loginError" style="color:var(--danger); font-size:0.8rem; margin-top:10px;"></div>
     
@@ -190,17 +190,24 @@
           <div id="rutinasContainer">Cargando rutinas...</div>
         </div>
 
-        <!-- GRÁFICO DE VOLUMEN SEMANAL -->
+        <!-- GRÁFICO DE VOLUMEN SEMANAL CON FILTRO DE DISCIPLINA -->
         <div class="card" id="cardGraficoVolumen">
-          <h2>📊 Evolución del Volumen Semanal</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
+            <h2 style="margin: 0; border: none; padding: 0;">📊 Evolución del Volumen Semanal</h2>
+            <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 175px; padding: 6px 10px; font-size: 0.82rem;">
+              <option value="Running">🏃‍♂️ Running (km)</option>
+              <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (series/min)</option>
+              <option value="Todas">🌐 Todas las disciplinas</option>
+            </select>
+          </div>
           <div class="help-text">
-            📈 Este gráfico muestra la sumatoria de kilómetros o minutos planificados por semana. Te permite anticipar los picos de choque y las semanas de descarga.
+            📈 Este gráfico agrupa automáticamente el volumen de tus sesiones por semana según la disciplina seleccionada, permitiéndote ver tus semanas de carga, choque y descarga.
           </div>
           <div class="chart-wrapper">
             <canvas id="volumenSemanalChart"></canvas>
           </div>
           <p id="volumenEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.85rem; padding: 20px;">
-            Aún no hay registros de volumen en las sesiones cargadas.
+            Aún no hay registros de volumen para esta disciplina en las sesiones cargadas.
           </p>
         </div>
       </section>
@@ -211,11 +218,24 @@
           <h2>Datos Personales</h2>
           <div class="profile-header">
             <div class="avatar-container"><img id="avatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto" /></div>
-            <div style="flex: 1;"><h3 id="perfilNombreCompleto" style="font-size: 1.15rem; color: var(--text);">Nombre</h3><p id="perfilEmailText" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;"></p></div>
+            <div style="flex: 1;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h3 id="perfilNombreCompleto" style="font-size: 1.15rem; color: var(--text);">Nombre</h3>
+                <span id="perfilEdadBadge" class="badge hidden" style="background:var(--primary);">-- años</span>
+              </div>
+              <p id="perfilEmailText" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;"></p>
+            </div>
           </div>
           <div class="grid-2">
-            <div><label>PIN de Acceso 🔒</label><input type="text" id="inputDNI" readonly style="background: var(--bg); opacity: 0.6; cursor: not-allowed;" /></div>
-            <div><label>Fecha de Nacimiento</label><input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" /></div>
+            <div>
+              <label>Mi PIN de Acceso 🔑 (Puedes personalizarlo)</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="inputDNI" placeholder="Ej: 1234" />
+                <button type="button" class="btn btn-outline" onclick="cambiarPinDirecto()" id="btnCambiarPinRapido" style="white-space:nowrap;">Guardar PIN</button>
+              </div>
+              <span class="field-hint">Elige un número fácil de recordar y toca "Guardar PIN".</span>
+            </div>
+            <div><label>Fecha de Nacimiento</label><input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" oninput="actualizarBadgeEdadPerfil()" /></div>
             <div><label>Celular Personal <span style="color:var(--danger)">*</span></label><input type="text" id="inputCelular" placeholder="Tu número" /></div>
             <div><label>Dirección / Domicilio</label><input type="text" id="inputDireccion" placeholder="Ej: Av. Colón 1234" /></div>
           </div>
@@ -363,7 +383,7 @@
       <section id="tab-videoteca" class="hidden">
         <div class="card">
           <h2>Videoteca de Ejercicios</h2>
-          <div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio..." oninput="filtrarVideos()" /></div>
+          <div style="margin-bottom: 14px;"><input type="text" id="busquedaVideo" placeholder="🔍 Buscar ejercicio o grupo muscular..." oninput="filtrarVideos()" /></div>
           <div id="videotecaContainer">Cargando videoteca...</div>
         </div>
       </section>
@@ -379,7 +399,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyFk3Hj_rbaQthU7kc2sMMKXwO51bCmkDQVNr_z04dwsLOFEPowu3oD__CCZVDpcEGV6A/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec";
 
     let deferredPrompt = null;
     let chartInstance = null;
@@ -447,6 +467,28 @@
       return null;
     }
 
+    function calcularEdadDesdeTexto(fechaStr) {
+      const f = parseFechaDDMMYYYY(formatSimpleDate(fechaStr));
+      if (!f || f.getFullYear() < 1920) return null;
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - f.getFullYear();
+      const m = hoy.getMonth() - f.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < f.getDate())) edad--;
+      return edad >= 0 ? edad : null;
+    }
+
+    function actualizarBadgeEdadPerfil() {
+      const val = document.getElementById("inputFechaNac").value;
+      const edad = calcularEdadDesdeTexto(val);
+      const badge = document.getElementById("perfilEdadBadge");
+      if (edad !== null) {
+        badge.textContent = `${edad} años`;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
     function esDeEstaSemana(fechaStr) {
       const f = parseFechaDDMMYYYY(fechaStr);
       if (!f) return false;
@@ -502,45 +544,52 @@
 
     function procesarDatosRecibidos(data) {
       if (data.perfil) {
+        const p = data.perfil;
         state.perfil = {
-          email: data.perfil["Correo Electrónico"] || "", nombre: data.perfil["Nombre y Apellido"] || "Atleta",
-          dni: data.perfil["PIN"] || localStorage.getItem("etrain_pin") || "",
-          fechaNac: formatSimpleDate(data.perfil["Fecha de Nacimiento"]),
-          fotoUrl: data.perfil["Foto URL"] || "",
-          vam: data.perfil["VAM (km/h)"] ? parseNum(data.perfil["VAM (km/h)"]) : "",
-          fcr: parseNum(data.perfil["FCR (Reposo)"], 52), fcmax: parseNum(data.perfil["FCmáx"], 188), cooperMetros: 2800,
-          celular: data.perfil["Celular"] || "", emergencia: data.perfil["Contacto de Emergencia"] || "",
-          direccion: data.perfil["Dirección"] || "", obraSocial: data.perfil["Obra Social"] || "",
-          clinica: data.perfil["Clínica"] || "", sangre: data.perfil["Grupo Sanguíneo"] || "",
-          donante: data.perfil["Donante"] || "", alergias: data.perfil["Alergias / Lesiones"] || ""
+          email: p["Correo Electrónico"] || p["Email"] || localStorage.getItem("etrain_email") || "",
+          nombre: p["Nombre y Apellido"] || p["Nombre"] || "Atleta",
+          dni: p["PIN"] || p["DNI"] || localStorage.getItem("etrain_pin") || "",
+          fechaNac: formatSimpleDate(p["Fecha de Nacimiento"] || p["Fecha Nacimiento"]),
+          fotoUrl: p["Foto URL"] || "",
+          vam: (p["VAM (km/h)"] || p["VAM"]) ? parseNum(p["VAM (km/h)"] || p["VAM"]) : "",
+          fcr: parseNum(p["FCR (Reposo)"] || p["FC Reposo"], 52),
+          fcmax: parseNum(p["FCmáx"] || p["FC Max"], 188),
+          cooperMetros: 2800,
+          celular: p["Celular"] || "",
+          emergencia: p["Contacto de Emergencia"] || p["Contacto Emergencia"] || "",
+          direccion: p["Dirección"] || p["Direccion"] || "",
+          obraSocial: p["Obra Social"] || "",
+          clinica: p["Clínica"] || p["Clínica Derivación"] || "",
+          sangre: p["Grupo Sanguíneo"] || "",
+          donante: p["Donante"] || "",
+          alergias: p["Alergias / Lesiones"] || p["Alergias / Observaciones"] || ""
         };
       }
       
       state.pbs = { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null };
       
-      if (Array.isArray(data.historial)) {
-        state.historialRaw = data.historial;
-        data.historial.forEach(h => {
-          const tipo = String(h["Ejercicio o Test"] || "").trim();
-          const in1 = h["Métrica 1"]; 
-          const in2 = parseNum(h["Métrica 2"]); 
-          const resCalcStr = h["Marca Calculada"];
-          const resCalc = parseNum(resCalcStr);
-          
-          if (state.rms[tipo] && parseNum(in1) > 0) { 
-            state.rms[tipo] = { peso: parseNum(in1), reps: in2, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2) }; 
-          } 
-          else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
-          else if (tipo.startsWith("Marca PB ")) {
-            const distKey = tipo.replace("Marca PB ", "");
-            if (state.pbs[distKey] !== undefined) {
-              if (!state.pbs[distKey] || in2 < state.pbs[distKey].segundos) {
-                state.pbs[distKey] = { tiempo: in1, segundos: in2, ritmo: resCalcStr };
-              }
+      const histArray = Array.isArray(data.historial) ? data.historial : (Array.isArray(data.tests) ? data.tests : []);
+      state.historialRaw = histArray;
+      histArray.forEach(h => {
+        const tipo = String(h["Ejercicio o Test"] || h["Ejercicio / Prueba"] || h["Tipo Test"] || "").trim();
+        const in1 = h["Métrica 1"] !== undefined ? h["Métrica 1"] : h["Resultado / Marca"]; 
+        const in2 = parseNum(h["Métrica 2"]); 
+        const resCalcStr = h["Marca Calculada"] !== undefined ? h["Marca Calculada"] : h["VAM / 1RM Estimado"];
+        const resCalc = parseNum(resCalcStr);
+        
+        if (state.rms[tipo] && parseNum(in1) > 0) { 
+          state.rms[tipo] = { peso: parseNum(in1), reps: in2 || 1, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2 || 1) }; 
+        } 
+        else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
+        else if (tipo.startsWith("Marca PB ")) {
+          const distKey = tipo.replace("Marca PB ", "");
+          if (state.pbs[distKey] !== undefined) {
+            if (!state.pbs[distKey] || (in2 > 0 && in2 < state.pbs[distKey].segundos)) {
+              state.pbs[distKey] = { tiempo: in1, segundos: in2, ritmo: resCalcStr };
             }
           }
-        });
-      }
+        }
+      });
       
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
@@ -554,7 +603,7 @@
           if (!mapa.has(key)) { 
             mapa.set(key, { 
               fechaRaw: rawFecha, fechaDisplay: displayFecha, tipo, 
-              volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || "", 
+              volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || r["RPE"] || "", 
               completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", 
               indicacionesProfe: notaProfeRow, bloques: [] 
             }); 
@@ -574,14 +623,25 @@
       if (data.periodizacion) {
         state.periodizacion = data.periodizacion;
       }
+
+      // Asignación reparada de la Videoteca
+      if (Array.isArray(data.videoteca)) {
+        state.videoteca = data.videoteca;
+      } else {
+        state.videoteca = [];
+      }
       
       state.cuotaVencida = false;
       if (Array.isArray(data.pagos)) {
         state.pagos = data.pagos.map(p => {
-          const est = String(p["Estado"] || "").trim().toLowerCase();
+          const est = String(p["Estado"] || p.estado || "").trim().toLowerCase();
           if (est.includes("vencid")) state.cuotaVencida = true;
           return {
-            ...p, "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"]), "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"]) 
+            ...p,
+            "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"] || p["Periodo"] || p.periodo || ""),
+            "Monto": p["Monto"] || p.monto || "",
+            "Estado": p["Estado"] || p.estado || "Pendiente",
+            "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "") 
           };
         });
       }
@@ -602,10 +662,12 @@
       document.getElementById("inputClinica").value = state.perfil.clinica; document.getElementById("inputSangre").value = state.perfil.sangre;
       document.getElementById("inputDonante").value = state.perfil.donante; document.getElementById("inputAlergias").value = state.perfil.alergias;
       
+      actualizarBadgeEdadPerfil();
       previewTestResistencia(); previewTestFuerza(); previewPBRitmo();
     }
 
     function syncSeguroAtleta() {
+      state.perfil.dni = document.getElementById("inputDNI").value.trim() || state.perfil.dni;
       state.perfil.fechaNac = document.getElementById("inputFechaNac").value; state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
       state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
       
@@ -615,17 +677,52 @@
       state.perfil.donante = document.getElementById("inputDonante").value.trim(); state.perfil.alergias = document.getElementById("inputAlergias").value.trim();
     }
 
+    async function cambiarPinDirecto() {
+      const nuevoPin = document.getElementById("inputDNI").value.trim();
+      if (!nuevoPin || nuevoPin.length < 3) {
+        alert("⚠️ Ingresa un PIN válido (al menos 3 o 4 caracteres).");
+        return;
+      }
+      const btn = document.getElementById("btnCambiarPinRapido");
+      btn.disabled = true; btn.textContent = "Guardando...";
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "cambiarPinAtleta",
+            email: state.perfil.email,
+            pinActual: localStorage.getItem("etrain_pin") || state.perfil.dni,
+            nuevoPin: nuevoPin
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          state.perfil.dni = nuevoPin;
+          localStorage.setItem("etrain_pin", nuevoPin);
+          btn.textContent = "✔ PIN Actualizado";
+          setTimeout(() => { btn.textContent = "Guardar PIN"; btn.disabled = false; }, 2000);
+        } else {
+          alert(json.message || "Error al actualizar PIN");
+          btn.textContent = "Guardar PIN"; btn.disabled = false;
+        }
+      } catch (e) {
+        btn.textContent = "Error"; btn.disabled = false;
+      }
+    }
+
     async function guardarPerfilEnSheets(testObj, botonId) {
       syncSeguroAtleta(); const btn = document.getElementById(botonId); const txt = btn ? btn.textContent : "";
       if(btn){ btn.disabled = true; btn.textContent = "Guardando..."; }
       try {
         const payload = { 
-          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, 
+          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, pin: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, 
           vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax,
           celular: state.perfil.celular, emergencia: state.perfil.emergencia, direccion: state.perfil.direccion, obraSocial: state.perfil.obraSocial,
           clinica: state.perfil.clinica, sangre: state.perfil.sangre, donante: state.perfil.donante, alergias: state.perfil.alergias, nuevoTest: testObj 
         };
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        localStorage.setItem("etrain_pin", state.perfil.dni);
         if(btn){ btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = txt; btn.disabled = false; }, 2000); }
       } catch (err) { if(btn){ btn.textContent = "Error"; btn.disabled = false; } }
     }
@@ -636,7 +733,7 @@
         alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia."); return;
       }
       if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
-      await guardarPerfilEnSheets(null, null); alert("Ficha Médica guardada con éxito.");
+      await guardarPerfilEnSheets(null, null); alert("Ficha Médica y PIN guardados con éxito.");
     }
     
     async function guardarParametrosFisiologicos() { recalcularZonas(); await guardarPerfilEnSheets(null, "btnGuardarParametros"); }
@@ -757,7 +854,7 @@
 
       const filtro = selector.value;
       const registros = state.historialRaw.filter(h => {
-        const tipoH = String(h["Ejercicio o Test"] || "").trim().toLowerCase();
+        const tipoH = String(h["Ejercicio o Test"] || h["Ejercicio / Prueba"] || "").trim().toLowerCase();
         if (filtro.includes("5 Min")) return tipoH.includes("5 min") || tipoH.includes("vam");
         if (filtro.includes("Cooper")) return tipoH.includes("cooper");
         return tipoH === filtro.toLowerCase();
@@ -775,9 +872,9 @@
         const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || Object.values(r)[0] || "-";
         labels.push(formatSimpleDate(fechaRaw));
 
-        const in1 = r["Métrica 1"]; 
+        const in1 = r["Métrica 1"] !== undefined ? r["Métrica 1"] : r["Resultado / Marca"]; 
         const in2 = parseNum(r["Métrica 2"], 1); 
-        const marca = parseNum(r["Marca Calculada"]);
+        const marca = parseNum(r["Marca Calculada"] !== undefined ? r["Marca Calculada"] : r["VAM / 1RM Estimado"]);
         
         let valFinal = marca;
         if (filtro.includes("Cooper")) {
@@ -822,14 +919,62 @@
       });
     }
 
+    function obtenerLunesSemana(fechaObj) {
+      const d = new Date(fechaObj);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
     function renderVolumenChart() {
       const canvas = document.getElementById("volumenSemanalChart");
       const emptyMsg = document.getElementById("volumenEmptyMsg");
       const badgeState = document.getElementById("periodBadgeState");
+      const selDisc = document.getElementById("filtroDisciplinaVolumen");
+      const discFiltro = selDisc ? selDisc.value : "Running";
       if (!canvas) return;
 
-      const labels = state.periodizacion.semanasLabels || [];
-      const dataVols = state.periodizacion.volumenes || [];
+      // Calculamos dinámicamente el volumen semanal filtrando por disciplina sobre las sesiones cargadas
+      const semanasMap = new Map();
+      state.sesionesAgrupadas.forEach(s => {
+        const fObj = parseFechaDDMMYYYY(s.fechaDisplay);
+        if (!fObj) return;
+
+        const tipoLower = String(s.tipo || "").toLowerCase();
+        const volLower = String(s.volumen || "").toLowerCase();
+
+        if (discFiltro === "Running" && (tipoLower.includes("fuerza") || tipoLower.includes("gym") || volLower.includes("series") || volLower.includes("kg"))) {
+          return;
+        }
+        if (discFiltro === "Fuerza" && (tipoLower.includes("running") || volLower.includes("km"))) {
+          return;
+        }
+
+        const matchNum = volLower.match(/([\d.,]+)/);
+        const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
+        if (valNum <= 0) return;
+
+        const lunes = obtenerLunesSemana(fObj);
+        const sortKey = lunes.toISOString().split("T")[0];
+        const labelSem = `Sem ${String(lunes.getDate()).padStart(2, '0')}/${String(lunes.getMonth() + 1).padStart(2, '0')}`;
+
+        if (!semanasMap.has(sortKey)) {
+          semanasMap.set(sortKey, { key: sortKey, label: labelSem, total: 0 });
+        }
+        semanasMap.get(sortKey).total += valNum;
+      });
+
+      const semanasOrdenadas = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
+      let labels = semanasOrdenadas.map(x => x.label);
+      let dataVols = semanasOrdenadas.map(x => +(x.total.toFixed(1)));
+
+      // Fallback si el servidor envió periodizacion directa y aún no hay sesiones filtradas
+      if (!labels.length && discFiltro === "Todas" && state.periodizacion && Array.isArray(state.periodizacion.semanasLabels)) {
+        labels = state.periodizacion.semanasLabels;
+        dataVols = state.periodizacion.volumenes || [];
+      }
 
       if (volumenChartInstance) { volumenChartInstance.destroy(); volumenChartInstance = null; }
 
@@ -843,22 +988,23 @@
       canvas.parentElement.classList.remove("hidden");
       emptyMsg.classList.add("hidden");
 
-      // Detección automática del microciclo actual (última semana vs promedio)
       let ultimaSemana = dataVols[dataVols.length - 1];
       let promedioAnterior = dataVols.length > 1 ? dataVols.slice(0, -1).reduce((a, b) => a + b, 0) / (dataVols.length - 1) : ultimaSemana;
       
       if (badgeState) {
         if (promedioAnterior > 0 && ultimaSemana > promedioAnterior * 1.15) {
-          badgeState.textContent = "🔴 Semana de Choque";
+          badgeState.textContent = `🔴 Sem. ${ dataVols.length } • Choque`;
           badgeState.style.background = "var(--danger)";
         } else if (promedioAnterior > 0 && ultimaSemana < promedioAnterior * 0.8) {
-          badgeState.textContent = "🟢 Semana de Descarga";
+          badgeState.textContent = `🟢 Sem. ${ dataVols.length } • Descarga`;
           badgeState.style.background = "var(--accent)";
         } else {
-          badgeState.textContent = "🔵 Semana de Carga";
+          badgeState.textContent = `🔵 Sem. ${ dataVols.length } • Carga`;
           badgeState.style.background = "var(--primary)";
         }
       }
+
+      const unidadLabel = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
 
       const ctx = canvas.getContext("2d");
       volumenChartInstance = new Chart(ctx, {
@@ -866,7 +1012,7 @@
         data: {
           labels: labels,
           datasets: [{
-            label: "Volumen Semanal",
+            label: `Volumen Semanal (${unidadLabel})`,
             data: dataVols,
             backgroundColor: "rgba(59, 130, 246, 0.6)",
             borderColor: "#3b82f6",
@@ -887,7 +1033,7 @@
               borderWidth: 1,
               callbacks: {
                 label: function(context) {
-                  return " Volumen total: " + context.parsed.y;
+                  return ` Volumen total: ${context.parsed.y} ${unidadLabel}`;
                 }
               }
             }
@@ -1023,15 +1169,35 @@
       else { body.classList.add("hidden"); if (icon) icon.textContent = "▼"; }
     }
 
+    function obtenerNombreVideo(v) {
+      return v["Ejercicio / Movimiento"] || v["Ejercicio"] || v.nombre || "";
+    }
+    function obtenerUrlVideo(v) {
+      return v["URL del Video"] || v["Video URL"] || v["URL"] || v.url || "";
+    }
+    function obtenerGrupoVideo(v) {
+      return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || "";
+    }
+    function obtenerDescVideo(v) {
+      return v["Descripción"] || v["Descripcion"] || v.descripcion || "";
+    }
+
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
       const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
 
       const bloquesHtml = s.bloques.map(b => {
         const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
-        if(state.videoteca.length) {
-          const match = state.videoteca.find(v => (v["Ejercicio / Movimiento"]||"").toLowerCase().includes(b.ejercicio.toLowerCase()) && b.ejercicio.length > 3);
-          if(match && match["URL del Video"] && match["URL del Video"] !== "#") linkVideoHtml = `<a href="${match["URL del Video"]}" target="_blank" style="font-size:0.75rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
+        if (state.videoteca.length && b.ejercicio && b.ejercicio.length > 2) {
+          const busq = b.ejercicio.toLowerCase();
+          const match = state.videoteca.find(v => {
+            const nomV = obtenerNombreVideo(v).toLowerCase();
+            return nomV && (nomV.includes(busq) || busq.includes(nomV));
+          });
+          const urlV = match ? obtenerUrlVideo(match) : "";
+          if (urlV && urlV !== "#") {
+            linkVideoHtml = `<a href="${urlV}" target="_blank" style="font-size:0.75rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
+          }
         }
         return `<div class="bloque-item">
             <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
@@ -1165,24 +1331,38 @@
 
     function renderVideoteca(lista) {
       const container = document.getElementById("videotecaContainer");
-      if (!lista.length) { container.innerHTML = `<p style="color:var(--muted);">No hay videos.</p>`; return; }
+      if (!Array.isArray(lista) || !lista.length) {
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding:16px;">No hay videos cargados en la videoteca.</p>`;
+        return;
+      }
       container.innerHTML = lista.map(v => {
-        const descHTML = v["Descripción"] ? `<div style="font-size:0.8rem; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border);"><em>${v["Descripción"]}</em></div>` : "";
+        const titulo = obtenerNombreVideo(v) || "-";
+        const grupo = obtenerGrupoVideo(v);
+        const url = obtenerUrlVideo(v);
+        const desc = obtenerDescVideo(v);
+        const descHTML = desc ? `<div style="font-size:0.8rem; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border);"><em>${desc}</em></div>` : "";
         return `<div class="video-card" style="flex-direction:column; align-items:stretch;">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-            <div><strong style="font-size:0.95rem; color:var(--text);">${v["Ejercicio / Movimiento"] || "-"}</strong><div style="font-size:0.78rem; color:var(--accent);">${v["Grupo Muscular"] || ""}</div></div>
-            <div>${v["URL del Video"] && v["URL del Video"] !== "#" ? `<a href="${v["URL del Video"]}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.75rem; color:var(--muted);">Próx.</span>`}</div>
+            <div><strong style="font-size:0.95rem; color:var(--text);">${titulo}</strong><div style="font-size:0.78rem; color:var(--accent);">${grupo}</div></div>
+            <div>${url && url !== "#" ? `<a href="${url}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.75rem; color:var(--muted);">Próx.</span>`}</div>
           </div>
           ${descHTML}
         </div>`;
       }).join("");
     }
     
-    function filtrarVideos() { const q = document.getElementById("busquedaVideo").value.toLowerCase(); renderVideoteca(state.videoteca.filter(v => String(v["Ejercicio / Movimiento"]).toLowerCase().includes(q) || String(v["Grupo Muscular"]).toLowerCase().includes(q) || String(v["Descripción"]).toLowerCase().includes(q))); }
+    function filtrarVideos() {
+      const q = document.getElementById("busquedaVideo").value.toLowerCase();
+      renderVideoteca(state.videoteca.filter(v =>
+        obtenerNombreVideo(v).toLowerCase().includes(q) ||
+        obtenerGrupoVideo(v).toLowerCase().includes(q) ||
+        obtenerDescVideo(v).toLowerCase().includes(q)
+      ));
+    }
     
     function renderPagos() {
       const container = document.getElementById("pagosContainer");
-      if (!state.pagos.length) { container.innerHTML = `<p style="color:var(--muted);">Sin pagos.</p>`; return; }
+      if (!state.pagos.length) { container.innerHTML = `<p style="color:var(--muted);">Sin pagos registrados.</p>`; return; }
       container.innerHTML = `<table><thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Venc</th></tr></thead><tbody>${state.pagos.map(p => { const e = String(p["Estado"]||"").toLowerCase(); const bc = (e.includes("pagado")||e.includes("día")) ? "badge-pagado" : (e.includes("vencido") ? "badge-vencido" : "badge-pendiente"); return `<tr><td><strong>${p["Mes / Periodo"]}</strong></td><td>${p["Monto"]}</td><td><span class="badge ${bc}">${p["Estado"]}</span></td><td>${p["Fecha de Vencimiento"]}</td></tr>`; }).join("")}</tbody></table>`;
     }
 
