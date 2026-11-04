@@ -75,7 +75,6 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.7rem; }
     
-    /* Estilos Periodización y Gráfico de Volumen */
     .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .period-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
 
@@ -144,7 +143,6 @@
 
       <!-- SECCIÓN 1: RUTINAS & PERIODIZACIÓN -->
       <section id="tab-rutinas">
-        <!-- TARJETA DE MACROCICLO / ESTADO DE CARGA -->
         <div class="period-card" id="periodCardContainer">
           <div>
             <div style="font-size: 0.72rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Macrociclo actual</div>
@@ -190,7 +188,6 @@
           <div id="rutinasContainer">Cargando rutinas...</div>
         </div>
 
-        <!-- GRÁFICO DE VOLUMEN SEMANAL CON FILTRO DE DISCIPLINA -->
         <div class="card" id="cardGraficoVolumen">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
             <h2 style="margin: 0; border: none; padding: 0;">📊 Evolución del Volumen Semanal</h2>
@@ -400,6 +397,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec";
+    const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
     let deferredPrompt = null;
     let chartInstance = null;
@@ -436,26 +434,74 @@
       cuotaVencida: false
     };
 
+    // ========================================================================
+    // FORMATEADORES BLINDADOS (Evitan "undefined/undefined/" y "GMT-0300")
+    // ========================================================================
     function formatSimpleDate(val) {
       if (!val || val === "-") return "";
       const str = String(val).trim();
-      if (str.includes("T") && str.includes("-")) {
-        const partes = str.split("T")[0].split("-"); return `${partes[2]}/${partes[1]}/${partes[0]}`; 
+
+      // 1. Formato ISO estricto (YYYY-MM-DD...)
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const partes = str.split("T")[0].split("-");
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
       }
-      const regexFecha = /(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/;
+
+      // 2. Formato con barras o guiones DD/MM/YYYY
+      const regexFecha = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/;
       const coincidencia = str.match(regexFecha);
       if (coincidencia) {
-        const dia = coincidencia[1].padStart(2, '0'); const mes = coincidencia[2].padStart(2, '0');
-        let anio = coincidencia[3]; if (anio.length === 2) anio = "20" + anio; return `${dia}/${mes}/${anio}`;
+        const dia = coincidencia[1].padStart(2, '0');
+        const mes = coincidencia[2].padStart(2, '0');
+        let anio = coincidencia[3];
+        if (anio.length === 2) anio = "20" + anio;
+        return `${dia}/${mes}/${anio}`;
       }
-      const d = new Date(str);
-      if (!isNaN(d.getTime()) && !str.includes("/")) return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
+
+      // 3. Formato Date de JS ("Thu Oct 01 2026 00:00:00 GMT-0300...")
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+          return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
+      }
+
       return str;
+    }
+
+    function formatPeriodoTexto(val) {
+      if (!val || val === "-") return "-";
+      const str = String(val).trim();
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return `${MESES_NOMBRES[d.getMonth()]} ${d.getFullYear()}`;
+      }
+      const m = str.match(/^0?1\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const idx = parseInt(m[1], 10) - 1;
+        if (idx >= 0 && idx < 12) return `${MESES_NOMBRES[idx]} ${m[2]}`;
+      }
+      return str;
+    }
+
+    function rescatarVamNumero(rawVal) {
+      if (!rawVal) return 0;
+      const str = String(rawVal).trim();
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return parseFloat(`${d.getDate()}.${d.getMonth() + 1}`);
+      }
+      const mFecha = str.match(/^(\d{1,2})\/0?(\d{1,2})\/\d{4}$/);
+      if (mFecha) return parseFloat(`${parseInt(mFecha[1], 10)}.${parseInt(mFecha[2], 10)}`);
+
+      const n = parseFloat(str.replace(",", "."));
+      return (!isNaN(n) && n > 0 && n < 35) ? n : 0;
     }
 
     function parseFechaDDMMYYYY(str) {
       if (!str) return null;
-      const partes = String(str).trim().split("/");
+      const limpia = formatSimpleDate(str);
+      const partes = String(limpia).trim().split("/");
       if (partes.length === 3) {
         const d = parseInt(partes[0], 10);
         const m = parseInt(partes[1], 10) - 1;
@@ -545,13 +591,14 @@
     function procesarDatosRecibidos(data) {
       if (data.perfil) {
         const p = data.perfil;
+        const vamExtraida = rescatarVamNumero(p["VAM (km/h)"] || p["VAM"]);
         state.perfil = {
           email: p["Correo Electrónico"] || p["Email"] || localStorage.getItem("etrain_email") || "",
           nombre: p["Nombre y Apellido"] || p["Nombre"] || "Atleta",
           dni: p["PIN"] || p["DNI"] || localStorage.getItem("etrain_pin") || "",
           fechaNac: formatSimpleDate(p["Fecha de Nacimiento"] || p["Fecha Nacimiento"]),
           fotoUrl: p["Foto URL"] || "",
-          vam: (p["VAM (km/h)"] || p["VAM"]) ? parseNum(p["VAM (km/h)"] || p["VAM"]) : "",
+          vam: vamExtraida > 0 ? vamExtraida : "",
           fcr: parseNum(p["FCR (Reposo)"] || p["FC Reposo"], 52),
           fcmax: parseNum(p["FCmáx"] || p["FC Max"], 188),
           cooperMetros: 2800,
@@ -575,11 +622,16 @@
         const in1 = h["Métrica 1"] !== undefined ? h["Métrica 1"] : h["Resultado / Marca"]; 
         const in2 = parseNum(h["Métrica 2"]); 
         const resCalcStr = h["Marca Calculada"] !== undefined ? h["Marca Calculada"] : h["VAM / 1RM Estimado"];
-        const resCalc = parseNum(resCalcStr);
+        const resCalc = rescatarVamNumero(resCalcStr) || parseNum(resCalcStr);
         
         if (state.rms[tipo] && parseNum(in1) > 0) { 
           state.rms[tipo] = { peso: parseNum(in1), reps: in2 || 1, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2 || 1) }; 
         } 
+        else if ((tipo.toLowerCase().includes("5 min") || tipo.toLowerCase().includes("vam")) && (resCalc > 0 || parseNum(in1) > 300)) {
+          // Rescatamos automáticamente la VAM del último test en el historial para que nunca aparezca en 0
+          const vamTest = (resCalc > 5 && resCalc < 30) ? resCalc : +((parseNum(in1) / 1000) * 12).toFixed(2);
+          if (vamTest > 0) state.perfil.vam = vamTest;
+        }
         else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
         else if (tipo.startsWith("Marca PB ")) {
           const distKey = tipo.replace("Marca PB ", "");
@@ -602,7 +654,7 @@
 
           if (!mapa.has(key)) { 
             mapa.set(key, { 
-              fechaRaw: rawFecha, fechaDisplay: displayFecha, tipo, 
+              fechaRaw: displayFecha, fechaDisplay: displayFecha, tipo, 
               volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || r["RPE"] || "", 
               completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", 
               indicacionesProfe: notaProfeRow, bloques: [] 
@@ -624,7 +676,6 @@
         state.periodizacion = data.periodizacion;
       }
 
-      // Asignación reparada de la Videoteca
       if (Array.isArray(data.videoteca)) {
         state.videoteca = data.videoteca;
       } else {
@@ -638,10 +689,10 @@
           if (est.includes("vencid")) state.cuotaVencida = true;
           return {
             ...p,
-            "Mes / Periodo": formatSimpleDate(p["Mes / Periodo"] || p["Periodo"] || p.periodo || ""),
+            "Mes / Periodo": formatPeriodoTexto(p["Mes / Periodo"] || p["Periodo"] || p.periodo || ""),
             "Monto": p["Monto"] || p.monto || "",
             "Estado": p["Estado"] || p.estado || "Pendiente",
-            "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "") 
+            "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "") || "-"
           };
         });
       }
@@ -655,7 +706,9 @@
       document.getElementById("inputFechaNac").value = state.perfil.fechaNac; document.getElementById("inputFotoUrl").value = state.perfil.fotoUrl;
       if (state.perfil.fotoUrl) document.getElementById("avatarImg").src = state.perfil.fotoUrl;
       
-      document.getElementById("inputVAM").value = state.perfil.vam; document.getElementById("inputFCR").value = state.perfil.fcr; document.getElementById("inputFCMax").value = state.perfil.fcmax;
+      document.getElementById("inputVAM").value = state.perfil.vam || "";
+      document.getElementById("inputFCR").value = state.perfil.fcr;
+      document.getElementById("inputFCMax").value = state.perfil.fcmax;
       
       document.getElementById("inputCelular").value = state.perfil.celular; document.getElementById("inputEmergencia").value = state.perfil.emergencia;
       document.getElementById("inputDireccion").value = state.perfil.direccion; document.getElementById("inputObraSocial").value = state.perfil.obraSocial;
@@ -753,7 +806,12 @@
       }
       
       const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc });
+      // Si ya había un registro hoy de este mismo test en memoria local, lo actualizamos en lugar de duplicarlo
+      const idxHoy = state.historialRaw.findIndex(x => formatSimpleDate(x["Fecha"]) === fechaHoyStr && String(x["Ejercicio o Test"]).toLowerCase() === tipo.toLowerCase());
+      const nuevoReg = { "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc };
+      if (idxHoy !== -1) state.historialRaw[idxHoy] = nuevoReg;
+      else state.historialRaw.push(nuevoReg);
+
       document.getElementById("chartSelector").value = tipo; renderChart();
 
       await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
@@ -842,7 +900,11 @@
       renderRMTable(); renderRutinas();
 
       const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
-      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm });
+      const idxHoy = state.historialRaw.findIndex(x => formatSimpleDate(x["Fecha"]) === fechaHoyStr && String(x["Ejercicio o Test"]).toLowerCase() === tipo.toLowerCase());
+      const nuevoReg = { "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm };
+      if (idxHoy !== -1) state.historialRaw[idxHoy] = nuevoReg;
+      else state.historialRaw.push(nuevoReg);
+
       document.getElementById("chartSelector").value = tipo; renderChart();
 
       await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
@@ -868,19 +930,21 @@
       canvas.parentElement.classList.remove("hidden"); emptyMsg.classList.add("hidden");
 
       const labels = []; const valores = [];
-      registros.forEach(r => {
-        const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || Object.values(r)[0] || "-";
-        labels.push(formatSimpleDate(fechaRaw));
+      registros.forEach((r, idx) => {
+        const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || "";
+        const fechaFmt = formatSimpleDate(fechaRaw);
+        labels.push(fechaFmt || `Test #${idx + 1}`);
 
         const in1 = r["Métrica 1"] !== undefined ? r["Métrica 1"] : r["Resultado / Marca"]; 
         const in2 = parseNum(r["Métrica 2"], 1); 
-        const marca = parseNum(r["Marca Calculada"] !== undefined ? r["Marca Calculada"] : r["VAM / 1RM Estimado"]);
+        const marcaRaw = r["Marca Calculada"] !== undefined ? r["Marca Calculada"] : r["VAM / 1RM Estimado"];
+        const marca = rescatarVamNumero(marcaRaw) || parseNum(marcaRaw);
         
         let valFinal = marca;
         if (filtro.includes("Cooper")) {
           const metros = parseNum(in1) > 300 ? parseNum(in1) : marca; valFinal = +(calcCooperVO2(metros).toFixed(1));
         } else if (filtro.includes("5 Min")) {
-          valFinal = marca > 0 ? marca : +(((parseNum(in1) / 1000) * 12).toFixed(2));
+          valFinal = (marca > 5 && marca < 35) ? marca : +(((parseNum(in1) / 1000) * 12).toFixed(2));
         } else if (filtro.includes("Marca PB")) {
           valFinal = in2;
         } else {
@@ -936,7 +1000,6 @@
       const discFiltro = selDisc ? selDisc.value : "Running";
       if (!canvas) return;
 
-      // Calculamos dinámicamente el volumen semanal filtrando por disciplina sobre las sesiones cargadas
       const semanasMap = new Map();
       state.sesionesAgrupadas.forEach(s => {
         const fObj = parseFechaDDMMYYYY(s.fechaDisplay);
@@ -970,7 +1033,6 @@
       let labels = semanasOrdenadas.map(x => x.label);
       let dataVols = semanasOrdenadas.map(x => +(x.total.toFixed(1)));
 
-      // Fallback si el servidor envió periodizacion directa y aún no hay sesiones filtradas
       if (!labels.length && discFiltro === "Todas" && state.periodizacion && Array.isArray(state.periodizacion.semanasLabels)) {
         labels = state.periodizacion.semanasLabels;
         dataVols = state.periodizacion.volumenes || [];
@@ -1121,8 +1183,7 @@
     }
 
     function renderCalendarioGrid(sesionesConIndice) {
-      const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-      document.getElementById("calMesTitulo").textContent = `${mesesNombres[state.calMes]} ${state.calAnio}`;
+      document.getElementById("calMesTitulo").textContent = `${MESES_NOMBRES[state.calMes]} ${state.calAnio}`;
 
       const grid = document.getElementById("calGrid");
       const diasNombres = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
@@ -1169,18 +1230,10 @@
       else { body.classList.add("hidden"); if (icon) icon.textContent = "▼"; }
     }
 
-    function obtenerNombreVideo(v) {
-      return v["Ejercicio / Movimiento"] || v["Ejercicio"] || v.nombre || "";
-    }
-    function obtenerUrlVideo(v) {
-      return v["URL del Video"] || v["Video URL"] || v["URL"] || v.url || "";
-    }
-    function obtenerGrupoVideo(v) {
-      return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || "";
-    }
-    function obtenerDescVideo(v) {
-      return v["Descripción"] || v["Descripcion"] || v.descripcion || "";
-    }
+    function obtenerNombreVideo(v) { return v["Ejercicio / Movimiento"] || v["Ejercicio"] || v.nombre || ""; }
+    function obtenerUrlVideo(v) { return v["URL del Video"] || v["Video URL"] || v["URL"] || v.url || ""; }
+    function obtenerGrupoVideo(v) { return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || ""; }
+    function obtenerDescVideo(v) { return v["Descripción"] || v["Descripcion"] || v.descripcion || ""; }
 
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
@@ -1363,7 +1416,7 @@
     function renderPagos() {
       const container = document.getElementById("pagosContainer");
       if (!state.pagos.length) { container.innerHTML = `<p style="color:var(--muted);">Sin pagos registrados.</p>`; return; }
-      container.innerHTML = `<table><thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Venc</th></tr></thead><tbody>${state.pagos.map(p => { const e = String(p["Estado"]||"").toLowerCase(); const bc = (e.includes("pagado")||e.includes("día")) ? "badge-pagado" : (e.includes("vencido") ? "badge-vencido" : "badge-pendiente"); return `<tr><td><strong>${p["Mes / Periodo"]}</strong></td><td>${p["Monto"]}</td><td><span class="badge ${bc}">${p["Estado"]}</span></td><td>${p["Fecha de Vencimiento"]}</td></tr>`; }).join("")}</tbody></table>`;
+      container.innerHTML = `<table><thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Venc</th></tr></thead><tbody>${state.pagos.map(p => { const e = String(p["Estado"]||"").toLowerCase(); const bc = (e.includes("pagado")||e.includes("día")) ? "badge-pagado" : (e.includes("vencido") ? "badge-vencido" : "badge-pendiente"); return `<tr><td><strong>${p["Mes / Periodo"] || "-"}</strong></td><td>${p["Monto"] || "-"}</td><td><span class="badge ${bc}">${p["Estado"] || "Pendiente"}</span></td><td>${p["Fecha de Vencimiento"] || "-"}</td></tr>`; }).join("")}</tbody></table>`;
     }
 
     function switchTab(tab, btn) {
