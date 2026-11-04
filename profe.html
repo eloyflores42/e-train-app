@@ -4,59 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-TRAIN | Panel Profe</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
       --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; --text: #f8fafc; --muted: #94a3b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Barlow Semi Condensed', system-ui, -apple-system, sans-serif; letter-spacing: 0.2px; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     
     header { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
     .brand-container { display: flex; align-items: center; gap: 8px; }
-    header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--accent); margin: 0; }
+    header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.15rem; letter-spacing: 0.6px; color: var(--accent); margin: 0; }
     
     #loginCoachScreen { max-width: 400px; margin: 70px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
-    #loginCoachScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--accent); margin-bottom: 8px; font-size: 1.5rem; }
-    #loginCoachScreen p { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+    #loginCoachScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--accent); margin-bottom: 8px; font-size: 1.55rem; }
+    #loginCoachScreen p { color: var(--muted); font-size: 0.92rem; margin-bottom: 20px; }
 
     .container { max-width: 880px; margin: 20px auto; padding: 0 16px; }
     
     .coach-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-    .coach-tab-btn { flex: 1; min-width: 140px; padding: 10px 8px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; text-align: center; transition: 0.2s; }
+    .coach-tab-btn { flex: 1; min-width: 140px; padding: 10px 8px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 700; font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; text-align: center; transition: 0.2s; }
     .coach-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-    .card h2 { font-size: 1.12rem; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .card h2 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.05rem; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 10px; }
     
-    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-align: left; }
-    input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.92rem; margin-bottom: 12px; }
+    label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; text-align: left; }
+    input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.96rem; font-weight: 600; margin-bottom: 12px; }
     textarea { resize: vertical; min-height: 75px; }
     
-    button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; font-size: 0.95rem; }
+    button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; width: 100%; transition: 0.2s; font-size: 0.96rem; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
     button.btn-success { background: var(--accent); color: #000; }
     button.btn-warning { background: var(--warning); color: #000; }
     button.btn-danger { background: var(--danger); color: #fff; }
-    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 12px; font-size: 0.8rem; }
+    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 12px; font-size: 0.82rem; }
     
     .rutina-card-admin { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
     .rutina-admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; cursor: pointer; }
     .rutina-admin-body { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
     
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.73rem; font-weight: 700; background: var(--primary); color: #fff; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; background: var(--primary); color: #fff; }
     .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); border: 1px solid var(--accent); }
     .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
     .badge-muted { background: rgba(148, 163, 184, 0.15); color: var(--muted); border: 1px solid var(--border); }
 
-    .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 8px 10px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 0.82rem; color: var(--text); }
-    .bloque-item-admin { background: #152033; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-top: 6px; font-size: 0.85rem; }
+    .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 8px 10px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 0.88rem; color: var(--text); }
+    .bloque-item-admin { background: #152033; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-top: 6px; font-size: 0.9rem; }
 
     .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
@@ -70,27 +70,27 @@
     .vol-unified-group select { flex: 1; min-width: 85px; }
 
     .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 170px; overflow-y: auto; margin-bottom: 12px; }
-    .atleta-check-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.88rem; cursor: pointer; }
+    .atleta-check-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.92rem; cursor: pointer; }
     .atleta-check-item:last-child { border-bottom: none; }
     .atleta-check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent); }
     
     .mode-switch { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
-    .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
     .mode-switch button.active { background: var(--primary); color: #fff; }
 
     .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-    .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
     .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .alumno-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .alumno-info h4 { font-size: 0.96rem; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .alumno-info p { font-size: 0.78rem; color: var(--muted); }
+    .alumno-info h4 { font-size: 1.02rem; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .alumno-info p { font-size: 0.84rem; color: var(--muted); }
     .alumno-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
     .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-    .kpi-box .kpi-val { font-size: 1.25rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
-    .kpi-box .kpi-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; }
+    .kpi-box .kpi-val { font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
+    .kpi-box .kpi-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
     .bar-row { margin-bottom: 8px; }
-    .bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 3px; }
     .bar-track { background: #0b1120; border-radius: 6px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
     .bar-fill { background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; border-radius: 6px; }
 
@@ -111,7 +111,7 @@
     <button class="btn btn-success" id="btnLoginCoach" onclick="verificarProfe()">Desbloquear Panel</button>
     <div id="coachError" style="color:var(--danger); font-size:0.85rem; margin-top:12px;"></div>
     <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 12px;">
-      <a href="./index.html" style="color: var(--muted); font-size: 0.8rem; text-decoration: none;">← Volver a la App de Atletas</a>
+      <a href="./index.html" style="color: var(--muted); font-size: 0.85rem; text-decoration: none;">← Volver a la App de Atletas</a>
     </div>
   </div>
 
@@ -143,7 +143,7 @@
           <h2>Configuración de la Sesión</h2>
 
           <div class="template-bar">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">⚡ Plantillas:</div>
+            <div style="font-size: 0.9rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">⚡ Plantillas:</div>
             <select id="selectPlantilla" onchange="cargarPlantilla()">
               <option value="">-- Elegir plantilla --</option>
             </select>
@@ -162,7 +162,7 @@
               </div>
               <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
               <div id="contenedorGrupal" class="hidden">
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem;">
                   <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
                   <a href="#" onclick="marcarAlDia(); return false;" style="color:var(--accent); text-decoration:none;">💳 Solo cuotas al día</a>
                   <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Ninguno</a>
@@ -250,7 +250,7 @@
         <div class="card">
           <h2>
             <span>📊 Estado de Alumnos y Cuotas</span>
-            <span id="contadorTotalAlumnos" style="font-size:0.8rem; color:var(--muted);"></span>
+            <span id="contadorTotalAlumnos" style="font-size:0.82rem; color:var(--muted);"></span>
           </h2>
 
           <div class="filter-pills">
@@ -304,7 +304,7 @@
           <div class="grid-3">
             <div><label>PIN Inicial (Temporal)</label><input type="text" id="nuevoPin" value="1234" placeholder="1234"></div>
             <div><label>Fecha de Nacimiento</label><input type="date" id="nuevoFechaNac"></div>
-            <div><label>Celular</label><input type="text" id="nuevoCelular" placeholder="223..."></div>
+            <div><label>Celular (Sin puntos)</label><input type="tel" id="nuevoCelular" placeholder="Ej: 2235947122"></div>
           </div>
           <button class="btn btn-success" onclick="crearAtleta()">💾 Registrar Nuevo Atleta</button>
         </div>
@@ -354,14 +354,14 @@
             </div>
 
             <div style="border-top: 1px solid var(--border); padding-top: 14px;">
-              <h3 style="font-size:0.95rem; color:var(--accent); margin-bottom:10px;">📋 Datos Personales, Médicos y PIN (Editables por el Profe)</h3>
+              <h3 style="font-size:1rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase;">📋 Datos Personales, Médicos y PIN (Editables por el Profe)</h3>
               <div class="grid-3">
                 <div><label>Nombre y Apellido</label><input type="text" id="fichaNombre"></div>
                 <div><label>Fecha de Nacimiento</label><input type="date" id="fichaFechaNac" onchange="actualizarVistaEdadEnVivo()"></div>
                 <div><label>PIN de Acceso</label><input type="text" id="fichaPin"></div>
               </div>
               <div class="grid-3">
-                <div><label>Celular</label><input type="text" id="fichaCelular"></div>
+                <div><label>Celular (Sin puntos)</label><input type="tel" id="fichaCelular"></div>
                 <div><label>VAM (km/h)</label><input type="number" step="0.1" id="fichaVam" placeholder="Ej: 14.4"></div>
                 <div><label>Grupo Sanguíneo / Donante</label><input type="text" id="fichaSangre"></div>
               </div>
@@ -370,7 +370,7 @@
                 <div><label>FC Máxima (ppm)</label><input type="number" id="fichaFcmax"></div>
               </div>
               <div class="grid-2">
-                <div><label>Contacto de Emergencia</label><input type="text" id="fichaEmergencia"></div>
+                <div><label>Contacto de Emergencia (Sin puntos)</label><input type="text" id="fichaEmergencia"></div>
                 <div><label>Obra Social / Clínica</label><input type="text" id="fichaObraSocial"></div>
               </div>
               <div>
@@ -384,7 +384,7 @@
           <div class="card">
             <h2>
               <span>📈 Periodización y Volumen por Semana</span>
-              <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.8rem;">
+              <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.84rem;">
                 <option value="Running">🏃‍♂️ Solo Running (km)</option>
                 <option value="Fuerza">🏋️‍♂️ Solo Fuerza (series/min)</option>
                 <option value="Todas">🌐 Todas las Sesiones</option>
@@ -503,6 +503,11 @@
         ]
       }
     };
+
+    function limpiarTelefonoPuntos(val) {
+      if (!val) return "";
+      return String(val).trim().replace(/(\d)\.(?=\d{3}(\D|$))/g, "$1");
+    }
 
     function limpiarFechaVisual(val) {
       if (!val || val === "-") return "";
@@ -845,7 +850,7 @@
                 ${edadBadge}
                 <span class="badge ${esBaja ? 'badge-muted' : cuota.badgeClass}">${esBaja ? 'DE BAJA' : cuota.label}</span>
               </h4>
-              <p>📧 ${a.email} | 📱 ${a.celular || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
+              <p>📧 ${a.email} | 📱 ${limpiarTelefonoPuntos(a.celular) || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
             </div>
             <div class="alumno-actions">
               <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${emailNorm}')">🩺 Ficha Atleta</button>
@@ -920,11 +925,11 @@
         document.getElementById("fichaNombre").value = p["Nombre"] || "";
         document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || p["Fecha de Nacimiento"] || "");
         document.getElementById("fichaPin").value = p["PIN"] || "";
-        document.getElementById("fichaCelular").value = p["Celular"] || "";
+        document.getElementById("fichaCelular").value = limpiarTelefonoPuntos(p["Celular"] || "");
         document.getElementById("fichaVam").value = vamLimpia;
         document.getElementById("fichaFcr").value = p["FC Reposo"] || "";
         document.getElementById("fichaFcmax").value = p["FC Max"] || "";
-        document.getElementById("fichaEmergencia").value = p["Contacto Emergencia"] || "";
+        document.getElementById("fichaEmergencia").value = limpiarTelefonoPuntos(p["Contacto Emergencia"] || p["Contacto de Emergencia"] || "");
         document.getElementById("fichaObraSocial").value = p["Obra Social"] || "";
         document.getElementById("fichaSangre").value = `${p["Grupo Sanguíneo"] || ""} ${p["Donante"] ? '(' + p["Donante"] + ')' : ''}`.trim();
         document.getElementById("fichaAlergias").value = p["Alergias / Observaciones"] || "";
@@ -971,17 +976,22 @@
       const email = document.getElementById("espejoSelectAtleta").value;
       if (!email) return;
 
+      const celLimpio = limpiarTelefonoPuntos(document.getElementById("fichaCelular").value);
+      const emgLimpio = limpiarTelefonoPuntos(document.getElementById("fichaEmergencia").value);
+      document.getElementById("fichaCelular").value = celLimpio;
+      document.getElementById("fichaEmergencia").value = emgLimpio;
+
       const payload = {
         action: "guardarPerfil",
         email: email,
         nombre: document.getElementById("fichaNombre").value.trim(),
         fechaNac: formatFechaEnvio(document.getElementById("fichaFechaNac").value),
         pin: document.getElementById("fichaPin").value.trim(),
-        celular: document.getElementById("fichaCelular").value.trim(),
+        celular: celLimpio,
         vam: document.getElementById("fichaVam").value.trim(),
         fcr: document.getElementById("fichaFcr").value.trim(),
         fcmax: document.getElementById("fichaFcmax").value.trim(),
-        emergencia: document.getElementById("fichaEmergencia").value.trim(),
+        emergencia: emgLimpio,
         obraSocial: document.getElementById("fichaObraSocial").value.trim(),
         sangre: document.getElementById("fichaSangre").value.trim(),
         alergias: document.getElementById("fichaAlergias").value.trim()
@@ -1079,7 +1089,7 @@
     function renderizarTestsEspejo(tests) {
       const cont = document.getElementById("espejoListaTests");
       if (!tests.length) {
-        cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">El atleta aún no tiene evaluaciones cargadas.</p>`;
+        cont.innerHTML = `<p style="color:var(--muted); font-size:0.88rem;">El atleta aún no tiene evaluaciones cargadas.</p>`;
         return;
       }
       cont.innerHTML = tests.slice().reverse().map(t => {
@@ -1089,11 +1099,11 @@
             <div>
               <span class="badge">${fechaLimpia}</span>
               <strong style="margin-left:6px;">${t["Ejercicio / Prueba"] || t["Tipo Test"] || "Test"}</strong>
-              <div style="font-size:0.78rem; color:var(--muted); margin-top:3px;">${t["Notas"] || ""}</div>
+              <div style="font-size:0.8rem; color:var(--muted); margin-top:3px;">${t["Notas"] || ""}</div>
             </div>
             <div style="text-align:right;">
               <div style="font-weight:700; color:var(--accent);">Marca: ${t["Resultado / Marca"] || "-"}</div>
-              <div style="font-size:0.78rem; color:var(--primary);">Calculado: ${t["VAM / 1RM Estimado"] || "-"}</div>
+              <div style="font-size:0.8rem; color:var(--primary);">Calculado: ${t["VAM / 1RM Estimado"] || "-"}</div>
             </div>
           </div>
         `;
@@ -1103,7 +1113,7 @@
     function renderizarFeedbackEspejo(feedbacks) {
       const cont = document.getElementById("espejoListaFeedback");
       if (!feedbacks.length) {
-        cont.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">Sin registros de RPE / Feedback todavía.</p>`;
+        cont.innerHTML = `<p style="color:var(--muted); font-size:0.88rem;">Sin registros de RPE / Feedback todavía.</p>`;
         return;
       }
       cont.innerHTML = feedbacks.slice(-10).reverse().map(f => {
@@ -1114,7 +1124,7 @@
               <strong>${fechaLimpia} • ${f["Tipo de Sesión"] || "Sesión"}</strong>
               <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10 (${f["Duración (min)"] || "-"})</span>
             </div>
-            <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
+            <div style="font-size:0.84rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
           </div>
         `;
       }).join("");
@@ -1352,7 +1362,7 @@
           const bloquesHtml = s.bloques.map(b => `
             <div class="bloque-item-admin">
               <strong>${b["Orden / Bloque"] || "-"}: ${b["Ejercicio"] || "-"}</strong><br>
-              <span style="color: var(--muted); font-size: 0.78rem;">
+              <span style="color: var(--muted); font-size: 0.84rem;">
                 Series/Reps: <strong>${b["Series y Repeticiones"] || "-"}</strong> | 
                 Carga: <strong>${b["Carga / Intensidad"] || "-"}</strong> | 
                 Micro: ${b["Micropausa"] || "-"} | Macro: ${b["Macropausa"] || "-"}
@@ -1368,9 +1378,9 @@
                 <div>
                   <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
                     <span class="badge">${s.fechaRaw}</span>
-                    <strong style="font-size: 1rem; color: var(--text);">${s.tipo}</strong>
+                    <strong style="font-size: 1.05rem; color: var(--text);">${s.tipo}</strong>
                   </div>
-                  <div style="font-size: 0.8rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
+                  <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
                 </div>
                 <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
                   <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
@@ -1479,7 +1489,7 @@
       const html = `
         <div class="bloque-row" id="bloque-${id}">
           <div class="bloque-header">
-            <span style="font-weight:bold; color:var(--primary);">Ejercicio #${id}</span>
+            <span style="font-weight:bold; color:var(--primary); text-transform:uppercase;">Ejercicio #${id}</span>
             <button class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar">✖</button>
           </div>
           <div class="grid-2">
@@ -1605,7 +1615,7 @@
       const email = document.getElementById("nuevoEmail").value.trim();
       const pin = document.getElementById("nuevoPin").value.trim();
       const fechaNac = formatFechaEnvio(document.getElementById("nuevoFechaNac").value);
-      const cel = document.getElementById("nuevoCelular").value.trim();
+      const cel = limpiarTelefonoPuntos(document.getElementById("nuevoCelular").value);
       if (!nombre || !email || !pin) return alert("Completa al menos Nombre, Email y PIN.");
 
       try {
