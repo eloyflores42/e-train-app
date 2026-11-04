@@ -134,7 +134,7 @@
         <button id="tab-btn-asignar" class="coach-tab-btn active" onclick="cambiarSeccionCoach('asignar', this)">📝 Asignar Rutina</button>
         <button id="tab-btn-gestion" class="coach-tab-btn" onclick="cambiarSeccionCoach('gestion', this)">📋 Rutinas Asignadas</button>
         <button id="tab-btn-alumnos" class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alumnos & Pagos</button>
-        <button id="tab-btn-espejo" class="coach-tab-btn" onclick="cambiarSeccionCoach('espejo', this)">🩺 Fichas & Espejo</button>
+        <button id="tab-btn-espejo" class="coach-tab-btn" onclick="cambiarSeccionCoach('espejo', this)">🩺 FICHAS ATLETAS</button>
       </div>
 
       <!-- SECCIÓN 1: ASIGNAR RUTINA -->
@@ -310,10 +310,10 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 4: FICHAS DE ALUMNOS, EDAD Y MODO ESPEJO -->
+      <!-- SECCIÓN 4: FICHAS ATLETAS -->
       <section id="coach-sec-espejo" class="hidden">
         <div class="card">
-          <h2>🩺 Seleccionar Atleta para Supervisión (Ficha & Modo Espejo)</h2>
+          <h2>🩺 Seleccionar Atleta (FICHAS ATLETAS)</h2>
           <div class="grid-2" style="align-items: end;">
             <div>
               <label>Atleta</label>
@@ -383,7 +383,7 @@
 
           <div class="card">
             <h2>
-              <span>📈 Modo Espejo: Periodización y Volumen por Semana</span>
+              <span>📈 Periodización y Volumen por Semana</span>
               <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.8rem;">
                 <option value="Running">🏃‍♂️ Solo Running (km)</option>
                 <option value="Fuerza">🏋️‍♂️ Solo Fuerza (series/min)</option>
@@ -504,9 +504,6 @@
       }
     };
 
-    // ========================================================================
-    // FUNCIONES SANITIZADORAS DE FECHAS, PERIODOS Y VAM (Anti GMT-0300)
-    // ========================================================================
     function limpiarFechaVisual(val) {
       if (!val || val === "-") return "";
       const str = String(val).trim();
@@ -555,7 +552,6 @@
         const n = parseFloat(str.replace(",", "."));
         if (!isNaN(n) && n > 0 && n < 35) return String(n);
       }
-      // Si no había VAM válida en el perfil, buscar en los tests del atleta
       for (let i = testsArr.length - 1; i >= 0; i--) {
         const t = testsArr[i];
         const nom = String(t["Ejercicio / Prueba"] || t["Tipo Test"] || "").toLowerCase();
@@ -852,7 +848,7 @@
               <p>📧 ${a.email} | 📱 ${a.celular || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
             </div>
             <div class="alumno-actions">
-              <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${emailNorm}')">🩺 Ficha / Espejo</button>
+              <button class="btn btn-outline" onclick="irAEspejoDeAtleta('${emailNorm}')">🩺 Ficha Atleta</button>
               <button class="btn btn-outline" onclick="seleccionarParaPago('${emailNorm}')" style="border-color:var(--accent); color:var(--accent);">💳 Cuota</button>
               ${esBaja
                 ? `<button class="btn btn-outline" onclick="cambiarCondicionAtleta('${emailNorm}', 'Activo')" style="border-color:var(--accent); color:var(--accent);">♻️ Reactivar</button>`
@@ -895,9 +891,7 @@
       }
     }
 
-    // ========================================================================
-    // FICHA MÉDICA, EDAD Y MODO ESPEJO
-    // ========================================================================
+    // FICHAS ATLETAS
     function irAEspejoDeAtleta(email) {
       cambiarSeccionCoach('espejo', document.getElementById('tab-btn-espejo'));
       document.getElementById("espejoSelectAtleta").value = String(email || "").trim().toLowerCase();
@@ -915,7 +909,7 @@
       try {
         const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
-        if (data.status !== "success") return alert(data.message || "Error al cargar espejo.");
+        if (data.status !== "success") return alert(data.message || "Error al cargar ficha.");
 
         paqueteEspejoActual = data;
         const p = data.perfil || {};
@@ -946,7 +940,7 @@
 
         cont.classList.remove("hidden");
       } catch (e) {
-        alert("Error de conexión al consultar Modo Espejo.");
+        alert("Error de conexión al consultar Ficha del Atleta.");
       }
     }
 
