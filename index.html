@@ -19,7 +19,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Barlow Semi Condensed', system-ui, -apple-system, sans-serif; letter-spacing: 0.2px; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     
-    /* PANTALLA DE PRECARGA INTERNA */
     #etrain-splash {
       position: fixed; inset: 0; background-color: var(--bg); z-index: 99999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -91,11 +90,6 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
     
-    /* ESTILOS ENLACE STRAVA */
-    .watch-box { background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--primary); border-radius: 8px; padding: 11px 12px; margin-top: 12px; }
-    .strava-input-group { display: flex; gap: 6px; margin-top: 6px; }
-    .strava-input-group input { background: #0b1120; border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; flex: 1; }
-
     .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .period-badge { padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
 
@@ -189,7 +183,7 @@
           </div>
 
           <div class="help-text" id="ayudaRutinas">
-            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos. Pega el <strong>link de tu actividad de Strava</strong>, anota tu <strong>RPE (1-10)</strong> y presiona <strong>Guardar</strong>.
+            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos. Ingresa el <strong>volumen real y su unidad</strong>, anota tu <strong>RPE (1-10)</strong> y presiona <strong>Guardar</strong>.
           </div>
 
           <div class="tabs" id="barraFiltrosLista" style="margin-bottom: 14px;">
@@ -218,7 +212,7 @@
 
         <div class="card" id="cardGraficoVolumen">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
-            <h2 style="margin: 0; border: none; padding: 0;">📊 Planificado vs. Real (Strava) vs. RPE</h2>
+            <h2 style="margin: 0; border: none; padding: 0;">📊 Planificado vs. Real vs. RPE</h2>
             <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 175px; padding: 6px 10px; font-size: 0.88rem;">
               <option value="Running">🏃‍♂️ Running (km)</option>
               <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (series/min)</option>
@@ -226,7 +220,7 @@
             </select>
           </div>
           <div class="help-text">
-            📈 <strong>Análisis de Triple Capa:</strong> Compara el <strong>Volumen Planificado</strong> (azul), el <strong>Volumen Real de Strava</strong> (verde) y tu <strong>Esfuerzo RPE promedio</strong> (línea naranja) semana a semana.
+            📈 <strong>Análisis de Triple Capa:</strong> Compara el <strong>Volumen Planificado</strong> (azul), el <strong>Volumen Real Completado</strong> (verde) y tu <strong>Esfuerzo RPE promedio</strong> (línea naranja) semana a semana.
           </div>
           <div class="chart-wrapper">
             <canvas id="volumenSemanalChart"></canvas>
@@ -621,46 +615,6 @@
     }
     function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
-
-    /* =========================================================================
-       EXTRACTOR INTELIGENTE DE LINK DE STRAVA
-       ========================================================================= */
-    function extraerTagStravaDeNota(notaStr) {
-      if (!notaStr) return null;
-      const match = String(notaStr).match(/\[🔗 Strava:\s*([^\]]+)\]/i);
-      if (!match) return null;
-      return match[1].trim();
-    }
-
-    function vincularStravaAtleta(idx) {
-      const inputEl = document.getElementById(`strava-link-${idx}`);
-      const statusEl = document.getElementById(`strava-status-${idx}`);
-      if (!inputEl) return;
-      const linkVal = inputEl.value.trim();
-      if (!linkVal || (!linkVal.includes("strava.com") && !linkVal.includes("strava.app.link"))) {
-        alert("⚠️ Ingresa un enlace válido de Strava (ej: https://www.strava.com/activities/...)");
-        return;
-      }
-
-      const tagStr = `[🔗 Strava: ${linkVal}]`;
-      const notaInput = document.getElementById(`nota-${idx}`);
-      if (notaInput) {
-        const limpia = notaInput.value.replace(/\[🔗 Strava:[^\]]+\]\s*/gi, "").trim();
-        notaInput.value = limpia ? `${tagStr}\n${limpia}` : tagStr;
-      }
-
-      const compSelect = document.getElementById(`comp-${idx}`);
-      if (compSelect) compSelect.value = "Sí";
-
-      const s = state.sesionesAgrupadas[idx];
-      if (s) {
-        s.notaAtleta = notaInput ? notaInput.value : tagStr;
-        s.completado = "Sí";
-      }
-
-      if (statusEl) statusEl.textContent = "✔ Enlace vinculado (Toca Guardar para confirmar)";
-      renderVolumenChart();
-    }
 
     window.addEventListener("DOMContentLoaded", () => {
       const savedEmail = localStorage.getItem("etrain_email");
@@ -1140,10 +1094,12 @@
         const matchNum = volLower.match(/([\d.,]+)/);
         const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
         const rpeVal = parseNum(s.rpe, 0);
-        const tagStrava = extraerTagStravaDeNota(s.notaAtleta);
-        const realKm = (tagStrava && discFiltro !== "Fuerza") ? valNum : 0; // Si pegó link de Strava, toma el volumen de la sesión como real completado
+        
+        // Extracción de volumen real y unidad desde notaAtleta
+        const matchVolReal = String(s.notaAtleta || "").match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
+        const realVal = matchVolReal ? parseFloat(matchVolReal[1].replace(",", ".")) : 0;
 
-        if (valNum <= 0 && rpeVal <= 0) return;
+        if (valNum <= 0 && rpeVal <= 0 && realVal <= 0) return;
 
         const lunes = obtenerLunesSemana(fObj);
         const sortKey = lunes.toISOString().split("T")[0];
@@ -1154,7 +1110,7 @@
         }
         const entry = semanasMap.get(sortKey);
         if (valNum > 0) entry.total += valNum;
-        if (tagStrava && valNum > 0) entry.realTotal += valNum;
+        if (realVal > 0 && discFiltro !== "Fuerza") entry.realTotal += realVal;
         if (rpeVal > 0) {
           entry.rpeSum += rpeVal;
           entry.rpeCount += 1;
@@ -1221,7 +1177,7 @@
       if (discFiltro !== "Fuerza") {
         datasets.push({
           type: "bar",
-          label: "Real Strava (km)",
+          label: "Real Completado",
           data: dataReal,
           backgroundColor: "rgba(16, 185, 129, 0.7)",
           borderColor: "#10b981",
@@ -1409,6 +1365,13 @@
     function obtenerGrupoVideo(v) { return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || ""; }
     function obtenerDescVideo(v) { return v["Descripción"] || v["Descripcion"] || v.descripcion || ""; }
 
+    function extraerVolumenRealGuardado(notaStr) {
+      if (!notaStr) return { val: "", unidad: "km" };
+      const m = String(notaStr).match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
+      if (!m) return { val: "", unidad: "km" };
+      return { val: m[1], unidad: m[2].toLowerCase() };
+    }
+
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
       const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
@@ -1432,44 +1395,49 @@
           </div>`;
       }).join("");
 
-      const linkStravaPrevio = extraerTagStravaDeNota(s.notaAtleta);
-      const badgeStravaHeader = linkStravaPrevio ? `<span class="badge" style="background:rgba(252,81,9,0.2); color:#ff5722; border:1px solid #ff5722;">🔗 Strava OK</span>` : "";
+      const volGuardado = extraerVolumenRealGuardado(s.notaAtleta);
       const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
 
       return `<div class="card" style="background:#152033; margin-bottom:14px;">
           <div class="rutina-header" onclick="toggleSesion(${idx})">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeStravaHeader}</div>
-            <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.88rem; color:var(--muted); font-weight:700;">${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}</div>
+            <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.88rem; color:var(--muted); font-weight:700;">Plan: ${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
           </div>
           
           <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
             ${notaProfeHtml} ${bloquesHtml}
 
-            <div class="watch-box">
-              <strong style="color:var(--primary); font-size:0.9rem; display:block;">🔗 Actividad de Strava</strong>
-              <span style="color:var(--muted); font-size:0.78rem;">Pega el enlace de tu entrenamiento completado en Strava.</span>
-              <div class="strava-input-group">
-                <input type="url" id="strava-link-${idx}" value="${linkStravaPrevio || ''}" placeholder="https://www.strava.com/activities/..." />
-                <button type="button" class="btn btn-outline" onclick="vincularStravaAtleta(${idx})" style="white-space:nowrap;">Vincular</button>
+            <div class="grid-2" style="margin-top:12px; gap:10px;">
+              <div>
+                <label>Volumen Real Completado</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="number" step="any" id="vol-real-${idx}" value="${volGuardado.val}" placeholder="Ej: 8.5" style="flex:1;" />
+                  <select id="vol-unidad-${idx}" style="width:110px;">
+                    <option value="km" ${volGuardado.unidad === 'km' ? 'selected' : ''}>km</option>
+                    <option value="min" ${volGuardado.unidad === 'min' ? 'selected' : ''}>min</option>
+                    <option value="series" ${volGuardado.unidad === 'series' ? 'selected' : ''}>series</option>
+                    <option value="pasadas" ${volGuardado.unidad === 'pasadas' ? 'selected' : ''}>pasadas</option>
+                    <option value="reps" ${volGuardado.unidad === 'reps' ? 'selected' : ''}>reps</option>
+                  </select>
+                </div>
               </div>
-              <div id="strava-status-${idx}" style="font-size:0.8rem; color:var(--accent); margin-top:4px; font-weight:700;"></div>
-            </div>
-
-            <div class="grid-3" style="margin-top:12px; align-items:start;">
               <div>
                 <label>RPE (Esfuerzo 1-10)</label>
                 <input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" placeholder="Ej: 7" />
-                <span class="field-hint">1 = Suave | 10 = Máximo</span>
               </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:10px; gap:10px; align-items:end;">
               <div>
                 <label>Estado de la Sesión</label>
                 <select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select>
               </div>
-              <div style="padding-top: 22px;">
-                <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button>
+              <div>
+                <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})" style="height:41px;">Guardar Registro</button>
               </div>
             </div>
-            <div style="margin-top: 10px;"><label>Nota para el Profe</label><textarea id="nota-${idx}" placeholder="Sensaciones, molestias, clima...">${s.notaAtleta || ""}</textarea></div>
+            
+            <div style="margin-top: 10px;"><label>Nota / Sensaciones para el Profe</label><textarea id="nota-${idx}" placeholder="Molestias, clima, sensaciones...">${s.notaAtleta ? s.notaAtleta.replace(/\[📊 Real:[^\]]+\]\s*/gi, "") : ""}</textarea></div>
           </div>
         </div>`;
     }
@@ -1560,12 +1528,26 @@
     }
 
     async function registrarRPE(idx) {
-      const s = state.sesionesAgrupadas[idx]; s.rpe = document.getElementById(`rpe-${idx}`).value; s.completado = document.getElementById(`comp-${idx}`).value; s.notaAtleta = document.getElementById(`nota-${idx}`).value;
+      const s = state.sesionesAgrupadas[idx]; 
+      s.rpe = document.getElementById(`rpe-${idx}`).value; 
+      s.completado = document.getElementById(`comp-${idx}`).value; 
+      
+      const volVal = document.getElementById(`vol-real-${idx}`).value.trim();
+      const volUnidad = document.getElementById(`vol-unidad-${idx}`).value;
+      const notaLimpia = document.getElementById(`nota-${idx}`).value.trim();
+      
+      let notaFinal = notaLimpia;
+      if (volVal) {
+        const tagReal = `[📊 Real: ${volVal} ${volUnidad}]`;
+        notaFinal = notaLimpia ? `${tagReal}\n${notaLimpia}` : tagReal;
+      }
+      s.notaAtleta = notaFinal;
+
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar Registro"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
