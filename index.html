@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-TRAIN | Plataforma Atletas</title>
   <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-home.png">
+  <link rel="icon" type="image/png" href="./icon-home.png">
+  <meta name="theme-color" content="#0f172a">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
   
@@ -16,6 +19,19 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Barlow Semi Condensed', system-ui, -apple-system, sans-serif; letter-spacing: 0.2px; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     
+    /* PANTALLA DE PRECARGA INTERNA (Usa el logo blanco original) */
+    #etrain-splash {
+      position: fixed; inset: 0; background-color: var(--bg); z-index: 99999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #etrain-splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-logo { max-height: 115px; width: auto; object-fit: contain; margin-bottom: 22px; animation: pulseSplash 1.6s infinite ease-in-out; }
+    .splash-spinner { width: 36px; height: 36px; border: 3px solid rgba(59, 130, 246, 0.2); border-top-color: var(--primary); border-radius: 50%; animation: spinSplash 0.8s linear infinite; }
+    .splash-text { margin-top: 14px; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+    @keyframes spinSplash { to { transform: rotate(360deg); } }
+    @keyframes pulseSplash { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.97); } }
+
     header { background: var(--card); padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: nowrap; gap: 8px; justify-content: space-between; align-items: center; overflow-x: auto; position: sticky; top: 0; z-index: 50; }
     .brand-container { display: flex; align-items: center; gap: 8px; flex-shrink: 1; }
     header h1 { font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.15rem; letter-spacing: 0.8px; color: var(--primary); margin: 0; white-space: nowrap; }
@@ -105,6 +121,13 @@
 </head>
 <body>
 
+  <!-- PANTALLA DE PRECARGA INTERNA (Usa el logo original dentro de la app) -->
+  <div id="etrain-splash">
+    <img src="./logo.png" alt="E-TRAIN" class="splash-logo" onerror="this.style.display='none'">
+    <div class="splash-spinner"></div>
+    <div class="splash-text" id="splashStatusText">Cargando plataforma...</div>
+  </div>
+
   <div id="loginScreen">
     <img src="./logo.png" alt="E-TRAIN Logo" style="max-height: 130px; margin-bottom: 15px;" onerror="this.style.display='none'">
     <h2>E-TRAIN</h2>
@@ -190,7 +213,7 @@
 
         <div class="card" id="cardGraficoVolumen">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
-            <h2 style="margin: 0; border: none; padding: 0;">📊 Evolución del Volumen Semanal</h2>
+            <h2 style="margin: 0; border: none; padding: 0;">📊 Carga Semanal vs. Esfuerzo (RPE)</h2>
             <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 175px; padding: 6px 10px; font-size: 0.88rem;">
               <option value="Running">🏃‍♂️ Running (km)</option>
               <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (series/min)</option>
@@ -198,7 +221,7 @@
             </select>
           </div>
           <div class="help-text">
-            📈 <strong>¿Qué muestra este gráfico?</strong> Suma tus kilómetros o series de cada semana para que identifiques visualmente tus semanas de carga progresiva, semanas de choque (pico) y semanas de descarga (recuperación).
+            📈 <strong>¿Qué muestra este gráfico?</strong> Las barras azules muestran tu volumen semanal planificado y la línea naranja refleja tu <strong>RPE promedio (esfuerzo percibido)</strong> a medida que completas las sesiones.
           </div>
           <div class="chart-wrapper">
             <canvas id="volumenSemanalChart"></canvas>
@@ -426,6 +449,14 @@
     let chartInstance = null;
     let volumenChartInstance = null;
 
+    function ocultarSplash() {
+      const splash = document.getElementById('etrain-splash');
+      if (splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+        setTimeout(() => { if (splash.parentNode) splash.remove(); }, 450);
+      }
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault(); deferredPrompt = e;
       const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.remove('hidden');
@@ -457,7 +488,6 @@
       cuotaVencida: false
     };
 
-    // Limpia puntos de miles en teléfonos ("2.235.947.122" -> "2235947122" o "Mamá - 2.235.947.122" -> "Mamá - 2235947122")
     function limpiarTelefonoPuntos(val) {
       if (!val) return "";
       return String(val).trim().replace(/(\d)\.(?=\d{3}(\D|$))/g, "$1");
@@ -588,25 +618,46 @@
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const savedEmail = localStorage.getItem("etrain_email"); const savedPin = localStorage.getItem("etrain_pin");
-      if (savedEmail && savedPin) { document.getElementById("loginEmail").value = savedEmail; document.getElementById("loginPin").value = savedPin; iniciarSesion(); }
+      const savedEmail = localStorage.getItem("etrain_email");
+      const savedPin = localStorage.getItem("etrain_pin");
+      if (savedEmail && savedPin) {
+        const st = document.getElementById("splashStatusText");
+        if (st) st.textContent = "Sincronizando tus rutinas...";
+        document.getElementById("loginEmail").value = savedEmail;
+        document.getElementById("loginPin").value = savedPin;
+        iniciarSesion();
+      } else {
+        setTimeout(ocultarSplash, 450);
+      }
     });
 
     async function iniciarSesion() {
       const email = document.getElementById("loginEmail").value.trim(); const pin = document.getElementById("loginPin").value.trim();
       const errDiv = document.getElementById("loginError"); const btn = document.getElementById("btnLoginBtn");
-      if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; return; }
+      if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; ocultarSplash(); return; }
       errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
 
       try {
         const cacheBuster = new Date().getTime(); 
         const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${cacheBuster}`);
         const data = await res.json();
-        if (data.status === "error") { errDiv.textContent = data.message; btn.disabled = false; btn.textContent = "Ingresar a la App"; return; }
+        if (data.status === "error") {
+          errDiv.textContent = data.message;
+          btn.disabled = false;
+          btn.textContent = "Ingresar a la App";
+          ocultarSplash();
+          return;
+        }
         localStorage.setItem("etrain_email", email); localStorage.setItem("etrain_pin", pin);
         procesarDatosRecibidos(data);
         document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("appContainer").classList.remove("hidden");
-      } catch (err) { errDiv.textContent = "Error de conexión."; btn.disabled = false; btn.textContent = "Ingresar"; }
+        ocultarSplash();
+      } catch (err) {
+        errDiv.textContent = "Error de conexión.";
+        btn.disabled = false;
+        btn.textContent = "Ingresar";
+        ocultarSplash();
+      }
     }
 
     function cerrarSesion() { localStorage.removeItem("etrain_email"); localStorage.removeItem("etrain_pin"); location.reload(); }
@@ -1043,30 +1094,38 @@
 
         const matchNum = volLower.match(/([\d.,]+)/);
         const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
-        if (valNum <= 0) return;
+        const rpeVal = parseNum(s.rpe, 0);
+        if (valNum <= 0 && rpeVal <= 0) return;
 
         const lunes = obtenerLunesSemana(fObj);
         const sortKey = lunes.toISOString().split("T")[0];
         const labelSem = `Sem ${String(lunes.getDate()).padStart(2, '0')}/${String(lunes.getMonth() + 1).padStart(2, '0')}`;
 
         if (!semanasMap.has(sortKey)) {
-          semanasMap.set(sortKey, { key: sortKey, label: labelSem, total: 0 });
+          semanasMap.set(sortKey, { key: sortKey, label: labelSem, total: 0, rpeSum: 0, rpeCount: 0 });
         }
-        semanasMap.get(sortKey).total += valNum;
+        const entry = semanasMap.get(sortKey);
+        if (valNum > 0) entry.total += valNum;
+        if (rpeVal > 0) {
+          entry.rpeSum += rpeVal;
+          entry.rpeCount += 1;
+        }
       });
 
       const semanasOrdenadas = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
       let labels = semanasOrdenadas.map(x => x.label);
       let dataVols = semanasOrdenadas.map(x => +(x.total.toFixed(1)));
+      let dataRpe = semanasOrdenadas.map(x => x.rpeCount > 0 ? +((x.rpeSum / x.rpeCount).toFixed(1)) : null);
 
       if (!labels.length && discFiltro === "Todas" && state.periodizacion && Array.isArray(state.periodizacion.semanasLabels)) {
         labels = state.periodizacion.semanasLabels;
         dataVols = state.periodizacion.volumenes || [];
+        dataRpe = labels.map(() => null);
       }
 
       if (volumenChartInstance) { volumenChartInstance.destroy(); volumenChartInstance = null; }
 
-      if (!labels.length || !dataVols.length) {
+      if (!labels.length || (!dataVols.some(v => v > 0) && !dataRpe.some(r => r !== null))) {
         canvas.parentElement.classList.add("hidden");
         emptyMsg.classList.remove("hidden");
         if (badgeState) { badgeState.textContent = "🟢 Fase Base"; badgeState.style.background = "var(--primary)"; }
@@ -1099,36 +1158,69 @@
         type: "bar",
         data: {
           labels: labels,
-          datasets: [{
-            label: `Volumen Semanal (${unidadLabel})`,
-            data: dataVols,
-            backgroundColor: "rgba(59, 130, 246, 0.6)",
-            borderColor: "#3b82f6",
-            borderWidth: 2,
-            borderRadius: 6
-          }]
+          datasets: [
+            {
+              type: "bar",
+              label: `Volumen Planificado (${unidadLabel})`,
+              data: dataVols,
+              backgroundColor: "rgba(59, 130, 246, 0.6)",
+              borderColor: "#3b82f6",
+              borderWidth: 2,
+              borderRadius: 6,
+              yAxisID: "y",
+              order: 2
+            },
+            {
+              type: "line",
+              label: "RPE Promedio (1-10)",
+              data: dataRpe,
+              borderColor: "#f59e0b",
+              backgroundColor: "rgba(245, 158, 11, 0.2)",
+              borderWidth: 3,
+              pointBackgroundColor: "#f59e0b",
+              pointBorderColor: "#fff",
+              pointRadius: 5,
+              tension: 0.3,
+              spanGaps: true,
+              yAxisID: "y1",
+              order: 1
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
+            legend: {
+              display: true,
+              labels: { color: "#f8fafc", font: { size: 11, weight: "600" } }
+            },
             tooltip: {
               backgroundColor: "#0f172a",
               titleColor: "#3b82f6",
               bodyColor: "#f8fafc",
               borderColor: "#334155",
-              borderWidth: 1,
-              callbacks: {
-                label: function(context) {
-                  return ` Volumen total: ${context.parsed.y} ${unidadLabel}`;
-                }
-              }
+              borderWidth: 1
             }
           },
           scales: {
             x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
-            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }
+            y: {
+              type: "linear",
+              position: "left",
+              ticks: { color: "#94a3b8" },
+              grid: { color: "rgba(51, 65, 85, 0.4)" },
+              title: { display: true, text: `Volumen (${unidadLabel})`, color: "#3b82f6", font: { size: 11, weight: "700" } }
+            },
+            y1: {
+              type: "linear",
+              position: "right",
+              min: 0,
+              max: 10,
+              ticks: { color: "#f59e0b", stepSize: 2 },
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "RPE (1-10)", color: "#f59e0b", font: { size: 11, weight: "700" } }
+            }
           }
         }
       });
@@ -1404,7 +1496,7 @@
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
         await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; renderRutinas(); }, 1200);
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
