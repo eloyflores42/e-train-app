@@ -1442,7 +1442,7 @@
         </div>`;
     }
 
-    function renderRutinas() {
+   function renderRutinas() {
       const container = document.getElementById("rutinasContainer");
       const barraFiltros = document.getElementById("barraFiltrosLista");
       const calWrapper = document.getElementById("calendarioWrapper");
@@ -1521,9 +1521,9 @@
         return;
       }
 
+      // 💡 CAMBIO CLAVE: Forzamos el segundo parámetro en 'true' para que TODAS nazcan retraídas por defecto
       container.innerHTML = sesionesFiltradas.map(s => {
-        const plegadoPorDefecto = (state.filtroRutina !== "pendientes" && state.filtroRutina !== "semana" && s.completado === "Sí");
-        return construirTarjetaSesionHTML(s, plegadoPorDefecto);
+        return construirTarjetaSesionHTML(s, true); 
       }).join("");
     }
 
