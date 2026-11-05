@@ -19,7 +19,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Barlow Semi Condensed', system-ui, -apple-system, sans-serif; letter-spacing: 0.2px; }
     body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
     
-    /* PANTALLA DE PRECARGA INTERNA (Usa el logo blanco original) */
+    /* PANTALLA DE PRECARGA INTERNA */
     #etrain-splash {
       position: fixed; inset: 0; background-color: var(--bg); z-index: 99999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -91,15 +91,10 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
     
-    /* ESTILOS LECTOR DE RELOJ (.FIT / .GPX / .TCX) */
-    .watch-box { background: rgba(16, 185, 129, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 11px 12px; margin-top: 12px; }
-    .watch-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .watch-btn-label { display: inline-flex; align-items: center; gap: 6px; background: #0b1120; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 0.84rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin: 0; }
-    .watch-btn-label:hover { background: var(--accent); color: #000; }
-    .watch-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(16, 185, 129, 0.25); }
-    .watch-stat-pill { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; text-align: center; }
-    .watch-stat-pill span { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-    .watch-stat-pill strong { font-size: 0.98rem; color: var(--accent); }
+    /* ESTILOS ENLACE STRAVA */
+    .watch-box { background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--primary); border-radius: 8px; padding: 11px 12px; margin-top: 12px; }
+    .strava-input-group { display: flex; gap: 6px; margin-top: 6px; }
+    .strava-input-group input { background: #0b1120; border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; flex: 1; }
 
     .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .period-badge { padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
@@ -131,7 +126,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE PRECARGA INTERNA (Usa el logo original dentro de la app) -->
+  <!-- PANTALLA DE PRECARGA INTERNA -->
   <div id="etrain-splash">
     <img src="./logo.png" alt="E-TRAIN" class="splash-logo" onerror="this.style.display='none'">
     <div class="splash-spinner"></div>
@@ -194,7 +189,7 @@
           </div>
 
           <div class="help-text" id="ayudaRutinas">
-            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos con tus ritmos y pesos calculados. Puedes <strong>vincular el archivo de tu reloj (.FIT / .GPX)</strong>, anotar tu <strong>RPE (1-10)</strong> y presionar <strong>Guardar</strong>.
+            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos. Pega el <strong>link de tu actividad de Strava</strong>, anota tu <strong>RPE (1-10)</strong> y presiona <strong>Guardar</strong>.
           </div>
 
           <div class="tabs" id="barraFiltrosLista" style="margin-bottom: 14px;">
@@ -223,7 +218,7 @@
 
         <div class="card" id="cardGraficoVolumen">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
-            <h2 style="margin: 0; border: none; padding: 0;">📊 Planificado vs. Real (Reloj) vs. RPE</h2>
+            <h2 style="margin: 0; border: none; padding: 0;">📊 Planificado vs. Real (Strava) vs. RPE</h2>
             <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 175px; padding: 6px 10px; font-size: 0.88rem;">
               <option value="Running">🏃‍♂️ Running (km)</option>
               <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (series/min)</option>
@@ -231,7 +226,7 @@
             </select>
           </div>
           <div class="help-text">
-            📈 <strong>Análisis de Triple Capa:</strong> Compara el <strong>Volumen Planificado</strong> (azul), el <strong>Volumen Real de tu Reloj</strong> (verde) y tu <strong>Esfuerzo RPE promedio</strong> (línea naranja) semana a semana.
+            📈 <strong>Análisis de Triple Capa:</strong> Compara el <strong>Volumen Planificado</strong> (azul), el <strong>Volumen Real de Strava</strong> (verde) y tu <strong>Esfuerzo RPE promedio</strong> (línea naranja) semana a semana.
           </div>
           <div class="chart-wrapper">
             <canvas id="volumenSemanalChart"></canvas>
@@ -628,394 +623,43 @@
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
     /* =========================================================================
-       MOTOR NATIVO LECTOR DE RELOJ (.FIT / .GPX / .TCX)
+       EXTRACTOR INTELIGENTE DE LINK DE STRAVA
        ========================================================================= */
-    function formatearSegundosReloj(totalSec) {
-      if (!totalSec || totalSec <= 0) return "0:00";
-      const s = Math.round(totalSec);
-      const hrs = Math.floor(s / 3600);
-      const mins = Math.floor((s % 3600) / 60);
-      const secs = s % 60;
-      if (hrs > 0) return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      return `${mins}:${String(secs).padStart(2, '0')}`;
-    }
-
-    function calcularRitmoDesdeDistTiempo(distKm, tiempoSeg) {
-      if (!distKm || distKm <= 0.02 || !tiempoSeg || tiempoSeg <= 0) return "-:-- /km";
-      const paceMin = (tiempoSeg / 60) / distKm;
-      if (paceMin > 35 || paceMin < 1.5) return "-:-- /km";
-      const m = Math.floor(paceMin);
-      const s = Math.round((paceMin - m) * 60);
-      return s === 60 ? `${m + 1}:00 /km` : `${m}:${String(s).padStart(2, '0')} /km`;
-    }
-
-    function haversineMetros(lat1, lon1, lat2, lon2) {
-      const R = 6371000;
-      const toRad = x => (x * Math.PI) / 180;
-      const dLat = toRad(lat2 - lat1);
-      const dLon = toRad(lon2 - lon1);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    function parsearArchivoGPX(xmlText) {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "text/xml");
-      let pts = Array.from(xml.getElementsByTagName("trkpt"));
-      if (!pts.length) pts = Array.from(xml.getElementsByTagName("rtept"));
-      if (!pts.length) throw new Error("El archivo GPX no contiene puntos de recorrido (trkpt).");
-
-      let distMetros = 0;
-      let prevLat = null, prevLon = null;
-      let firstTime = null, lastTime = null;
-      let hrSum = 0, hrCount = 0, hrMax = 0;
-
-      pts.forEach(pt => {
-        const lat = parseFloat(pt.getAttribute("lat"));
-        const lon = parseFloat(pt.getAttribute("lon"));
-        if (!isNaN(lat) && !isNaN(lon)) {
-          if (prevLat !== null && prevLon !== null) {
-            const d = haversineMetros(prevLat, prevLon, lat, lon);
-            if (d < 250) distMetros += d;
-          }
-          prevLat = lat; prevLon = lon;
-        }
-        const tNodes = pt.getElementsByTagName("time");
-        if (tNodes.length && tNodes[0].textContent) {
-          const tMs = new Date(tNodes[0].textContent.trim()).getTime();
-          if (!isNaN(tMs)) {
-            if (firstTime === null || tMs < firstTime) firstTime = tMs;
-            if (lastTime === null || tMs > lastTime) lastTime = tMs;
-          }
-        }
-        const children = pt.getElementsByTagName("*");
-        for (let i = 0; i < children.length; i++) {
-          const tag = children[i].localName || children[i].nodeName;
-          if (tag && (tag.toLowerCase() === "hr" || tag.toLowerCase().endsWith(":hr") || tag.toLowerCase() === "heartrate")) {
-            const hrVal = parseInt(children[i].textContent.trim(), 10);
-            if (!isNaN(hrVal) && hrVal > 30 && hrVal < 245) {
-              hrSum += hrVal; hrCount++;
-              if (hrVal > hrMax) hrMax = hrVal;
-            }
-          }
-        }
-      });
-
-      const distKm = +(distMetros / 1000).toFixed(2);
-      const tiempoSeg = (firstTime !== null && lastTime !== null && lastTime > firstTime) ? Math.round((lastTime - firstTime) / 1000) : 0;
-      const hrAvg = hrCount > 0 ? Math.round(hrSum / hrCount) : null;
-      return {
-        distKm,
-        tiempoSeg,
-        tiempoStr: formatearSegundosReloj(tiempoSeg),
-        ritmoStr: calcularRitmoDesdeDistTiempo(distKm, tiempoSeg),
-        hrAvg,
-        hrMax: hrMax > 0 ? hrMax : null
-      };
-    }
-
-    function parsearArchivoTCX(xmlText) {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "text/xml");
-      const laps = Array.from(xml.getElementsByTagName("Lap"));
-      let distMetros = 0;
-      let tiempoSeg = 0;
-      let hrSum = 0, hrCount = 0, hrMax = 0;
-
-      laps.forEach(lap => {
-        const dNode = lap.getElementsByTagName("DistanceMeters")[0];
-        const tNode = lap.getElementsByTagName("TotalTimeSeconds")[0];
-        if (dNode) distMetros += parseFloat(dNode.textContent) || 0;
-        if (tNode) tiempoSeg += parseFloat(tNode.textContent) || 0;
-      });
-
-      const trkpts = Array.from(xml.getElementsByTagName("Trackpoint"));
-      let prevLat = null, prevLon = null;
-      let calcDistM = 0;
-      let firstTime = null, lastTime = null;
-
-      trkpts.forEach(tp => {
-        const latNode = tp.getElementsByTagName("LatitudeDegrees")[0];
-        const lonNode = tp.getElementsByTagName("LongitudeDegrees")[0];
-        if (latNode && lonNode) {
-          const lat = parseFloat(latNode.textContent);
-          const lon = parseFloat(lonNode.textContent);
-          if (!isNaN(lat) && !isNaN(lon)) {
-            if (prevLat !== null) calcDistM += haversineMetros(prevLat, prevLon, lat, lon);
-            prevLat = lat; prevLon = lon;
-          }
-        }
-        const tNode = tp.getElementsByTagName("Time")[0];
-        if (tNode) {
-          const ms = new Date(tNode.textContent.trim()).getTime();
-          if (!isNaN(ms)) {
-            if (firstTime === null || ms < firstTime) firstTime = ms;
-            if (lastTime === null || ms > lastTime) lastTime = ms;
-          }
-        }
-        const hrNode = tp.getElementsByTagName("HeartRateBpm")[0];
-        if (hrNode) {
-          const vNode = hrNode.getElementsByTagName("Value")[0];
-          if (vNode) {
-            const hr = parseInt(vNode.textContent.trim(), 10);
-            if (!isNaN(hr) && hr > 30 && hr < 245) {
-              hrSum += hr; hrCount++;
-              if (hr > hrMax) hrMax = hr;
-            }
-          }
-        }
-      });
-
-      if (distMetros <= 0 && calcDistM > 0) distMetros = calcDistM;
-      if (tiempoSeg <= 0 && firstTime && lastTime) tiempoSeg = Math.round((lastTime - firstTime) / 1000);
-      const distKm = +(distMetros / 1000).toFixed(2);
-      return {
-        distKm,
-        tiempoSeg: Math.round(tiempoSeg),
-        tiempoStr: formatearSegundosReloj(tiempoSeg),
-        ritmoStr: calcularRitmoDesdeDistTiempo(distKm, tiempoSeg),
-        hrAvg: hrCount > 0 ? Math.round(hrSum / hrCount) : null,
-        hrMax: hrMax > 0 ? hrMax : null
-      };
-    }
-
-    function parsearArchivoFITBinario(arrayBuffer) {
-      const view = new DataView(arrayBuffer);
-      if (view.byteLength < 14) throw new Error("Archivo .FIT demasiado corto o dañado.");
-      const headerSize = view.getUint8(0);
-      const dataSize = view.getUint32(4, true);
-      let offset = headerSize;
-      const endOffset = Math.min(headerSize + dataSize, view.byteLength);
-
-      const localDefs = {};
-      let sessionDistM = 0, sessionTimeS = 0, sessionHrAvg = 0, sessionHrMax = 0;
-      let maxRecordDistM = 0;
-      let firstTimestamp = null, lastTimestamp = null;
-      let recHrSum = 0, recHrCount = 0, recHrMax = 0;
-      let prevLat = null, prevLon = null, haversineDistM = 0;
-
-      while (offset < endOffset) {
-        if (offset >= view.byteLength) break;
-        const recordHeader = view.getUint8(offset++);
-        const isCompressedTimestamp = (recordHeader & 0x80) !== 0;
-
-        if (isCompressedTimestamp) {
-          const localNum = (recordHeader >> 5) & 0x03;
-          const def = localDefs[localNum];
-          if (!def) break;
-          offset = leerRegistroDatosFIT(view, offset, def);
-          continue;
-        }
-
-        const isDefinition = (recordHeader & 0x40) !== 0;
-        const hasDeveloperData = (recordHeader & 0x20) !== 0;
-        const localNum = recordHeader & 0x0F;
-
-        if (isDefinition) {
-          if (offset + 5 > view.byteLength) break;
-          offset++; // reserved
-          const arch = view.getUint8(offset++);
-          const littleEndian = arch === 0;
-          const globalMsgNum = view.getUint16(offset, littleEndian);
-          offset += 2;
-          const numFields = view.getUint8(offset++);
-          const fields = [];
-          for (let i = 0; i < numFields; i++) {
-            if (offset + 3 > view.byteLength) break;
-            const fNum = view.getUint8(offset++);
-            const fSize = view.getUint8(offset++);
-            const fType = view.getUint8(offset++);
-            fields.push({ fNum, fSize, fType });
-          }
-          let devFieldsSize = 0;
-          if (hasDeveloperData && offset < view.byteLength) {
-            const numDev = view.getUint8(offset++);
-            for (let i = 0; i < numDev; i++) {
-              if (offset + 3 > view.byteLength) break;
-              offset++;
-              const dSize = view.getUint8(offset++);
-              offset++;
-              devFieldsSize += dSize;
-            }
-          }
-          localDefs[localNum] = { littleEndian, globalMsgNum, fields, devFieldsSize };
-        } else {
-          const def = localDefs[localNum];
-          if (!def) break;
-          offset = leerRegistroDatosFIT(view, offset, def);
-        }
-      }
-
-      function leerValorFIT(view, pos, size, baseType, le) {
-        const typeNum = baseType & 0x1F;
-        if (pos + size > view.byteLength) return null;
-        if (size === 1) {
-          if (typeNum === 1) { const v = view.getInt8(pos); return v === 0x7F ? null : v; }
-          const v = view.getUint8(pos); return (v === 0xFF || v === 0x00 && typeNum === 0) ? null : v;
-        }
-        if (size === 2) {
-          if (typeNum === 3) { const v = view.getInt16(pos, le); return v === 0x7FFF ? null : v; }
-          const v = view.getUint16(pos, le); return v === 0xFFFF ? null : v;
-        }
-        if (size === 4) {
-          if (typeNum === 5) { const v = view.getInt32(pos, le); return v === 0x7FFFFFFF ? null : v; }
-          const v = view.getUint32(pos, le); return v === 0xFFFFFFFF ? null : v;
-        }
-        return null;
-      }
-
-      function leerRegistroDatosFIT(view, curOffset, def) {
-        const msg = def.globalMsgNum;
-        let recLat = null, recLon = null;
-
-        for (let i = 0; i < def.fields.length; i++) {
-          const f = def.fields[i];
-          const val = leerValorFIT(view, curOffset, f.fSize, f.fType, def.littleEndian);
-          curOffset += f.fSize;
-          if (val === null) continue;
-
-          // Global Msg 18 = Session Summary
-          if (msg === 18) {
-            if (f.fNum === 9 && val > 0) sessionDistM = val / 100;
-            if ((f.fNum === 7 || f.fNum === 8) && val > 0) {
-              const tSec = val / 1000;
-              if (f.fNum === 8 || sessionTimeS === 0) sessionTimeS = tSec;
-            }
-            if (f.fNum === 16 && val > 30 && val < 245) sessionHrAvg = val;
-            if (f.fNum === 17 && val > 30 && val < 245) sessionHrMax = val;
-          }
-          // Global Msg 20 = Record (Punto a punto)
-          else if (msg === 20) {
-            if (f.fNum === 253 && val > 600000000) {
-              if (firstTimestamp === null || val < firstTimestamp) firstTimestamp = val;
-              if (lastTimestamp === null || val > lastTimestamp) lastTimestamp = val;
-            }
-            if (f.fNum === 5 && val > 0) {
-              const dM = val / 100;
-              if (dM > maxRecordDistM && dM < 300000) maxRecordDistM = dM;
-            }
-            if (f.fNum === 3 && val > 30 && val < 245) {
-              recHrSum += val; recHrCount++;
-              if (val > recHrMax) recHrMax = val;
-            }
-            if (f.fNum === 0) recLat = val * (180 / 2147483648);
-            if (f.fNum === 1) recLon = val * (180 / 2147483648);
-          }
-        }
-
-        if (msg === 20 && recLat !== null && recLon !== null && Math.abs(recLat) <= 90 && Math.abs(recLon) <= 180) {
-          if (prevLat !== null && prevLon !== null) {
-            const stepM = haversineMetros(prevLat, prevLon, recLat, recLon);
-            if (stepM < 250) haversineDistM += stepM;
-          }
-          prevLat = recLat; prevLon = recLon;
-        }
-
-        curOffset += (def.devFieldsSize || 0);
-        return curOffset;
-      }
-
-      const finalDistM = sessionDistM > 0 ? sessionDistM : (maxRecordDistM > 0 ? maxRecordDistM : haversineDistM);
-      const finalTimeS = sessionTimeS > 0 ? sessionTimeS : ((firstTimestamp && lastTimestamp && lastTimestamp > firstTimestamp) ? (lastTimestamp - firstTimestamp) : 0);
-      const finalHrAvg = sessionHrAvg > 0 ? sessionHrAvg : (recHrCount > 0 ? Math.round(recHrSum / recHrCount) : null);
-      const finalHrMax = sessionHrMax > 0 ? sessionHrMax : (recHrMax > 0 ? recHrMax : null);
-
-      const distKm = +(finalDistM / 1000).toFixed(2);
-      return {
-        distKm,
-        tiempoSeg: Math.round(finalTimeS),
-        tiempoStr: formatearSegundosReloj(finalTimeS),
-        ritmoStr: calcularRitmoDesdeDistTiempo(distKm, finalTimeS),
-        hrAvg: finalHrAvg,
-        hrMax: finalHrMax
-      };
-    }
-
-    function extraerTagRelojDeNota(notaStr) {
+    function extraerTagStravaDeNota(notaStr) {
       if (!notaStr) return null;
-      const match = String(notaStr).match(/\[⌚ Reloj:\s*([\d.,]+)\s*km\s*\|\s*⏱️\s*([^|\]]+)\|\s*⚡\s*([^|\]]+)(?:\|\s*❤️\s*([^\]]+))?\]/i);
+      const match = String(notaStr).match(/\[🔗 Strava:\s*([^\]]+)\]/i);
       if (!match) return null;
-      return {
-        distKm: parseFloat(match[1].replace(",", ".")) || 0,
-        tiempoStr: match[2].trim(),
-        ritmoStr: match[3].trim(),
-        hrStr: match[4] ? match[4].trim() : "-"
-      };
+      return match[1].trim();
     }
 
-    function construirTagRelojTexto(datos) {
-      const hrParte = datos.hrAvg ? ` | ❤️ ${datos.hrAvg}${datos.hrMax ? '/' + datos.hrMax : ''} ppm` : "";
-      return `[⌚ Reloj: ${datos.distKm} km | ⏱️ ${datos.tiempoStr} | ⚡ ${datos.ritmoStr}${hrParte}]`;
-    }
-
-    async function procesarArchivoReloj(event, idx) {
-      const file = event.target.files ? event.target.files[0] : null;
-      if (!file) return;
-      const ext = file.name.split('.').pop().toLowerCase();
-      const statusEl = document.getElementById(`watch-status-${idx}`);
-      if (statusEl) statusEl.textContent = "⏳ Procesando archivo...";
-
-      try {
-        let resultado = null;
-        if (ext === "fit") {
-          const buffer = await file.arrayBuffer();
-          resultado = parsearArchivoFITBinario(buffer);
-        } else if (ext === "gpx") {
-          const text = await file.text();
-          resultado = parsearArchivoGPX(text);
-        } else if (ext === "tcx") {
-          const text = await file.text();
-          resultado = parsearArchivoTCX(text);
-        } else {
-          alert("⚠️ Formato no compatible. Selecciona un archivo .FIT, .GPX o .TCX exportado de tu reloj.");
-          if (statusEl) statusEl.textContent = "";
-          return;
-        }
-
-        if (!resultado || (resultado.distKm <= 0 && resultado.tiempoSeg <= 0)) {
-          alert("⚠️ No se encontraron datos de distancia o tiempo en el archivo seleccionado.");
-          if (statusEl) statusEl.textContent = "";
-          return;
-        }
-
-        const tagStr = construirTagRelojTexto(resultado);
-        const notaInput = document.getElementById(`nota-${idx}`);
-        if (notaInput) {
-          const limpia = notaInput.value.replace(/\[⌚ Reloj:[^\]]+\]\s*/gi, "").trim();
-          notaInput.value = limpia ? `${tagStr}\n${limpia}` : tagStr;
-        }
-
-        const compSelect = document.getElementById(`comp-${idx}`);
-        if (compSelect) compSelect.value = "Sí";
-
-        const s = state.sesionesAgrupadas[idx];
-        if (s) {
-          s.notaAtleta = notaInput ? notaInput.value : tagStr;
-          s.completado = "Sí";
-        }
-
-        const summaryDiv = document.getElementById(`watch-summary-${idx}`);
-        if (summaryDiv) {
-          const hrDisplay = resultado.hrAvg ? `${resultado.hrAvg}${resultado.hrMax ? ' / ' + resultado.hrMax : ''} ppm` : "-";
-          summaryDiv.innerHTML = `
-            <div class="watch-stats-grid">
-              <div class="watch-stat-pill"><span>Distancia Real</span><strong>${resultado.distKm} km</strong></div>
-              <div class="watch-stat-pill"><span>Tiempo</span><strong>${resultado.tiempoStr}</strong></div>
-              <div class="watch-stat-pill"><span>Ritmo Prom.</span><strong>${resultado.ritmoStr}</strong></div>
-              <div class="watch-stat-pill"><span>Pulsaciones</span><strong>${hrDisplay}</strong></div>
-            </div>
-          `;
-          summaryDiv.classList.remove("hidden");
-        }
-        if (statusEl) statusEl.textContent = "✔ Reloj vinculado (Toca Guardar para confirmar)";
-        renderVolumenChart();
-      } catch (err) {
-        console.error(err);
-        alert("⚠️ No se pudo leer el archivo del reloj. Verifica que sea un archivo .FIT, .GPX o .TCX válido.");
-        if (statusEl) statusEl.textContent = "";
+    function vincularStravaAtleta(idx) {
+      const inputEl = document.getElementById(`strava-link-${idx}`);
+      const statusEl = document.getElementById(`strava-status-${idx}`);
+      if (!inputEl) return;
+      const linkVal = inputEl.value.trim();
+      if (!linkVal || !linkVal.includes("strava.com")) {
+        alert("⚠️ Ingresa un enlace válido de Strava (ej: https://www.strava.com/activities/...)");
+        return;
       }
+
+      const tagStr = `[🔗 Strava: ${linkVal}]`;
+      const notaInput = document.getElementById(`nota-${idx}`);
+      if (notaInput) {
+        const limpia = notaInput.value.replace(/\[🔗 Strava:[^\]]+\]\s*/gi, "").trim();
+        notaInput.value = limpia ? `${tagStr}\n${limpia}` : tagStr;
+      }
+
+      const compSelect = document.getElementById(`comp-${idx}`);
+      if (compSelect) compSelect.value = "Sí";
+
+      const s = state.sesionesAgrupadas[idx];
+      if (s) {
+        s.notaAtleta = notaInput ? notaInput.value : tagStr;
+        s.completado = "Sí";
+      }
+
+      if (statusEl) statusEl.textContent = "✔ Enlace vinculado (Toca Guardar para confirmar)";
+      renderVolumenChart();
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -1496,10 +1140,10 @@
         const matchNum = volLower.match(/([\d.,]+)/);
         const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
         const rpeVal = parseNum(s.rpe, 0);
-        const tagWatch = extraerTagRelojDeNota(s.notaAtleta);
-        const realKm = (tagWatch && discFiltro !== "Fuerza") ? tagWatch.distKm : 0;
+        const tagStrava = extraerTagStravaDeNota(s.notaAtleta);
+        const realKm = (tagStrava && discFiltro !== "Fuerza") ? valNum : 0; // Si pegó link de Strava, toma el volumen de la sesión como real completado
 
-        if (valNum <= 0 && rpeVal <= 0 && realKm <= 0) return;
+        if (valNum <= 0 && rpeVal <= 0) return;
 
         const lunes = obtenerLunesSemana(fObj);
         const sortKey = lunes.toISOString().split("T")[0];
@@ -1510,7 +1154,7 @@
         }
         const entry = semanasMap.get(sortKey);
         if (valNum > 0) entry.total += valNum;
-        if (realKm > 0) entry.realTotal += realKm;
+        if (tagStrava && valNum > 0) entry.realTotal += valNum;
         if (rpeVal > 0) {
           entry.rpeSum += rpeVal;
           entry.rpeCount += 1;
@@ -1577,7 +1221,7 @@
       if (discFiltro !== "Fuerza") {
         datasets.push({
           type: "bar",
-          label: "Real Reloj (km)",
+          label: "Real Strava (km)",
           data: dataReal,
           backgroundColor: "rgba(16, 185, 129, 0.7)",
           borderColor: "#10b981",
@@ -1612,17 +1256,8 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: true,
-              labels: { color: "#f8fafc", font: { size: 11, weight: "600" } }
-            },
-            tooltip: {
-              backgroundColor: "#0f172a",
-              titleColor: "#3b82f6",
-              bodyColor: "#f8fafc",
-              borderColor: "#334155",
-              borderWidth: 1
-            }
+            legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
+            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1 }
           },
           scales: {
             x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
@@ -1797,22 +1432,13 @@
           </div>`;
       }).join("");
 
-      const datosRelojPrevios = extraerTagRelojDeNota(s.notaAtleta);
-      const badgeRelojHeader = datosRelojPrevios ? `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--accent); border:1px solid var(--accent);">⌚ ${datosRelojPrevios.distKm} km</span>` : "";
+      const linkStravaPrevio = extraerTagStravaDeNota(s.notaAtleta);
+      const badgeStravaHeader = linkStravaPrevio ? `<span class="badge" style="background:rgba(252,81,9,0.2); color:#ff5722; border:1px solid #ff5722;">🔗 Strava OK</span>` : "";
       const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
-
-      const resumenRelojHtml = datosRelojPrevios ? `
-        <div class="watch-stats-grid">
-          <div class="watch-stat-pill"><span>Distancia Real</span><strong>${datosRelojPrevios.distKm} km</strong></div>
-          <div class="watch-stat-pill"><span>Tiempo</span><strong>${datosRelojPrevios.tiempoStr}</strong></div>
-          <div class="watch-stat-pill"><span>Ritmo Prom.</span><strong>${datosRelojPrevios.ritmoStr}</strong></div>
-          <div class="watch-stat-pill"><span>Pulsaciones</span><strong>${datosRelojPrevios.hrStr}</strong></div>
-        </div>
-      ` : "";
 
       return `<div class="card" style="background:#152033; margin-bottom:14px;">
           <div class="rutina-header" onclick="toggleSesion(${idx})">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeRelojHeader}</div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeStravaHeader}</div>
             <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.88rem; color:var(--muted); font-weight:700;">${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
           </div>
           
@@ -1820,18 +1446,13 @@
             ${notaProfeHtml} ${bloquesHtml}
 
             <div class="watch-box">
-              <div class="watch-header">
-                <div>
-                  <strong style="color:var(--accent); font-size:0.9rem; display:block;">⌚ Datos Reales de tu Reloj (Garmin, Coros, Polar, Strava)</strong>
-                  <span style="color:var(--muted); font-size:0.78rem;">Sube tu archivo .FIT, .GPX o .TCX para calcular distancia, ritmo y FC automáticamente.</span>
-                </div>
-                <label class="watch-btn-label">
-                  📂 Vincular Archivo (.FIT / .GPX)
-                  <input type="file" accept=".fit,.gpx,.tcx" class="hidden" onchange="procesarArchivoReloj(event, ${idx})" />
-                </label>
+              <strong style="color:var(--primary); font-size:0.9rem; display:block;">🔗 Actividad de Strava</strong>
+              <span style="color:var(--muted); font-size:0.78rem;">Pega el enlace de tu entrenamiento completado en Strava.</span>
+              <div class="strava-input-group">
+                <input type="url" id="strava-link-${idx}" value="${linkStravaPrevio || ''}" placeholder="https://www.strava.com/activities/..." />
+                <button type="button" class="btn btn-outline" onclick="vincularStravaAtleta(${idx})" style="white-space:nowrap;">Vincular</button>
               </div>
-              <div id="watch-status-${idx}" style="font-size:0.8rem; color:var(--accent); margin-top:4px; font-weight:700;"></div>
-              <div id="watch-summary-${idx}" class="${datosRelojPrevios ? '' : 'hidden'}">${resumenRelojHtml}</div>
+              <div id="strava-status-${idx}" style="font-size:0.8rem; color:var(--accent); margin-top:4px; font-weight:700;"></div>
             </div>
 
             <div class="grid-3" style="margin-top:12px; align-items:start;">
@@ -1848,7 +1469,7 @@
                 <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})">Guardar</button>
               </div>
             </div>
-            <div style="margin-top: 10px;"><label>Nota para el Profe (y telemetría del reloj)</label><textarea id="nota-${idx}" placeholder="Sensaciones, molestias, clima...">${s.notaAtleta || ""}</textarea></div>
+            <div style="margin-top: 10px;"><label>Nota para el Profe</label><textarea id="nota-${idx}" placeholder="Sensaciones, molestias, clima...">${s.notaAtleta || ""}</textarea></div>
           </div>
         </div>`;
     }
