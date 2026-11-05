@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-TRAIN | Panel Profe</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg: #0f172a; --card: #1e293b; --border: #334155; --primary: #3b82f6; 
@@ -65,9 +66,14 @@
     .template-bar { background: rgba(16, 185, 129, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .template-bar select { margin-bottom: 0; flex: 1; min-width: 200px; border-color: var(--accent); }
     
-    .vol-unified-group { display: flex; gap: 6px; }
-    .vol-unified-group input { flex: 2; }
-    .vol-unified-group select { flex: 1; min-width: 85px; }
+    .vol-unified-group { display: flex; gap: 6px; align-items: center; }
+    .vol-unified-group input { flex: 2; margin-bottom: 0; }
+    .vol-unified-group select { flex: 1; min-width: 85px; margin-bottom: 0; }
+
+    /* CHIPS DE ACCESO RÁPIDO Y GENERADOR */
+    .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .quick-chip { background: rgba(59, 130, 246, 0.12); border: 1px solid var(--primary); color: #93c5fd; padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.15s; }
+    .quick-chip:hover { background: var(--primary); color: #fff; }
 
     .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 170px; overflow-y: auto; margin-bottom: 12px; }
     .atleta-check-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.92rem; cursor: pointer; }
@@ -77,6 +83,19 @@
     .mode-switch { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
     .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
     .mode-switch button.active { background: var(--primary); color: #fff; }
+
+    /* VISTA CALENDARIZADA PROFE */
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #0b1120; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-bottom: 14px; }
+    .cal-day-name { font-size: 0.8rem; color: var(--muted); font-weight: 700; text-transform: uppercase; padding-bottom: 4px; }
+    .cal-cell { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.92rem; font-weight: 700; cursor: pointer; position: relative; transition: 0.15s; user-select: none; }
+    .cal-cell.empty { background: transparent; border-color: transparent; cursor: default; }
+    .cal-cell.today { border-color: var(--primary); font-weight: 800; }
+    .cal-cell.selected { background: rgba(59, 130, 246, 0.25); border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+    .cal-dots { display: flex; gap: 3px; margin-top: 4px; }
+    .cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+    .cal-dot.done { background: var(--accent); }
+    .cal-dot.partial { background: var(--warning); }
 
     .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
@@ -94,6 +113,7 @@
     .bar-track { background: #0b1120; border-radius: 6px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
     .bar-fill { background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; border-radius: 6px; }
 
+    .chart-wrapper { position: relative; height: 270px; width: 100%; margin-top: 12px; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -190,10 +210,10 @@
               <input type="text" id="inputTipoSesion" placeholder="Ej: Pasadas VAM / Tren Inferior" />
             </div>
             <div>
-              <label>Volumen Total (Valor + Unidad)</label>
+              <label>Volumen Total (Auto / Manual)</label>
               <div class="vol-unified-group">
-                <input type="number" step="0.1" id="inputVolumenValor" placeholder="Ej: 8" />
-                <select id="inputVolumenUnidad">
+                <input type="number" step="0.1" id="inputVolumenValor" placeholder="Ej: 8" oninput="marcarVolumenManual()" />
+                <select id="inputVolumenUnidad" onchange="recalcularVolumenAutomatico()">
                   <option value="km">km</option>
                   <option value="min">min</option>
                   <option value="series">series</option>
@@ -212,8 +232,20 @@
         <div class="card">
           <h2>
             <span>Ejercicios de la Sesión</span>
-            <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Sumar Ejercicio</button>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Ejercicio</button>
+            </div>
           </h2>
+
+          <div class="quick-chips">
+            <span style="color:var(--muted); font-size:0.75rem; align-self:center; text-transform:uppercase; font-weight:700;">Asistente Rápido:</span>
+            <button type="button" class="quick-chip" onclick="insertarBloqueRapido('fartlek')">⚡ Fartlek 8x(3'Z2+1'Z4)</button>
+            <button type="button" class="quick-chip" onclick="insertarBloqueRapido('pasadas1000')">⚡ 5 x 1000m</button>
+            <button type="button" class="quick-chip" onclick="insertarBloqueRapido('fuerza8')">⚡ 4 x 8 @ 75% 1RM</button>
+            <button type="button" class="quick-chip" onclick="insertarBloqueRapido('circuito4')">⚡ Circuito 4 Estaciones (40"x20")</button>
+            <button type="button" class="quick-chip" onclick="insertarBloqueRapido('activacion3')">⚡ Bloque Activación / Core (3)</button>
+          </div>
+
           <div id="bloquesContainer"></div>
           <button class="btn btn-outline" onclick="agregarBloque()" style="width:100%; border-style:dashed; margin-top:10px;">+ Agregar otro ejercicio</button>
         </div>
@@ -222,7 +254,7 @@
         <div id="mensajeResultado" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
       </section>
 
-      <!-- SECCIÓN 2: RUTINAS ASIGNADAS -->
+      <!-- SECCIÓN 2: RUTINAS ASIGNADAS (CON CALENDARIO MENSUAL) -->
       <section id="coach-sec-gestion" class="hidden">
         <div class="card">
           <h2>🔍 Consultar Rutinas de un Atleta</h2>
@@ -237,8 +269,17 @@
           </div>
         </div>
 
+        <div class="card" id="cardGestionCalendario">
+          <div class="cal-header">
+            <button class="btn btn-outline" onclick="cambiarMesCalendarioGestion(-1)" style="padding: 4px 10px;">◀</button>
+            <strong id="gestionCalMesTitulo" style="font-size: 1rem; text-transform: uppercase;">Mes Año</strong>
+            <button class="btn btn-outline" onclick="cambiarMesCalendarioGestion(1)" style="padding: 4px 10px;">▶</button>
+          </div>
+          <div class="cal-grid" id="gestionCalGrid"></div>
+        </div>
+
         <div class="card">
-          <h2>📋 Listado de Sesiones Cargadas (Toca una tarjeta para desplegar)</h2>
+          <h2>📋 Listado de Sesiones Cargadas</h2>
           <div id="gestionListaContainer">
             <p style="color: var(--muted); text-align: center; padding: 20px;">Selecciona un atleta arriba para ver sus rutinas cargadas.</p>
           </div>
@@ -383,37 +424,44 @@
 
           <div class="card">
             <h2>
-              <span>📈 Periodización y Volumen por Semana</span>
+              <span>📈 Periodización y Volumen por Semana (Triple Capa)</span>
               <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.84rem;">
-                <option value="Running">🏃‍♂️ Solo Running (km)</option>
-                <option value="Fuerza">🏋️‍♂️ Solo Fuerza (series/min)</option>
+                <option value="Running">🏃‍♂️ Running (Planificado vs Real Reloj)</option>
+                <option value="Fuerza">🏋️‍♂️ Fuerza (series/min)</option>
                 <option value="Todas">🌐 Todas las Sesiones</option>
               </select>
             </h2>
             <div id="espejoResumenSemanaActual" class="coach-notes" style="margin-bottom:14px;"></div>
-            <div id="espejoBarrasVolumen"></div>
+            <div class="chart-wrapper">
+              <canvas id="espejoTripleChart"></canvas>
+            </div>
           </div>
 
+          <!-- HISTORIAL DE TESTS DESPLEGABLE (ACORDEÓN) -->
           <div class="card">
-            <h2>
-              <span>⏱️ Historial de Tests y Evaluaciones del Atleta</span>
-              <button class="btn btn-outline" onclick="abrirCargaTestProfe()">+ Cargar Test al Atleta</button>
-            </h2>
+            <details id="acordeonTestsEspejo" style="cursor:pointer;">
+              <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center;">
+                <span>⏱️ Historial de Tests y Evaluaciones (<span id="espejoContadorTests">0</span>) ▼</span>
+                <button type="button" class="btn btn-outline" onclick="event.preventDefault(); abrirCargaTestProfe();" style="padding:4px 10px; font-size:0.8rem;">+ Cargar Test</button>
+              </summary>
 
-            <div id="formNuevoTestProfe" class="hidden" style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
-              <div class="grid-3">
-                <div><label>Categoría / Tipo</label><input type="text" id="testProfeTipo" placeholder="Ej: Resistencia / Fuerza"></div>
-                <div><label>Prueba / Ejercicio</label><input type="text" id="testProfeEj" placeholder="Ej: Test de 5 Min (VAM) / Sentadilla"></div>
-                <div><label>Resultado / Marca</label><input type="text" id="testProfeRes" placeholder="Ej: 1200 / 80"></div>
-              </div>
-              <div class="grid-2">
-                <div><label>VAM o 1RM Estimado</label><input type="text" id="testProfeEst" placeholder="Ej: 14.4 / 90"></div>
-                <div><label>Notas</label><input type="text" id="testProfeNotas" placeholder="Sensaciones o repeticiones..."></div>
-              </div>
-              <button class="btn btn-success" onclick="guardarTestDesdeProfe()">Guardar Evaluación</button>
-            </div>
+              <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; cursor:default;" onclick="event.stopPropagation()">
+                <div id="formNuevoTestProfe" class="hidden" style="background:#0b1120; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
+                  <div class="grid-3">
+                    <div><label>Categoría / Tipo</label><input type="text" id="testProfeTipo" placeholder="Ej: Resistencia / Fuerza"></div>
+                    <div><label>Prueba / Ejercicio</label><input type="text" id="testProfeEj" placeholder="Ej: Test de 5 Min (VAM) / Sentadilla"></div>
+                    <div><label>Resultado / Marca</label><input type="text" id="testProfeRes" placeholder="Ej: 1200 / 80"></div>
+                  </div>
+                  <div class="grid-2">
+                    <div><label>VAM o 1RM Estimado</label><input type="text" id="testProfeEst" placeholder="Ej: 14.4 / 90"></div>
+                    <div><label>Notas</label><input type="text" id="testProfeNotas" placeholder="Sensaciones o repeticiones..."></div>
+                  </div>
+                  <button class="btn btn-success" onclick="guardarTestDesdeProfe()">Guardar Evaluación</button>
+                </div>
 
-            <div id="espejoListaTests"></div>
+                <div id="espejoListaTests"></div>
+              </div>
+            </details>
           </div>
 
           <div class="card">
@@ -439,6 +487,12 @@
     let cacheRutinasAtletaGestion = [];
     let plantillasPersonalizadas = [];
     let paqueteEspejoActual = null;
+    let volumenManualEditado = false;
+    let espejoTripleChartInstance = null;
+    let gestionCalMes = new Date().getMonth();
+    let gestionCalAnio = new Date().getFullYear();
+    let gestionCalFechaSeleccionada = null;
+    let cacheRutinasAtletaCalendario = [];
 
     const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
@@ -590,6 +644,130 @@
       if (disc === "Running") selectUnidad.value = "km";
       else if (disc === "Fuerza") selectUnidad.value = "series";
       else selectUnidad.value = "min";
+      recalcularVolumenAutomatico();
+    }
+
+    function marcarVolumenManual() {
+      volumenManualEditado = true;
+    }
+
+    /* AUTOCALCULADOR INTELIGENTE DE VOLUMEN EN VIVO */
+    function recalcularVolumenAutomatico() {
+      if (volumenManualEditado) return;
+      const disc = document.getElementById("inputDisciplina").value;
+      const unidadesSel = document.getElementById("inputVolumenUnidad");
+      const valorInput = document.getElementById("inputVolumenValor");
+      const bloquesNodes = document.querySelectorAll(".bloque-row");
+
+      let totalKm = 0;
+      let totalSeries = 0;
+      let totalMin = 0;
+
+      bloquesNodes.forEach(nodo => {
+        const id = nodo.id.replace("bloque-", "");
+        const serVal = (document.getElementById(`series-${id}`).value || "").toLowerCase().trim();
+        const ejVal = (document.getElementById(`ejercicio-${id}`).value || "").toLowerCase().trim();
+
+        // Patrón ej: 5 x 1000m
+        const mPasadas = serVal.match(/(\d+)\s*x\s*([\d.]+)\s*(m|km)/i);
+        if (mPasadas) {
+          const cant = parseFloat(mPasadas[1]);
+          const med = parseFloat(mPasadas[2]);
+          const unidad = mPasadas[3].toLowerCase();
+          const metrosTotales = cant * (unidad === "km" ? med * 1000 : med);
+          totalKm += metrosTotales / 1000;
+          return;
+        }
+
+        // Patrón ej: 2 x 6 x 400m
+        const mDoble = serVal.match(/(\d+)\s*x\s*(\d+)\s*x\s*([\d.]+)\s*(m|km)/i);
+        if (mDoble) {
+          const b1 = parseFloat(mDoble[1]);
+          const b2 = parseFloat(mDoble[2]);
+          const med = parseFloat(mDoble[3]);
+          const unidad = mDoble[4].toLowerCase();
+          const metrosTotales = b1 * b2 * (unidad === "km" ? med * 1000 : med);
+          totalKm += metrosTotales / 1000;
+          return;
+        }
+
+        // Patrón distancia simple: 3 km o 400m
+        const mDist = serVal.match(/([\d.]+)\s*(km|m)/i);
+        if (mDist && !serVal.includes("x")) {
+          const val = parseFloat(mDist[1]);
+          const unidad = mDist[2].toLowerCase();
+          totalKm += (unidad === "m" ? val / 1000 : val);
+          return;
+        }
+
+        // Patrón tiempo continuo: 45 min
+        const mMin = serVal.match(/([\d.]+)\s*(min|mins|'|minutos)/i);
+        if (mMin) {
+          totalMin += parseFloat(mMin[1]);
+          return;
+        }
+
+        // Patrón fuerza / series: 4 x 8 o 3 x 12
+        const mFuerza = serVal.match(/(\d+)\s*x\s*(\d+)/);
+        if (mFuerza) {
+          totalSeries += parseInt(mFuerza[1], 10);
+          return;
+        }
+
+        // Patrón circuitos por tiempo: 4 x 40" x 20
+        const mCircuito = serVal.match(/(\d+)\s*x\s*(\d+)(?:s|"|seg)?\s*x/i);
+        if (mCircuito) {
+          totalSeries += parseInt(mCircuito[1], 10);
+          totalMin += Math.round((parseInt(mCircuito[1], 10) * parseInt(mCircuito[2], 10)) / 60);
+          return;
+        }
+      });
+
+      if (disc === "Running") {
+        if (totalKm > 0) {
+          unidadesSel.value = "km";
+          valorInput.value = +totalKm.toFixed(1);
+        } else if (totalMin > 0) {
+          unidadesSel.value = "min";
+          valorInput.value = totalMin;
+        }
+      } else if (disc === "Fuerza") {
+        if (totalSeries > 0) {
+          unidadesSel.value = "series";
+          valorInput.value = totalSeries;
+        } else if (totalMin > 0) {
+          unidadesSel.value = "min";
+          valorInput.value = totalMin;
+        }
+      } else {
+        if (totalMin > 0) {
+          unidadesSel.value = "min";
+          valorInput.value = totalMin;
+        } else if (totalKm > 0) {
+          unidadesSel.value = "km";
+          valorInput.value = +totalKm.toFixed(1);
+        }
+      }
+    }
+
+    /* ASISTENTE RÁPIDO DE BLOQUES (CHIPS) */
+    function insertarBloqueRapido(tipo) {
+      if (tipo === "fartlek") {
+        agregarBloque({ orden: "Principal", ejercicio: "Fartlek de Cambios de Ritmo", series: "8 x (3' Z2 + 1' Z4)", carga: "Z2 / Z4", micro: "1'", macro: "2'" });
+      } else if (tipo === "pasadas1000") {
+        agregarBloque({ orden: "Principal", ejercicio: "Series de 1000m", series: "5 x 1000m", carga: "90% VAM", micro: "2'", macro: "-" });
+      } else if (tipo === "fuerza8") {
+        agregarBloque({ orden: "A1", ejercicio: "Sentadilla / Peso Muerto", series: "4 x 8", carga: "75% 1RM", micro: "1'", macro: "2'" });
+      } else if (tipo === "circuito4") {
+        for (let i = 1; i <= 4; i++) {
+          agregarBloque({ orden: `Estación ${i}`, ejercicio: `Estación Funcional #${i}`, series: "4 x 40\"", carga: "Ritmo Vivo", micro: "20\"", macro: i === 4 ? "1'30\"" : "-" });
+        }
+      } else if (tipo === "activacion3") {
+        agregarBloque({ orden: "Act 1", ejercicio: "Plancha Frontal / Movilidad", series: "3 x 30s", carga: "Libre", micro: "15s", macro: "-" });
+        agregarBloque({ orden: "Act 2", ejercicio: "Puente de Glúteos / Bird-Dog", series: "3 x 12", carga: "Libre", micro: "15s", macro: "-" });
+        agregarBloque({ orden: "Act 3", ejercicio: "Skips Estáticos / Activación", series: "3 x 15", carga: "Libre", micro: "30s", macro: "1'" });
+      }
+      recalcularVolumenAutomatico();
     }
 
     function renderizarSelectorPlantillas() {
@@ -680,6 +858,7 @@
 
       const prevPagoSel = pagoSelectAtleta.value;
       const prevEspejoSel = espejoSelectAtleta.value;
+      const prevGestionSel = gestionSelectAtleta.value;
       
       selectAtleta.innerHTML = '<option value="">Seleccionar atleta...</option>';
       gestionSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
@@ -723,6 +902,10 @@
 
       if (prevPagoSel) pagoSelectAtleta.value = prevPagoSel;
       if (prevEspejoSel) espejoSelectAtleta.value = prevEspejoSel;
+      if (prevGestionSel) {
+        gestionSelectAtleta.value = prevGestionSel;
+        cargarRutinasParaGestionar();
+      }
     }
 
     function calcularEdadExacta(fechaStr) {
@@ -1019,12 +1202,21 @@
       return new Date(d.setDate(diff));
     }
 
+    function extraerTagRelojDeNotaProfe(notaStr) {
+      if (!notaStr) return null;
+      const match = String(notaStr).match(/\[⌚ Reloj:\s*([\d.,]+)\s*km/i);
+      if (!match) return null;
+      return parseFloat(match[1].replace(",", ".")) || 0;
+    }
+
+    /* GRÁFICO DE TRIPLE CAPA EN FICHAS ATLETAS */
     function renderizarGraficoVolumenEspejo() {
       if (!paqueteEspejoActual) return;
       const rutinas = paqueteEspejoActual.rutinas || [];
       const discFiltro = document.getElementById("espejoFiltroDisciplina").value;
-      const contBarras = document.getElementById("espejoBarrasVolumen");
       const contResumen = document.getElementById("espejoResumenSemanaActual");
+      const canvas = document.getElementById("espejoTripleChart");
+      if (!canvas) return;
 
       const sesionesMap = new Map();
       rutinas.forEach(r => {
@@ -1045,49 +1237,125 @@
         if (discFiltro === "Fuerza" && (tipo.includes("running") || volStr.includes("km"))) return;
 
         const match = volStr.match(/([\d.,]+)/);
-        const valor = match ? parseFloat(match[1].replace(",", ".")) : 0;
+        const valorPlan = match ? parseFloat(match[1].replace(",", ".")) : 0;
+        const valorReal = (discFiltro !== "Fuerza") ? (extraerTagRelojDeNotaProfe(s["Notas del Atleta"]) || 0) : 0;
+        const rpeVal = parseFloat(s["Esfuerzo RPE (0-10)"] || s["RPE"]) || 0;
 
         const lunes = obtenerLunesDeSemana(fObj);
         const keySem = lunes.toISOString().split("T")[0];
-        const labelSem = `Semana del ${String(lunes.getDate()).padStart(2,'0')}/${String(lunes.getMonth()+1).padStart(2,'0')}`;
+        const labelSem = `Sem ${String(lunes.getDate()).padStart(2,'0')}/${String(lunes.getMonth()+1).padStart(2,'0')}`;
 
         if (!semanasMap.has(keySem)) {
-          semanasMap.set(keySem, { key: keySem, label: labelSem, total: 0, sesiones: 0 });
+          semanasMap.set(keySem, { key: keySem, label: labelSem, plan: 0, real: 0, rpeSum: 0, rpeCount: 0 });
         }
         const item = semanasMap.get(keySem);
-        item.total += valor;
-        item.sesiones += 1;
+        if (valorPlan > 0) item.plan += valorPlan;
+        if (valorReal > 0) item.real += valorReal;
+        if (rpeVal > 0) {
+          item.rpeSum += rpeVal;
+          item.rpeCount += 1;
+        }
       });
 
       const semanasArr = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
+      const labels = semanasArr.map(s => s.label);
+      const dataPlan = semanasArr.map(s => +(s.plan.toFixed(1)));
+      const dataReal = semanasArr.map(s => +(s.real.toFixed(2)));
+      const dataRpe = semanasArr.map(s => s.rpeCount > 0 ? +((s.rpeSum / s.rpeCount).toFixed(1)) : null);
+
       if (!semanasArr.length) {
         contResumen.innerHTML = `No hay sesiones registradas para el filtro <strong>${discFiltro}</strong>.`;
-        contBarras.innerHTML = "";
+        if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
         return;
       }
 
-      const maxVol = Math.max(...semanasArr.map(s => s.total), 1);
       const unidadRef = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
       const ultimaSem = semanasArr[semanasArr.length - 1];
+      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${ultimaSem.plan.toFixed(1)} ${unidadRef}</strong> | Real Reloj: <strong style="color:var(--accent);">${ultimaSem.real.toFixed(1)} km</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
 
-      contResumen.innerHTML = `📌 <strong>Semana #${semanasArr.length} de Periodización Registrada (${ultimaSem.label}):</strong> Volumen acumulado de <strong>${ultimaSem.total.toFixed(1)} ${unidadRef}</strong> en ${ultimaSem.sesiones} sesión(es).`;
+      if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
 
-      contBarras.innerHTML = semanasArr.map((s, idx) => {
-        const pct = Math.min(100, Math.round((s.total / maxVol) * 100));
-        return `
-          <div class="bar-row">
-            <div class="bar-label">
-              <span><strong>Sem ${idx + 1}:</strong> ${s.label} (${s.sesiones} ses.)</span>
-              <strong style="color:var(--accent);">${s.total.toFixed(1)} ${unidadRef}</strong>
-            </div>
-            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
-          </div>
-        `;
-      }).join("");
+      const datasets = [
+        {
+          type: "bar",
+          label: `Planificado (${unidadRef})`,
+          data: dataPlan,
+          backgroundColor: "rgba(59, 130, 246, 0.6)",
+          borderColor: "#3b82f6",
+          borderWidth: 2,
+          borderRadius: 6,
+          yAxisID: "y",
+          order: 3
+        }
+      ];
+
+      if (discFiltro !== "Fuerza") {
+        datasets.push({
+          type: "bar",
+          label: "Real Reloj (km)",
+          data: dataReal,
+          backgroundColor: "rgba(16, 185, 129, 0.7)",
+          borderColor: "#10b981",
+          borderWidth: 2,
+          borderRadius: 6,
+          yAxisID: "y",
+          order: 2
+        });
+      }
+
+      datasets.push({
+        type: "line",
+        label: "RPE Promedio (1-10)",
+        data: dataRpe,
+        borderColor: "#f59e0b",
+        backgroundColor: "rgba(245, 158, 11, 0.2)",
+        borderWidth: 3,
+        pointBackgroundColor: "#f59e0b",
+        pointBorderColor: "#fff",
+        pointRadius: 5,
+        tension: 0.3,
+        spanGaps: true,
+        yAxisID: "y1",
+        order: 1
+      });
+
+      const ctx = canvas.getContext("2d");
+      espejoTripleChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: { labels: labels, datasets: datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
+            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1 }
+          },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
+            y: {
+              type: "linear",
+              position: "left",
+              ticks: { color: "#94a3b8" },
+              grid: { color: "rgba(51, 65, 85, 0.4)" },
+              title: { display: true, text: `Volumen (${unidadRef})`, color: "#3b82f6", font: { size: 11, weight: "700" } }
+            },
+            y1: {
+              type: "linear",
+              position: "right",
+              min: 0,
+              max: 10,
+              ticks: { color: "#f59e0b", stepSize: 2 },
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "RPE (1-10)", color: "#f59e0b", font: { size: 11, weight: "700" } }
+            }
+          }
+        }
+      });
     }
 
     function renderizarTestsEspejo(tests) {
       const cont = document.getElementById("espejoListaTests");
+      document.getElementById("espejoContadorTests").textContent = tests.length;
       if (!tests.length) {
         cont.innerHTML = `<p style="color:var(--muted); font-size:0.88rem;">El atleta aún no tiene evaluaciones cargadas.</p>`;
         return;
@@ -1220,6 +1488,7 @@
       document.getElementById("inputIndicaciones").value = p.indicaciones || "";
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
+      volumenManualEditado = false;
       (p.bloques || []).forEach(b => agregarBloque({
         orden: b.orden || b["Orden / Bloque"] || "",
         ejercicio: b.ejercicio || b["Ejercicio"] || "",
@@ -1228,6 +1497,7 @@
         micro: b.micro || b.micropausa || b["Micropausa"] || "",
         macro: b.macro || b.macropausa || b["Macropausa"] || ""
       }));
+      recalcularVolumenAutomatico();
     }
 
     async function guardarPlantillaActual() {
@@ -1318,6 +1588,7 @@
       } catch (e) {}
     }
 
+    /* VISTA CALENDARIO MENSUAL EN RUTINAS ASIGNADAS (PANEL PROFE) */
     async function cargarRutinasParaGestionar() {
       const email = document.getElementById("gestionSelectAtleta").value;
       const container = document.getElementById("gestionListaContainer");
@@ -1332,11 +1603,6 @@
         const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         const rutinasRaw = data.rutinas || [];
-
-        if (!rutinasRaw.length) {
-          container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Este atleta no tiene rutinas asignadas actualmente.</p>`;
-          return;
-        }
 
         const mapaSesiones = new Map();
         rutinasRaw.forEach(r => {
@@ -1355,50 +1621,117 @@
           mapaSesiones.get(key).bloques.push(r);
         });
 
-        const sesionesArray = Array.from(mapaSesiones.values());
-        cacheRutinasAtletaGestion = sesionesArray;
-
-        container.innerHTML = sesionesArray.map((s, index) => {
-          const bloquesHtml = s.bloques.map(b => `
-            <div class="bloque-item-admin">
-              <strong>${b["Orden / Bloque"] || "-"}: ${b["Ejercicio"] || "-"}</strong><br>
-              <span style="color: var(--muted); font-size: 0.84rem;">
-                Series/Reps: <strong>${b["Series y Repeticiones"] || "-"}</strong> | 
-                Carga: <strong>${b["Carga / Intensidad"] || "-"}</strong> | 
-                Micro: ${b["Micropausa"] || "-"} | Macro: ${b["Macropausa"] || "-"}
-              </span>
-            </div>
-          `).join("");
-
-          const indicacionHtml = s.indicaciones ? `<div class="coach-notes"><strong>📢 Indicaciones:</strong> ${s.indicaciones}</div>` : "";
-
-          return `
-            <div class="rutina-card-admin">
-              <div class="rutina-admin-header" onclick="toggleAdminRutina(${index})">
-                <div>
-                  <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
-                    <span class="badge">${s.fechaRaw}</span>
-                    <strong style="font-size: 1.05rem; color: var(--text);">${s.tipo}</strong>
-                  </div>
-                  <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
-                </div>
-                <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
-                  <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
-                  <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion('${s.fechaRaw}', '${s.tipo}')" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
-                </div>
-              </div>
-
-              <div id="admin-rutina-body-${index}" class="rutina-admin-body hidden">
-                ${indicacionHtml}
-                ${bloquesHtml}
-              </div>
-            </div>
-          `;
-        }).join("");
+        cacheRutinasAtletaCalendario = Array.from(mapaSesiones.values());
+        renderGestionCalendarioGrid();
+        renderGestionListadoSesiones();
 
       } catch (e) {
         container.innerHTML = `<p style="color: var(--danger); text-align: center; padding: 20px;">Error al conectar con la base de datos.</p>`;
       }
+    }
+
+    function cambiarMesCalendarioGestion(delta) {
+      gestionCalMes += delta;
+      if (gestionCalMes > 11) { gestionCalMes = 0; gestionCalAnio++; }
+      else if (gestionCalMes < 0) { gestionCalMes = 11; gestionCalAnio--; }
+      gestionCalFechaSeleccionada = null;
+      renderGestionCalendarioGrid();
+      renderGestionListadoSesiones();
+    }
+
+    function seleccionarDiaCalendarioGestion(fechaStr) {
+      gestionCalFechaSeleccionada = (gestionCalFechaSeleccionada === fechaStr) ? null : fechaStr;
+      renderGestionCalendarioGrid();
+      renderGestionListadoSesiones();
+    }
+
+    function renderGestionCalendarioGrid() {
+      document.getElementById("gestionCalMesTitulo").textContent = `${MESES_NOMBRES[gestionCalMes]} ${gestionCalAnio}`;
+      const grid = document.getElementById("gestionCalGrid");
+      const diasNombres = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+      let html = diasNombres.map(d => `<div class="cal-day-name">${d}</div>`).join("");
+
+      const primerDiaMes = new Date(gestionCalAnio, gestionCalMes, 1).getDay();
+      const offsetLunes = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
+      const totalDiasMes = new Date(gestionCalAnio, gestionCalMes + 1, 0).getDate();
+
+      for (let i = 0; i < offsetLunes; i++) {
+        html += `<div class="cal-cell empty"></div>`;
+      }
+
+      const hoyStr = limpiarFechaVisual(new Date());
+
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const fechaDiaStr = `${String(dia).padStart(2, '0')}/${String(gestionCalMes + 1).padStart(2, '0')}/${gestionCalAnio}`;
+        const sesionesDelDia = cacheRutinasAtletaCalendario.filter(s => s.fechaRaw === fechaDiaStr);
+
+        let dotsHtml = "";
+        if (sesionesDelDia.length > 0) {
+          dotsHtml = `<div class="cal-dots"><span class="cal-dot done"></span></div>`;
+        }
+
+        const isToday = fechaDiaStr === hoyStr ? "today" : "";
+        const isSelected = gestionCalFechaSeleccionada === fechaDiaStr ? "selected" : "";
+
+        html += `<div class="cal-cell ${isToday} ${isSelected}" onclick="seleccionarDiaCalendarioGestion('${fechaDiaStr}')">
+          <span>${dia}</span>
+          ${dotsHtml}
+        </div>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderGestionListadoSesiones() {
+      const container = document.getElementById("gestionListaContainer");
+      let sesionesFiltradas = cacheRutinasAtletaCalendario;
+
+      if (gestionCalFechaSeleccionada) {
+        sesionesFiltradas = cacheRutinasAtletaCalendario.filter(s => s.fechaRaw === gestionCalFechaSeleccionada);
+      }
+
+      if (!sesionesFiltradas.length) {
+        container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">${gestionCalFechaSeleccionada ? 'No hay rutinas para el ' + gestionCalFechaSeleccionada : 'No hay rutinas cargadas.'}</p>`;
+        return;
+      }
+
+      container.innerHTML = sesionesFiltradas.map((s) => {
+        const index = cacheRutinasAtletaCalendario.findIndex(x => x.fechaRaw === s.fechaRaw && x.tipo === s.tipo);
+        const bloquesHtml = s.bloques.map(b => `
+          <div class="bloque-item-admin">
+            <strong>${b["Orden / Bloque"] || "-"}: ${b["Ejercicio"] || "-"}</strong><br>
+            <span style="color: var(--muted); font-size: 0.84rem;">
+              Series/Reps: <strong>${b["Series y Repeticiones"] || "-"}</strong> | 
+              Carga: <strong>${b["Carga / Intensidad"] || "-"}</strong> | 
+              Micro: ${b["Micropausa"] || "-"} | Macro: ${b["Macropausa"] || "-"}
+            </span>
+          </div>
+        `).join("");
+
+        const indicacionHtml = s.indicaciones ? `<div class="coach-notes"><strong>📢 Indicaciones:</strong> ${s.indicaciones}</div>` : "";
+
+        return `
+          <div class="rutina-card-admin">
+            <div class="rutina-admin-header" onclick="toggleAdminRutina(${index})">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
+                  <span class="badge">${s.fechaRaw}</span>
+                  <strong style="font-size: 1.05rem; color: var(--text);">${s.tipo}</strong>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
+              </div>
+              <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
+                <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
+                <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion('${s.fechaRaw}', '${s.tipo}')" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
+              </div>
+            </div>
+
+            <div id="admin-rutina-body-${index}" class="rutina-admin-body hidden">
+              ${indicacionHtml}
+              ${bloquesHtml}
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function toggleAdminRutina(index) {
@@ -1417,7 +1750,7 @@
     }
 
     function editarRutinaDesdeGestion(index) {
-      const s = cacheRutinasAtletaGestion[index];
+      const s = cacheRutinasAtletaCalendario[index];
       if (!s) return;
 
       cambiarSeccionCoach('asignar', document.getElementById('tab-btn-asignar'));
@@ -1450,6 +1783,7 @@
       document.getElementById("inputIndicaciones").value = s.indicaciones;
       document.getElementById("bloquesContainer").innerHTML = "";
       contadorBloques = 0;
+      volumenManualEditado = false;
 
       s.bloques.forEach(b => {
         agregarBloque({
@@ -1461,7 +1795,7 @@
           macro: b["Macropausa"] || ""
         });
       });
-
+      recalcularVolumenAutomatico();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1497,7 +1831,7 @@
             <div><label>Ejercicio</label><input type="text" id="ejercicio-${id}" value="${datos ? datos.ejercicio : ''}" list="listaEjercicios" placeholder="Buscar..."></div>
           </div>
           <div class="grid-2">
-            <div><label>Series y Reps / Distancia</label><input type="text" id="series-${id}" value="${datos ? datos.series : ''}" placeholder="4x10"></div>
+            <div><label>Series y Reps / Distancia</label><input type="text" id="series-${id}" value="${datos ? datos.series : ''}" placeholder="4x10" oninput="recalcularVolumenAutomatico()"></div>
             <div><label>Carga / Ritmo (%)</label><input type="text" id="carga-${id}" value="${datos ? datos.carga : ''}" placeholder="75% 1RM"></div>
           </div>
           <div class="grid-2">
@@ -1507,11 +1841,13 @@
         </div>
       `;
       document.getElementById("bloquesContainer").insertAdjacentHTML('beforeend', html);
+      recalcularVolumenAutomatico();
     }
 
     function eliminarBloque(id) {
       const b = document.getElementById(`bloque-${id}`);
       if (b) b.remove();
+      recalcularVolumenAutomatico();
     }
 
     function formatFechaEnvio(fechaYYYYMMDD) {
