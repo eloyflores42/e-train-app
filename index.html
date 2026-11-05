@@ -637,7 +637,7 @@
       const statusEl = document.getElementById(`strava-status-${idx}`);
       if (!inputEl) return;
       const linkVal = inputEl.value.trim();
-      if (!linkVal || !linkVal.includes("strava.com")) {
+      if (!linkVal || (!linkVal.includes("strava.com") && !linkVal.includes("strava.app.link"))) {
         alert("⚠️ Ingresa un enlace válido de Strava (ej: https://www.strava.com/activities/...)");
         return;
       }
