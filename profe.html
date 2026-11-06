@@ -70,7 +70,6 @@
     .vol-unified-group input { flex: 2; margin-bottom: 0; }
     .vol-unified-group select { flex: 1; min-width: 85px; margin-bottom: 0; }
 
-    /* CHIPS DE ACCESO RÁPIDO Y GENERADOR */
     .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
     .quick-chip { background: rgba(59, 130, 246, 0.12); border: 1px solid var(--primary); color: #93c5fd; padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.15s; }
     .quick-chip:hover { background: var(--primary); color: #fff; }
@@ -84,7 +83,6 @@
     .mode-switch button { background: transparent; color: var(--muted); border: none; padding: 5px 10px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
     .mode-switch button.active { background: var(--primary); color: #fff; }
 
-    /* VISTA CALENDARIZADA PROFE */
     .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #0b1120; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-bottom: 14px; }
     .cal-day-name { font-size: 0.8rem; color: var(--muted); font-weight: 700; text-transform: uppercase; padding-bottom: 4px; }
@@ -108,11 +106,7 @@
     .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
     .kpi-box .kpi-val { font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
     .kpi-box .kpi-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-    .bar-row { margin-bottom: 8px; }
-    .bar-label { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 3px; }
-    .bar-track { background: #0b1120; border-radius: 6px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
-    .bar-fill { background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; border-radius: 6px; }
-
+    
     .chart-wrapper { position: relative; height: 270px; width: 100%; margin-top: 12px; }
     .hidden { display: none !important; }
   </style>
@@ -254,7 +248,7 @@
         <div id="mensajeResultado" style="text-align:center; margin-bottom:20px; font-weight:bold;"></div>
       </section>
 
-      <!-- SECCIÓN 2: RUTINAS ASIGNADAS (CON CALENDARIO MENSUAL) -->
+      <!-- SECCIÓN 2: RUTINAS ASIGNADAS -->
       <section id="coach-sec-gestion" class="hidden">
         <div class="card">
           <h2>🔍 Consultar Rutinas de un Atleta</h2>
@@ -286,7 +280,7 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 3: ALUMNOS, FILTROS DE CUOTA Y BAJAS -->
+      <!-- SECCIÓN 3: ALUMNOS & PAGOS -->
       <section id="coach-sec-alumnos" class="hidden">
         <div class="card">
           <h2>
@@ -307,7 +301,6 @@
           <div id="contenedorListadoAlumnos"></div>
         </div>
 
-        <!-- GESTIÓN DE PAGO / MEMBRESÍA -->
         <div class="card" id="cardGestionPagos">
           <h2>💳 Registrar / Actualizar Cuota</h2>
           <div class="grid-2">
@@ -335,7 +328,6 @@
           <button class="btn" id="btnGuardarPagoProfe" onclick="guardarPagoAtleta()">💾 Guardar Estado de Cuota</button>
         </div>
 
-        <!-- ALTA DE NUEVO ATLETA -->
         <div class="card">
           <h2>➕ Dar de Alta Nuevo Atleta</h2>
           <div class="grid-2">
@@ -426,7 +418,7 @@
             <h2>
               <span>📈 Periodización y Volumen por Semana (Triple Capa)</span>
               <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.84rem;">
-                <option value="Running">🏃‍♂️ Running (Planificado vs Real Reloj)</option>
+                <option value="Running">🏃‍♂️ Running (Planificado vs Real)</option>
                 <option value="Fuerza">🏋️‍♂️ Fuerza (series/min)</option>
                 <option value="Todas">🌐 Todas las Sesiones</option>
               </select>
@@ -437,7 +429,7 @@
             </div>
           </div>
 
-          <!-- HISTORIAL DE TESTS DESPLEGABLE (ACORDEÓN) -->
+          <!-- HISTORIAL DE TESTS DESPLEGABLE -->
           <div class="card">
             <details id="acordeonTestsEspejo" style="cursor:pointer;">
               <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center;">
@@ -651,7 +643,6 @@
       volumenManualEditado = true;
     }
 
-    /* AUTOCALCULADOR INTELIGENTE DE VOLUMEN EN VIVO */
     function recalcularVolumenAutomatico() {
       if (volumenManualEditado) return;
       const disc = document.getElementById("inputDisciplina").value;
@@ -666,9 +657,7 @@
       bloquesNodes.forEach(nodo => {
         const id = nodo.id.replace("bloque-", "");
         const serVal = (document.getElementById(`series-${id}`).value || "").toLowerCase().trim();
-        const ejVal = (document.getElementById(`ejercicio-${id}`).value || "").toLowerCase().trim();
 
-        // Patrón ej: 5 x 1000m
         const mPasadas = serVal.match(/(\d+)\s*x\s*([\d.]+)\s*(m|km)/i);
         if (mPasadas) {
           const cant = parseFloat(mPasadas[1]);
@@ -679,7 +668,6 @@
           return;
         }
 
-        // Patrón ej: 2 x 6 x 400m
         const mDoble = serVal.match(/(\d+)\s*x\s*(\d+)\s*x\s*([\d.]+)\s*(m|km)/i);
         if (mDoble) {
           const b1 = parseFloat(mDoble[1]);
@@ -691,7 +679,6 @@
           return;
         }
 
-        // Patrón distancia simple: 3 km o 400m
         const mDist = serVal.match(/([\d.]+)\s*(km|m)/i);
         if (mDist && !serVal.includes("x")) {
           const val = parseFloat(mDist[1]);
@@ -700,21 +687,18 @@
           return;
         }
 
-        // Patrón tiempo continuo: 45 min
         const mMin = serVal.match(/([\d.]+)\s*(min|mins|'|minutos)/i);
         if (mMin) {
           totalMin += parseFloat(mMin[1]);
           return;
         }
 
-        // Patrón fuerza / series: 4 x 8 o 3 x 12
         const mFuerza = serVal.match(/(\d+)\s*x\s*(\d+)/);
         if (mFuerza) {
           totalSeries += parseInt(mFuerza[1], 10);
           return;
         }
 
-        // Patrón circuitos por tiempo: 4 x 40" x 20
         const mCircuito = serVal.match(/(\d+)\s*x\s*(\d+)(?:s|"|seg)?\s*x/i);
         if (mCircuito) {
           totalSeries += parseInt(mCircuito[1], 10);
@@ -724,33 +708,17 @@
       });
 
       if (disc === "Running") {
-        if (totalKm > 0) {
-          unidadesSel.value = "km";
-          valorInput.value = +totalKm.toFixed(1);
-        } else if (totalMin > 0) {
-          unidadesSel.value = "min";
-          valorInput.value = totalMin;
-        }
+        if (totalKm > 0) { unidadesSel.value = "km"; valorInput.value = +totalKm.toFixed(1); }
+        else if (totalMin > 0) { unidadesSel.value = "min"; valorInput.value = totalMin; }
       } else if (disc === "Fuerza") {
-        if (totalSeries > 0) {
-          unidadesSel.value = "series";
-          valorInput.value = totalSeries;
-        } else if (totalMin > 0) {
-          unidadesSel.value = "min";
-          valorInput.value = totalMin;
-        }
+        if (totalSeries > 0) { unidadesSel.value = "series"; valorInput.value = totalSeries; }
+        else if (totalMin > 0) { unidadesSel.value = "min"; valorInput.value = totalMin; }
       } else {
-        if (totalMin > 0) {
-          unidadesSel.value = "min";
-          valorInput.value = totalMin;
-        } else if (totalKm > 0) {
-          unidadesSel.value = "km";
-          valorInput.value = +totalKm.toFixed(1);
-        }
+        if (totalMin > 0) { unidadesSel.value = "min"; valorInput.value = totalMin; }
+        else if (totalKm > 0) { unidadesSel.value = "km"; valorInput.value = +totalKm.toFixed(1); }
       }
     }
 
-    /* ASISTENTE RÁPIDO DE BLOQUES (CHIPS) */
     function insertarBloqueRapido(tipo) {
       if (tipo === "fartlek") {
         agregarBloque({ orden: "Principal", ejercicio: "Fartlek de Cambios de Ritmo", series: "8 x (3' Z2 + 1' Z4)", carga: "Z2 / Z4", micro: "1'", macro: "2'" });
@@ -809,8 +777,7 @@
       btn.textContent = "Verificando...";
 
       try {
-        const cacheBuster = new Date().getTime();
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(pass)}&cb=${cacheBuster}`);
+        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(pass)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         
         if (data.status === "success") {
@@ -951,22 +918,13 @@
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
 
-      if (est.includes("vencid")) {
-        return { codigo: "vencida", label: `Vencida (${perLimpio || "-"})`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
-      }
-
-      if (est.includes("pendient")) {
-        return { codigo: "vencida", label: `Pendiente (${perLimpio || "-"})`, labelCorto: "Pendiente", badgeClass: "badge-warn", ultimo };
-      }
+      if (est.includes("vencid")) return { codigo: "vencida", label: `Vencida (${perLimpio || "-"})`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+      if (est.includes("pendient")) return { codigo: "vencida", label: `Pendiente (${perLimpio || "-"})`, labelCorto: "Pendiente", badgeClass: "badge-warn", ultimo };
 
       if (fechaVenc) {
         const diffDias = Math.ceil((fechaVenc - hoy) / (1000 * 60 * 60 * 24));
-        if (diffDias < 0) {
-          return { codigo: "vencida", label: `Venció el ${vencLimpio}`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
-        }
-        if (diffDias <= 5) {
-          return { codigo: "por_vencer", label: `Vence en ${diffDias}d (${vencLimpio})`, labelCorto: `Vence ${diffDias}d`, badgeClass: "badge-warn", ultimo };
-        }
+        if (diffDias < 0) return { codigo: "vencida", label: `Venció el ${vencLimpio}`, labelCorto: "Vencida", badgeClass: "badge-danger", ultimo };
+        if (diffDias <= 5) return { codigo: "por_vencer", label: `Vence en ${diffDias}d (${vencLimpio})`, labelCorto: `Vence ${diffDias}d`, badgeClass: "badge-warn", ultimo };
       }
 
       return { codigo: "activa", label: `Al día (${perLimpio || "-"}${vencLimpio ? ' • Vence ' + vencLimpio : ''})`, labelCorto: "Al día", badgeClass: "badge-ok", ultimo };
@@ -989,9 +947,8 @@
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
         const cuota = evaluarEstadoCuotaAtleta(a.email);
 
-        if (esBaja) {
-          cBaja++;
-        } else {
+        if (esBaja) { cBaja++; } 
+        else {
           cActivos++;
           if (cuota.codigo === "activa") cAlDia++;
           else if (cuota.codigo === "por_vencer") cPorVencer++;
@@ -999,7 +956,6 @@
         }
 
         if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q)) return false;
-
         if (filtroAlumnosActual === "baja") return esBaja;
         if (esBaja) return false;
         if (filtroAlumnosActual === "todos") return true;
@@ -1079,7 +1035,6 @@
       }
     }
 
-    // FICHAS ATLETAS
     function irAEspejoDeAtleta(email) {
       cambiarSeccionCoach('espejo', document.getElementById('tab-btn-espejo'));
       document.getElementById("espejoSelectAtleta").value = String(email || "").trim().toLowerCase();
@@ -1089,10 +1044,7 @@
     async function cargarFichaYEspejoAtleta() {
       const email = document.getElementById("espejoSelectAtleta").value;
       const cont = document.getElementById("contenedorContenidoEspejo");
-      if (!email) {
-        cont.classList.add("hidden");
-        return;
-      }
+      if (!email) { cont.classList.add("hidden"); return; }
 
       try {
         const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
@@ -1202,14 +1154,32 @@
       return new Date(d.setDate(diff));
     }
 
-    function extraerTagRelojDeNotaProfe(notaStr) {
-      if (!notaStr) return null;
-      const match = String(notaStr).match(/\[⌚ Reloj:\s*([\d.,]+)\s*km/i);
-      if (!match) return null;
-      return parseFloat(match[1].replace(",", ".")) || 0;
+    /* PARSER INTELIGENTE DE NOTAS PARA EL PROFESOR (VOLUMEN REAL + DATOS CAPTURA) */
+    function parsearNotaAtletaProfe(notaStr) {
+      if (!notaStr) return { realVal: 0, realTexto: "", capturaTexto: "", notaLimpia: "" };
+      const str = String(notaStr);
+
+      const mReal = str.match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
+      const realNum = mReal ? parseFloat(mReal[1].replace(",", ".")) : 0;
+      const realTxt = mReal ? `${mReal[1]} ${mReal[2]}` : "";
+
+      const mCap = str.match(/\[⌚ Datos Captura:\s*([^\]]+)\]/i);
+      const capTxt = mCap ? mCap[1].trim() : "";
+
+      const limpia = str
+        .replace(/\[📊 Real:[^\]]+\]\s*/gi, "")
+        .replace(/\[⌚ Datos Captura:[^\]]+\]\s*/gi, "")
+        .trim();
+
+      return {
+        realVal: isNaN(realNum) ? 0 : realNum,
+        realTexto: realTxt,
+        capturaTexto: capTxt,
+        notaLimpia: limpia
+      };
     }
 
-    /* GRÁFICO DE TRIPLE CAPA EN FICHAS ATLETAS */
+    /* GRÁFICO DE TRIPLE CAPA CON DATOS REALES EXTRAÍDOS */
     function renderizarGraficoVolumenEspejo() {
       if (!paqueteEspejoActual) return;
       const rutinas = paqueteEspejoActual.rutinas || [];
@@ -1238,7 +1208,9 @@
 
         const match = volStr.match(/([\d.,]+)/);
         const valorPlan = match ? parseFloat(match[1].replace(",", ".")) : 0;
-        const valorReal = (discFiltro !== "Fuerza") ? (extraerTagRelojDeNotaProfe(s["Notas del Atleta"]) || 0) : 0;
+        
+        const parsedNota = parsearNotaAtletaProfe(s["Notas del Atleta"]);
+        const valorReal = (discFiltro !== "Fuerza") ? parsedNota.realVal : 0;
         const rpeVal = parseFloat(s["Esfuerzo RPE (0-10)"] || s["RPE"]) || 0;
 
         const lunes = obtenerLunesDeSemana(fObj);
@@ -1271,7 +1243,7 @@
 
       const unidadRef = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
       const ultimaSem = semanasArr[semanasArr.length - 1];
-      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${ultimaSem.plan.toFixed(1)} ${unidadRef}</strong> | Real Reloj: <strong style="color:var(--accent);">${ultimaSem.real.toFixed(1)} km</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
+      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${ultimaSem.plan.toFixed(1)} ${unidadRef}</strong> | Real Completado: <strong style="color:var(--accent);">${ultimaSem.real.toFixed(1)} ${unidadRef}</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
 
       if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
 
@@ -1292,7 +1264,7 @@
       if (discFiltro !== "Fuerza") {
         datasets.push({
           type: "bar",
-          label: "Real Reloj (km)",
+          label: "Real Completado",
           data: dataReal,
           backgroundColor: "rgba(16, 185, 129, 0.7)",
           borderColor: "#10b981",
@@ -1378,6 +1350,7 @@
       }).join("");
     }
 
+    /* RENDERIZAR FEEDBACK EN FICHA PROFE CON INSIGNIAS VISUALES */
     function renderizarFeedbackEspejo(feedbacks) {
       const cont = document.getElementById("espejoListaFeedback");
       if (!feedbacks.length) {
@@ -1386,13 +1359,23 @@
       }
       cont.innerHTML = feedbacks.slice(-10).reverse().map(f => {
         const fechaLimpia = limpiarFechaVisual(f["Fecha"]) || "-";
+        const parsedNota = parsearNotaAtletaProfe(f["Comentarios"]);
+
+        const badgeReal = parsedNota.realTexto ? `<span class="badge" style="background:rgba(16, 185, 129, 0.2); color:#10b981; border:1px solid #10b981;">📊 Real: ${parsedNota.realTexto}</span>` : "";
+        const badgeCap = parsedNota.capturaTexto ? `<span class="badge" style="background:rgba(59, 130, 246, 0.2); color:#60a5fa; border:1px solid #3b82f6;">⌚ ${parsedNota.capturaTexto}</span>` : "";
+        const commentBox = parsedNota.notaLimpia ? `<div style="font-size:0.84rem; color:var(--muted); margin-top:6px; background:rgba(16,185,129,0.06); padding:6px 8px; border-radius:4px; border-left:2px solid #10b981;">💬 "${parsedNota.notaLimpia}"</div>` : "";
+
         return `
           <div class="bloque-item-admin">
-            <div style="display:flex; justify-content:space-between;">
-              <strong>${fechaLimpia} • ${f["Tipo de Sesión"] || "Sesión"}</strong>
-              <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10 (${f["Duración (min)"] || "-"})</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <div><strong>${fechaLimpia} • ${f["Tipo de Sesión"] || "Sesión"}</strong></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                ${badgeReal}
+                ${badgeCap}
+                <span class="badge badge-warn">RPE: ${f["RPE"] || "-"}/10</span>
+              </div>
             </div>
-            <div style="font-size:0.84rem; color:var(--muted); margin-top:4px;">💬 "${f["Comentarios"] || "Sin comentarios"}"</div>
+            ${commentBox}
           </div>
         `;
       }).join("");
@@ -1463,22 +1446,16 @@
     function cargarPlantilla() {
       const val = document.getElementById("selectPlantilla").value;
       const btnBorrar = document.getElementById("btnBorrarPlantilla");
-      if (!val) {
-        btnBorrar.classList.add("hidden");
-        return;
-      }
+      if (!val) { btnBorrar.classList.add("hidden"); return; }
 
       let p = null;
       if (val.startsWith("base__")) {
-        const key = val.replace("base__", "");
-        p = PLANTILLAS_BASE[key];
+        p = PLANTILLAS_BASE[val.replace("base__", "")];
         btnBorrar.classList.add("hidden");
       } else if (val.startsWith("custom__")) {
-        const id = val.replace("custom__", "");
-        p = plantillasPersonalizadas.find(item => String(item.id) === String(id));
+        p = plantillasPersonalizadas.find(item => String(item.id) === String(val.replace("custom__", "")));
         btnBorrar.classList.remove("hidden");
       }
-
       if (!p) return;
 
       document.getElementById("inputDisciplina").value = p.disciplina || "Running";
@@ -1508,7 +1485,6 @@
       const ind = document.getElementById("inputIndicaciones").value.trim();
 
       if (!tipo) return alert("Escribe primero el Nombre / Tipo de Sesión para guardarla como plantilla.");
-
       const bloquesNodes = document.querySelectorAll(".bloque-row");
       if (bloquesNodes.length === 0) return alert("Agrega al menos un ejercicio.");
 
@@ -1588,7 +1564,6 @@
       } catch (e) {}
     }
 
-    /* VISTA CALENDARIO MENSUAL EN RUTINAS ASIGNADAS (PANEL PROFE) */
     async function cargarRutinasParaGestionar() {
       const email = document.getElementById("gestionSelectAtleta").value;
       const container = document.getElementById("gestionListaContainer");
@@ -1596,7 +1571,6 @@
         container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Selecciona un atleta arriba para ver sus rutinas cargadas.</p>`;
         return;
       }
-
       container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Buscando rutinas...</p>`;
 
       try {
@@ -1624,7 +1598,6 @@
         cacheRutinasAtletaCalendario = Array.from(mapaSesiones.values());
         renderGestionCalendarioGrid();
         renderGestionListadoSesiones();
-
       } catch (e) {
         container.innerHTML = `<p style="color: var(--danger); text-align: center; padding: 20px;">Error al conectar con la base de datos.</p>`;
       }
@@ -1759,16 +1732,10 @@
 
       let disc = "Running";
       let nombreLimpio = s.tipo;
-      if (s.tipo.toLowerCase().startsWith("fuerza")) {
-        disc = "Fuerza";
-        nombreLimpio = s.tipo.replace(/^fuerza\s*-\s*/i, "");
-      } else if (s.tipo.toLowerCase().startsWith("running")) {
-        disc = "Running";
-        nombreLimpio = s.tipo.replace(/^running\s*-\s*/i, "");
-      } else if (s.tipo.toLowerCase().startsWith("mixto") || s.tipo.toLowerCase().startsWith("funcional")) {
-        disc = "Mixto";
-        nombreLimpio = s.tipo.replace(/^(mixto|funcional)\s*-\s*/i, "");
-      }
+      if (s.tipo.toLowerCase().startsWith("fuerza")) { disc = "Fuerza"; nombreLimpio = s.tipo.replace(/^fuerza\s*-\s*/i, ""); }
+      else if (s.tipo.toLowerCase().startsWith("running")) { disc = "Running"; nombreLimpio = s.tipo.replace(/^running\s*-\s*/i, ""); }
+      else if (s.tipo.toLowerCase().startsWith("mixto") || s.tipo.toLowerCase().startsWith("funcional")) { disc = "Mixto"; nombreLimpio = s.tipo.replace(/^(mixto|funcional)\s*-\s*/i, ""); }
+      
       document.getElementById("inputDisciplina").value = disc;
       document.getElementById("inputTipoSesion").value = nombreLimpio;
 
@@ -1807,14 +1774,9 @@
         const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: fecha, tipo: tipo };
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
-        if (json.status === "success") {
-          cargarRutinasParaGestionar();
-        } else {
-          alert("Error al borrar la rutina.");
-        }
-      } catch (e) {
-        alert("Error de conexión.");
-      }
+        if (json.status === "success") { cargarRutinasParaGestionar(); }
+        else { alert("Error al borrar la rutina."); }
+      } catch (e) { alert("Error de conexión."); }
     }
 
     function agregarBloque(datos = null) {
@@ -1966,12 +1928,8 @@
           document.getElementById("nuevoFechaNac").value = "";
           document.getElementById("nuevoCelular").value = "";
           verificarProfe();
-        } else {
-          alert("Error: " + json.message);
-        }
-      } catch (e) {
-        alert("Error de conexión al dar de alta.");
-      }
+        } else { alert("Error: " + json.message); }
+      } catch (e) { alert("Error de conexión al dar de alta."); }
     }
 
     function cargarDatosPagoAtleta() {
@@ -1998,23 +1956,15 @@
       const estado = document.getElementById("pagoEstado").value;
       const vencRaw = document.getElementById("pagoVenc").value;
 
-      if (!email) return alert("⚠️ Primero selecciona un atleta en el desplegable 'Seleccionar Atleta' (o toca el botón '💳 Cuota' al lado de su nombre arriba).");
-      if (!periodo) return alert("⚠️ Indica el Periodo / Mes (ej: noviembre 2026).");
+      if (!email) return alert("⚠️ Primero selecciona un atleta en el desplegable.");
+      if (!periodo) return alert("⚠️ Indica el Periodo / Mes.");
 
       const btn = document.getElementById("btnGuardarPagoProfe");
       btn.disabled = true;
       btn.textContent = "⏳ Guardando cuota...";
 
       try {
-        const payload = {
-          action: "guardarPago",
-          pass: claveGuardada,
-          email: email,
-          periodo: periodo,
-          monto: monto,
-          estado: estado,
-          vencimiento: formatFechaEnvio(vencRaw)
-        };
+        const payload = { action: "guardarPago", pass: claveGuardada, email: email, periodo: periodo, monto: monto, estado: estado, vencimiento: formatFechaEnvio(vencRaw) };
         const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         btn.disabled = false;
@@ -2023,9 +1973,7 @@
         if (json.status === "success") {
           alert("✅ ¡Estado de cuota actualizado con éxito!");
           verificarProfe();
-        } else {
-          alert("Error al guardar pago: " + (json.message || ""));
-        }
+        } else { alert("Error al guardar pago."); }
       } catch (e) {
         btn.disabled = false;
         btn.textContent = "💾 Guardar Estado de Cuota";
