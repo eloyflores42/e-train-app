@@ -797,14 +797,27 @@ const APIS_POR_INQUILINO = {
       state.cuotaVencida = false;
       if (Array.isArray(data.pagos)) {
         state.pagos = data.pagos.map(p => {
-          const est = String(p["Estado"] || p.estado || "").trim().toLowerCase();
-          if (est.includes("vencid")) state.cuotaVencida = true;
+          const est = String(p["Estado"] || p.estado || "pendiente").trim().toLowerCase();
+          const vencLimpio = formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "");
+          const fVenc = parseFechaDDMMYYYY(vencLimpio);
+          const hoy = new Date(); hoy.setHours(0,0,0,0);
+          
+          // Bloqueo inteligente:
+          if (est.includes("vencid")) {
+             state.cuotaVencida = true; // Bloqueo directo si el profe marcó "Vencido"
+          } else if (est.includes("pendient")) {
+             // Bloqueo automático si está "Pendiente" y la fecha ya expiró (o no tiene fecha asignada)
+             if (!fVenc || fVenc < hoy) {
+                 state.cuotaVencida = true;
+             }
+          }
+
           return {
             ...p,
             "Mes / Periodo": formatPeriodoTexto(p["Mes / Periodo"] || p["Periodo"] || p.periodo || ""),
             "Monto": p["Monto"] || p.monto || "",
             "Estado": p["Estado"] || p.estado || "Pendiente",
-            "Fecha de Vencimiento": formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "") || "-"
+            "Fecha de Vencimiento": vencLimpio || "-"
           };
         });
       }
