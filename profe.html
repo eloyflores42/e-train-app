@@ -481,11 +481,11 @@
   <datalist id="listaEjercicios"></datalist>
 
   <script>
-    // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
-    const APIS_POR_INQUILINO = {
-      "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
-      "default": "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec"
-    };
+   // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
+const APIS_POR_INQUILINO = {
+  "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
+  "default": "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec"
+};
 
     function getApiUrl() {
       const tenant = localStorage.getItem("etrain_tenant_profe") || "default";
