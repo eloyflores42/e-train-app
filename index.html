@@ -137,6 +137,16 @@
     <img src="./logo.png" alt="E-TRAIN Logo" style="max-height: 130px; margin-bottom: 15px;" onerror="this.style.display='none'">
     <h2>E-TRAIN</h2>
     <p>Ingresa con tu correo y tu PIN personal de entrenamiento.</p>
+    
+    <!-- SELECTOR DE INQUILINO / SAAS -->
+    <div class="form-group">
+      <label>Equipo / Entrenador</label>
+      <select id="loginTenant">
+        <option value="default">E-TRAIN (Profe Eloy)</option>
+        <option value="mariaisis.dicroche@hotmail.com">Profe Isis (Beta)</option>
+      </select>
+    </div>
+
     <div class="form-group"><label>Correo Electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" /></div>
     <div class="form-group"><label>PIN de Acceso</label><input type="password" id="loginPin" placeholder="Ej: 1234" onkeypress="if(event.key === 'Enter') iniciarSesion()" /></div>
     <button class="btn" onclick="iniciarSesion()" id="btnLoginBtn">Ingresar a la App</button>
@@ -447,7 +457,17 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec";
+    // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
+    const APIS_POR_INQUILINO = {
+      "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
+      "default": "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec"
+    };
+
+    function getApiUrl() {
+      const tenant = localStorage.getItem("etrain_tenant") || "default";
+      return APIS_POR_INQUILINO[tenant] || APIS_POR_INQUILINO["default"];
+    }
+
     const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
     let deferredPrompt = null;
@@ -625,6 +645,13 @@
     window.addEventListener("DOMContentLoaded", () => {
       const savedEmail = localStorage.getItem("etrain_email");
       const savedPin = localStorage.getItem("etrain_pin");
+      const savedTenant = localStorage.getItem("etrain_tenant");
+
+      if (savedTenant) {
+        const selTenant = document.getElementById("loginTenant");
+        if (selTenant) selTenant.value = savedTenant;
+      }
+
       if (savedEmail && savedPin) {
         const st = document.getElementById("splashStatusText");
         if (st) st.textContent = "Sincronizando tus rutinas...";
@@ -637,14 +664,21 @@
     });
 
     async function iniciarSesion() {
-      const email = document.getElementById("loginEmail").value.trim(); const pin = document.getElementById("loginPin").value.trim();
-      const errDiv = document.getElementById("loginError"); const btn = document.getElementById("btnLoginBtn");
+      const email = document.getElementById("loginEmail").value.trim(); 
+      const pin = document.getElementById("loginPin").value.trim();
+      const tenant = document.getElementById("loginTenant").value;
+      const errDiv = document.getElementById("loginError"); 
+      const btn = document.getElementById("btnLoginBtn");
+      
       if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; ocultarSplash(); return; }
       errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
 
       try {
+        localStorage.setItem("etrain_tenant", tenant);
+        const apiUrl = getApiUrl();
         const cacheBuster = new Date().getTime(); 
-        const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${cacheBuster}`);
+        
+        const res = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${cacheBuster}`);
         const data = await res.json();
         if (data.status === "error") {
           errDiv.textContent = data.message;
@@ -653,7 +687,8 @@
           ocultarSplash();
           return;
         }
-        localStorage.setItem("etrain_email", email); localStorage.setItem("etrain_pin", pin);
+        localStorage.setItem("etrain_email", email); 
+        localStorage.setItem("etrain_pin", pin);
         procesarDatosRecibidos(data);
         document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("appContainer").classList.remove("hidden");
         ocultarSplash();
@@ -665,7 +700,12 @@
       }
     }
 
-    function cerrarSesion() { localStorage.removeItem("etrain_email"); localStorage.removeItem("etrain_pin"); location.reload(); }
+    function cerrarSesion() { 
+      localStorage.removeItem("etrain_email"); 
+      localStorage.removeItem("etrain_pin"); 
+      localStorage.removeItem("etrain_tenant"); 
+      location.reload(); 
+    }
 
     function procesarDatosRecibidos(data) {
       if (data.perfil) {
@@ -822,7 +862,7 @@
       const btn = document.getElementById("btnCambiarPinRapido");
       btn.disabled = true; btn.textContent = "Guardando...";
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(getApiUrl(), {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
@@ -857,7 +897,7 @@
           celular: state.perfil.celular, emergencia: state.perfil.emergencia, direccion: state.perfil.direccion, obraSocial: state.perfil.obraSocial,
           clinica: state.perfil.clinica, sangre: state.perfil.sangre, donante: state.perfil.donante, alergias: state.perfil.alergias, nuevoTest: testObj 
         };
-        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         localStorage.setItem("etrain_pin", state.perfil.dni);
         if(btn){ btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = txt; btn.disabled = false; }, 2000); }
       } catch (err) { if(btn){ btn.textContent = "Error"; btn.disabled = false; } }
@@ -1101,7 +1141,6 @@
         const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
         const rpeVal = parseNum(s.rpe, 0);
         
-        // Extracción de volumen real y unidad desde notaAtleta
         const matchVolReal = String(s.notaAtleta || "").match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
         const realVal = matchVolReal ? parseFloat(matchVolReal[1].replace(",", ".")) : 0;
 
@@ -1380,58 +1419,50 @@
       return m ? m[1].trim() : "";
     }
 
-    /* =========================================================================
-       LECTOR ÓPTICO DE CAPTURAS DE PANTALLA (STRAVA / GARMIN / COROS / RELOJ)
-       ========================================================================= */
-async function procesarCapturaReloj(event, idx) {
-  const file = event.target.files[0];
-  if (!file) return;
+    async function procesarCapturaReloj(event, idx) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-  const statusEl = document.getElementById(`ocr-status-${idx}`);
-  statusEl.style.color = "var(--warning)";
-  statusEl.textContent = "⏳ Analizando imagen con precisión...";
+      const statusEl = document.getElementById(`ocr-status-${idx}`);
+      statusEl.style.color = "var(--warning)";
+      statusEl.textContent = "⏳ Analizando imagen con precisión...";
 
-  try {
-    const result = await Tesseract.recognize(file, 'spa+eng');
-    const texto = result.data.text.replace(/\n/g, " ");
+      try {
+        const result = await Tesseract.recognize(file, 'spa+eng');
+        const texto = result.data.text.replace(/\n/g, " ");
 
-    // 🎯 1. PRIORIDAD ABSOLUTA: Buscar el número grande de kilómetros (ej: "4.56 km" o "4,56km")
-    const matchKm = texto.match(/(\d{1,2}[.,]\d{2})\s*km/i) || texto.match(/(\d{1,2}[.,]\d{1})\s*km/i);
-    
-    // ⌚ 2. Buscar Duración exacta (formato HH:MM:SS o MM:SS, ignorando los ceros iniciales si es necesario)
-    const matchTiempo = texto.match(/(\d{2}:\d{2}:\d{2})/i) || texto.match(/(\d{2}:\d{2})/i);
+        const matchKm = texto.match(/(\d{1,2}[.,]\d{2})\s*km/i) || texto.match(/(\d{1,2}[.,]\d{1})\s*km/i);
+        const matchTiempo = texto.match(/(\d{2}:\d{2}:\d{2})/i) || texto.match(/(\d{2}:\d{2})/i);
+        const matchRitmo = texto.match(/(\d{1,2}[':]\d{2})/i);
 
-    // ⚡ 3. Buscar Ritmo medio (ej: "8'45\"" o "8:45")
-    const matchRitmo = texto.match(/(\d{1,2}[':]\d{2})/i);
+        let extras = [];
+        if (matchRitmo) extras.push(`Ritmo: ${matchRitmo[1].replace("'", ":")}/km`);
+        if (matchTiempo && matchTiempo[1] !== "00:00:00" && matchTiempo[1] !== "00:40:00") {
+          extras.push(`Tiempo: ${matchTiempo[1]}`);
+        }
 
-    let extras = [];
-    if (matchRitmo) extras.push(`Ritmo: ${matchRitmo[1].replace("'", ":")}/km`);
-    if (matchTiempo && matchTiempo[1] !== "00:00:00" && matchTiempo[1] !== "00:40:00") { // Evitar leer ceros vacíos
-      extras.push(`Tiempo: ${matchTiempo[1]}`);
+        const ocrMetaInput = document.getElementById(`ocr-meta-${idx}`);
+        if (ocrMetaInput && extras.length > 0) {
+          ocrMetaInput.value = extras.join(" | ");
+        }
+
+        if (matchKm) {
+          const kmLimpio = parseFloat(matchKm[1].replace(",", "."));
+          document.getElementById(`vol-real-${idx}`).value = kmLimpio;
+          document.getElementById(`vol-unidad-${idx}`).value = "km";
+          document.getElementById(`comp-${idx}`).value = "Sí";
+
+          statusEl.style.color = "var(--accent)";
+          statusEl.textContent = `✔ ¡Detectado con éxito: ${kmLimpio} km! Toca Guardar.`;
+        } else {
+          statusEl.style.color = "var(--danger)";
+          statusEl.textContent = "⚠️ No se leyó el valor en km con claridad. Tipealo a mano.";
+        }
+      } catch (err) {
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "❌ Error al procesar la imagen.";
+      }
     }
-
-    const ocrMetaInput = document.getElementById(`ocr-meta-${idx}`);
-    if (ocrMetaInput && extras.length > 0) {
-      ocrMetaInput.value = extras.join(" | ");
-    }
-
-    if (matchKm) {
-      const kmLimpio = parseFloat(matchKm[1].replace(",", "."));
-      document.getElementById(`vol-real-${idx}`).value = kmLimpio;
-      document.getElementById(`vol-unidad-${idx}`).value = "km";
-      document.getElementById(`comp-${idx}`).value = "Sí";
-
-      statusEl.style.color = "var(--accent)";
-      statusEl.textContent = `✔ ¡Detectado con éxito: ${kmLimpio} km! Toca Guardar.`;
-    } else {
-      statusEl.style.color = "var(--danger)";
-      statusEl.textContent = "⚠️ No se leyó el valor en km con claridad. Tipealo a mano.";
-    }
-  } catch (err) {
-    statusEl.style.color = "var(--danger)";
-    statusEl.textContent = "❌ Error al procesar la imagen.";
-  }
-}
 
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
@@ -1602,7 +1633,6 @@ async function procesarCapturaReloj(event, idx) {
         return;
       }
 
-      // Todas las tarjetas nacen retraídas por defecto
       container.innerHTML = sesionesFiltradas.map(s => {
         return construirTarjetaSesionHTML(s, true); 
       }).join("");
@@ -1628,7 +1658,7 @@ async function procesarCapturaReloj(event, idx) {
       const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
-        await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar Registro"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
