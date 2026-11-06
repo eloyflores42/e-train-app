@@ -1155,20 +1155,24 @@
     }
 
     /* PARSER INTELIGENTE DE NOTAS PARA EL PROFESOR (VOLUMEN REAL + DATOS CAPTURA) */
-    function parsearNotaAtletaProfe(notaStr) {
+function parsearNotaAtletaProfe(notaStr) {
       if (!notaStr) return { realVal: 0, realTexto: "", capturaTexto: "", notaLimpia: "" };
       const str = String(notaStr);
 
+      // 1. Extraer Volumen Real (ej: "[📊 Real: 4.56 km]")
       const mReal = str.match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
       const realNum = mReal ? parseFloat(mReal[1].replace(",", ".")) : 0;
       const realTxt = mReal ? `${mReal[1]} ${mReal[2]}` : "";
 
+      // 2. Extraer Datos de Captura OCR (ej: "[⌚ Datos Captura: Ritmo: 8:45/km | Tiempo: 00:40:00]")
       const mCap = str.match(/\[⌚ Datos Captura:\s*([^\]]+)\]/i);
       const capTxt = mCap ? mCap[1].trim() : "";
 
+      // 3. Dejar limpio el comentario para el profe
       const limpia = str
         .replace(/\[📊 Real:[^\]]+\]\s*/gi, "")
         .replace(/\[⌚ Datos Captura:[^\]]+\]\s*/gi, "")
+        .replace(/\[⌚ Reloj:[^\]]+\]\s*/gi, "")
         .trim();
 
       return {
