@@ -21,6 +21,8 @@
     #loginCoachScreen { max-width: 400px; margin: 70px auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
     #loginCoachScreen h2 { font-family: 'Montserrat', sans-serif; font-style: italic; color: var(--accent); margin-bottom: 8px; font-size: 1.55rem; }
     #loginCoachScreen p { color: var(--muted); font-size: 0.92rem; margin-bottom: 20px; }
+    
+    .form-group { margin-bottom: 14px; text-align: left; }
 
     .container { max-width: 880px; margin: 20px auto; padding: 0 16px; }
     
@@ -118,12 +120,23 @@
     <img src="./logo.png" alt="E-TRAIN" style="max-height: 90px; margin-bottom: 12px;" onerror="this.style.display='none'">
     <h2>MODO ENTRENADOR</h2>
     <p>Acceso exclusivo de administración y planificación.</p>
-    <div>
+    
+    <!-- SELECTOR DE INQUILINO / SAAS -->
+    <div class="form-group">
+      <label>Equipo / Entrenador</label>
+      <select id="loginTenantProfe">
+        <option value="default">E-TRAIN (Profe Eloy)</option>
+        <option value="mariaisis.dicroche@hotmail.com">Profe Isis (Beta)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
       <label>Clave Maestra</label>
       <input type="password" id="inputCoachPass" placeholder="Ingresa tu clave secreta..." onkeypress="if(event.key === 'Enter') verificarProfe()" />
     </div>
     <button class="btn btn-success" id="btnLoginCoach" onclick="verificarProfe()">Desbloquear Panel</button>
     <div id="coachError" style="color:var(--danger); font-size:0.85rem; margin-top:12px;"></div>
+    
     <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 12px;">
       <a href="./index.html" style="color: var(--muted); font-size: 0.85rem; text-decoration: none;">← Volver a la App de Atletas</a>
     </div>
@@ -468,8 +481,17 @@
   <datalist id="listaEjercicios"></datalist>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec";
-    
+    // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
+    const APIS_POR_INQUILINO = {
+      "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
+      "default": "https://script.google.com/macros/s/AKfycbxmBrmTqb9h72khwvrfHDYQC4Ti2dwGloLrGI0bS0zVzKCCcubbwxgh9EN1fMY9amHtZg/exec"
+    };
+
+    function getApiUrl() {
+      const tenant = localStorage.getItem("etrain_tenant_profe") || "default";
+      return APIS_POR_INQUILINO[tenant] || APIS_POR_INQUILINO["default"];
+    }
+
     let contadorBloques = 0;
     let claveGuardada = "";
     let modoAsignacion = "individual";
@@ -617,6 +639,13 @@
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
       document.getElementById("pagoVenc").valueAsDate = new Date();
+
+      const savedTenant = localStorage.getItem("etrain_tenant_profe");
+      if (savedTenant) {
+        const selTenant = document.getElementById("loginTenantProfe");
+        if (selTenant) selTenant.value = savedTenant;
+      }
+
       const localPl = localStorage.getItem("etrain_custom_templates");
       if (localPl) {
         try { plantillasPersonalizadas = JSON.parse(localPl); } catch(e) {}
@@ -768,8 +797,10 @@
 
     async function verificarProfe() {
       const pass = document.getElementById("inputCoachPass").value.trim();
+      const tenant = document.getElementById("loginTenantProfe").value;
       const errDiv = document.getElementById("coachError");
       const btn = document.getElementById("btnLoginCoach");
+      
       if (!pass) { errDiv.textContent = "Ingresa la clave maestra."; return; }
 
       errDiv.textContent = "";
@@ -777,7 +808,9 @@
       btn.textContent = "Verificando...";
 
       try {
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(pass)}&cb=${new Date().getTime()}`);
+        localStorage.setItem("etrain_tenant_profe", tenant);
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}?modo=profe&pass=${encodeURIComponent(pass)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         
         if (data.status === "success") {
@@ -1016,7 +1049,7 @@
       if (!confirm(`¿Confirmás ${accionTxt} a ${email}?`)) return;
 
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(getApiUrl(), {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "cambiarEstadoAtleta", pass: claveGuardada, email: email, estado: nuevoEstado })
@@ -1047,7 +1080,7 @@
       if (!email) { cont.classList.add("hidden"); return; }
 
       try {
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
+        const res = await fetch(`${getApiUrl()}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailEspejo=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         if (data.status !== "success") return alert(data.message || "Error al cargar ficha.");
 
@@ -1133,7 +1166,7 @@
       };
 
       try {
-        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
           alert("✅ Ficha médica y datos del atleta actualizados correctamente.");
@@ -1155,20 +1188,17 @@
     }
 
     /* PARSER INTELIGENTE DE NOTAS PARA EL PROFESOR (VOLUMEN REAL + DATOS CAPTURA) */
-function parsearNotaAtletaProfe(notaStr) {
+    function parsearNotaAtletaProfe(notaStr) {
       if (!notaStr) return { realVal: 0, realTexto: "", capturaTexto: "", notaLimpia: "" };
       const str = String(notaStr);
 
-      // 1. Extraer Volumen Real (ej: "[📊 Real: 4.56 km]")
       const mReal = str.match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
       const realNum = mReal ? parseFloat(mReal[1].replace(",", ".")) : 0;
       const realTxt = mReal ? `${mReal[1]} ${mReal[2]}` : "";
 
-      // 2. Extraer Datos de Captura OCR (ej: "[⌚ Datos Captura: Ritmo: 8:45/km | Tiempo: 00:40:00]")
       const mCap = str.match(/\[⌚ Datos Captura:\s*([^\]]+)\]/i);
       const capTxt = mCap ? mCap[1].trim() : "";
 
-      // 3. Dejar limpio el comentario para el profe
       const limpia = str
         .replace(/\[📊 Real:[^\]]+\]\s*/gi, "")
         .replace(/\[⌚ Datos Captura:[^\]]+\]\s*/gi, "")
@@ -1404,7 +1434,7 @@ function parsearNotaAtletaProfe(notaStr) {
       if (!payload.ejercicio || !payload.resultado) return alert("Completa al menos la Prueba y el Resultado.");
 
       try {
-        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
           document.getElementById("formNuevoTestProfe").classList.add("hidden");
@@ -1417,6 +1447,7 @@ function parsearNotaAtletaProfe(notaStr) {
 
     function salirProfe() {
       localStorage.removeItem("etrain_coach_pass");
+      localStorage.removeItem("etrain_tenant_profe");
       location.reload();
     }
 
@@ -1526,7 +1557,7 @@ function parsearNotaAtletaProfe(notaStr) {
       document.getElementById("btnBorrarPlantilla").classList.remove("hidden");
 
       try {
-        await fetch(API_URL, {
+        await fetch(getApiUrl(), {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
@@ -1560,7 +1591,7 @@ function parsearNotaAtletaProfe(notaStr) {
       renderizarSelectorPlantillas();
 
       try {
-        await fetch(API_URL, {
+        await fetch(getApiUrl(), {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "borrarPlantilla", pass: claveGuardada, id: id })
@@ -1578,7 +1609,7 @@ function parsearNotaAtletaProfe(notaStr) {
       container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Buscando rutinas...</p>`;
 
       try {
-        const res = await fetch(`${API_URL}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
+        const res = await fetch(`${getApiUrl()}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(email)}&cb=${new Date().getTime()}`);
         const data = await res.json();
         const rutinasRaw = data.rutinas || [];
 
@@ -1776,7 +1807,7 @@ function parsearNotaAtletaProfe(notaStr) {
 
       try {
         const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: fecha, tipo: tipo };
-        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") { cargarRutinasParaGestionar(); }
         else { alert("Error al borrar la rutina."); }
@@ -1889,7 +1920,7 @@ function parsearNotaAtletaProfe(notaStr) {
             tipoOriginal: tipoFinal
           };
 
-          const res = await fetch(API_URL, {
+          const res = await fetch(getApiUrl(), {
             method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
           });
           const json = await res.json();
@@ -1922,7 +1953,7 @@ function parsearNotaAtletaProfe(notaStr) {
 
       try {
         const payload = { action: "crearAtleta", pass: claveGuardada, nombre: nombre, email: email, pin: pin, celular: cel, fechaNac: fechaNac, fotoUrl: "", vam: "", fcr: 52, fcmax: 188, emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" };
-        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
           alert(`¡Atleta ${nombre} registrado con éxito! PIN inicial: ${pin}`);
@@ -1969,7 +2000,7 @@ function parsearNotaAtletaProfe(notaStr) {
 
       try {
         const payload = { action: "guardarPago", pass: claveGuardada, email: email, periodo: periodo, monto: monto, estado: estado, vencimiento: formatFechaEnvio(vencRaw) };
-        const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         btn.disabled = false;
         btn.textContent = "💾 Guardar Estado de Cuota";
