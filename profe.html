@@ -978,7 +978,7 @@ const APIS_POR_INQUILINO = {
 
       const filtrados = listaAtletasGlobal.filter(a => {
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
-        const cuota = evaluarEstadoCuotaAtleta(emailNorm);
+        const cuota = evaluarEstadoCuotaAtleta(a.email);
 
         if (esBaja) { cBaja++; } 
         else {
