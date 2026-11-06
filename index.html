@@ -1383,64 +1383,55 @@
     /* =========================================================================
        LECTOR ÓPTICO DE CAPTURAS DE PANTALLA (STRAVA / GARMIN / COROS / RELOJ)
        ========================================================================= */
-    async function procesarCapturaReloj(event, idx) {
-      const file = event.target.files[0];
-      if (!file) return;
+async function procesarCapturaReloj(event, idx) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-      const statusEl = document.getElementById(`ocr-status-${idx}`);
-      statusEl.style.color = "var(--warning)";
-      statusEl.textContent = "⏳ Escaneando datos de la imagen...";
+  const statusEl = document.getElementById(`ocr-status-${idx}`);
+  statusEl.style.color = "var(--warning)";
+  statusEl.textContent = "⏳ Analizando imagen con precisión...";
 
-      try {
-        const result = await Tesseract.recognize(file, 'spa+eng');
-        const texto = result.data.text.replace(/\n/g, " ");
+  try {
+    const result = await Tesseract.recognize(file, 'spa+eng');
+    const texto = result.data.text.replace(/\n/g, " ");
 
-        // 1. Detectar Distancia en KM (ej: "8.45 km", "10,2 km" o "Distancia 7.5")
-        const matchKm = texto.match(/(\d{1,2}[.,]\d{1,2})\s*km/i) || texto.match(/distancia\s*[:\-]?\s*(\d{1,2}[.,]\d{1,2})/i);
-        
-        // 2. Detectar Ritmo promedio (ej: "4:52 /km" o "5'10\" /km")
-        const matchRitmo = texto.match(/(\d{1,2}[:']\d{2})\s*["”]?\/km/i);
+    // 🎯 1. PRIORIDAD ABSOLUTA: Buscar el número grande de kilómetros (ej: "4.56 km" o "4,56km")
+    const matchKm = texto.match(/(\d{1,2}[.,]\d{2})\s*km/i) || texto.match(/(\d{1,2}[.,]\d{1})\s*km/i);
+    
+    // ⌚ 2. Buscar Duración exacta (formato HH:MM:SS o MM:SS, ignorando los ceros iniciales si es necesario)
+    const matchTiempo = texto.match(/(\d{2}:\d{2}:\d{2})/i) || texto.match(/(\d{2}:\d{2})/i);
 
-        // 3. Detectar Pulsaciones (ej: "155 ppm", "155 bpm", "155 lpm")
-        const matchFC = texto.match(/(\d{2,3})\s*(?:ppm|bpm|lpm)/i);
+    // ⚡ 3. Buscar Ritmo medio (ej: "8'45\"" o "8:45")
+    const matchRitmo = texto.match(/(\d{1,2}[':]\d{2})/i);
 
-        // 4. Detectar Duración en minutos si no hay km (para sesiones de Fuerza/Funcional)
-        const matchMin = texto.match(/(\d{1,3})\s*(?:min|minutos|m\b)/i);
-
-        let extras = [];
-        if (matchRitmo) extras.push(`Ritmo: ${matchRitmo[1].replace("'", ":")}/km`);
-        if (matchFC) extras.push(`FC: ${matchFC[1]} ppm`);
-
-        const ocrMetaInput = document.getElementById(`ocr-meta-${idx}`);
-        if (ocrMetaInput && extras.length > 0) {
-          ocrMetaInput.value = extras.join(" | ");
-        }
-
-        if (matchKm) {
-          const kmLimpio = parseFloat(matchKm[1].replace(",", "."));
-          document.getElementById(`vol-real-${idx}`).value = kmLimpio;
-          document.getElementById(`vol-unidad-${idx}`).value = "km";
-          document.getElementById(`comp-${idx}`).value = "Sí";
-
-          statusEl.style.color = "var(--accent)";
-          statusEl.textContent = `✔ Detectado: ${kmLimpio} km ${extras.length ? '(' + extras.join(', ') + ')' : ''}. ¡Toca Guardar!`;
-        } else if (matchMin) {
-          const minLimpio = parseInt(matchMin[1], 10);
-          document.getElementById(`vol-real-${idx}`).value = minLimpio;
-          document.getElementById(`vol-unidad-${idx}`).value = "min";
-          document.getElementById(`comp-${idx}`).value = "Sí";
-
-          statusEl.style.color = "var(--accent)";
-          statusEl.textContent = `✔ Detectado: ${minLimpio} min ${extras.length ? '(' + extras.join(', ') + ')' : ''}. ¡Toca Guardar!`;
-        } else {
-          statusEl.style.color = "var(--danger)";
-          statusEl.textContent = "⚠️ No se divisaron los km/min con claridad. Puedes tipearlos abajo.";
-        }
-      } catch (err) {
-        statusEl.style.color = "var(--danger)";
-        statusEl.textContent = "❌ Error al leer la imagen. Ingresa el valor manualmente.";
-      }
+    let extras = [];
+    if (matchRitmo) extras.push(`Ritmo: ${matchRitmo[1].replace("'", ":")}/km`);
+    if (matchTiempo && matchTiempo[1] !== "00:00:00" && matchTiempo[1] !== "00:40:00") { // Evitar leer ceros vacíos
+      extras.push(`Tiempo: ${matchTiempo[1]}`);
     }
+
+    const ocrMetaInput = document.getElementById(`ocr-meta-${idx}`);
+    if (ocrMetaInput && extras.length > 0) {
+      ocrMetaInput.value = extras.join(" | ");
+    }
+
+    if (matchKm) {
+      const kmLimpio = parseFloat(matchKm[1].replace(",", "."));
+      document.getElementById(`vol-real-${idx}`).value = kmLimpio;
+      document.getElementById(`vol-unidad-${idx}`).value = "km";
+      document.getElementById(`comp-${idx}`).value = "Sí";
+
+      statusEl.style.color = "var(--accent)";
+      statusEl.textContent = `✔ ¡Detectado con éxito: ${kmLimpio} km! Toca Guardar.`;
+    } else {
+      statusEl.style.color = "var(--danger)";
+      statusEl.textContent = "⚠️ No se leyó el valor en km con claridad. Tipealo a mano.";
+    }
+  } catch (err) {
+    statusEl.style.color = "var(--danger)";
+    statusEl.textContent = "❌ Error al procesar la imagen.";
+  }
+}
 
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
