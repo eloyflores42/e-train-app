@@ -978,7 +978,7 @@
 
       const filtrados = listaAtletasGlobal.filter(a => {
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
-        const cuota = evaluarEstadoCuotaAtleta(a.email);
+        const cuota = evaluarEstadoCuotaAtleta(emailNorm);
 
         if (esBaja) { cBaja++; } 
         else {
