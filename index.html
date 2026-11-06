@@ -9,7 +9,6 @@
   <link rel="icon" type="image/png" href="./icon-home.png">
   <meta name="theme-color" content="#0f172a">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Montserrat:ital,wght@0,800;1,800&display=swap" rel="stylesheet">
   
   <style>
@@ -90,11 +89,6 @@
     .bloque-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.88rem; }
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
-
-    /* CAJA DE CAPTURA OCR */
-    .ocr-box { margin-top: 12px; background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--primary); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .ocr-btn-label { margin: 0; cursor: pointer; background: #0b1120; border: 1px solid var(--primary); color: var(--primary); padding: 6px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; transition: 0.2s; white-space: nowrap; }
-    .ocr-btn-label:hover { background: var(--primary); color: #fff; }
     
     .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .period-badge { padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
@@ -199,7 +193,7 @@
           </div>
 
           <div class="help-text" id="ayudaRutinas">
-            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos. Puedes <strong>subir una captura de tu reloj/Strava</strong> para autocompletar los datos o ingresar el <strong>volumen real</strong> manualmente, anotar tu <strong>RPE (1-10)</strong> y presionar <strong>Guardar</strong>.
+            🧭 <strong>¿Qué estás viendo?</strong> Aquí aparecen tus entrenamientos. Puedes ingresar el <strong>volumen real completado</strong>, anotar tu <strong>RPE (1-10)</strong> y presionar <strong>Guardar</strong>.
           </div>
 
           <div class="tabs" id="barraFiltrosLista" style="margin-bottom: 14px;">
@@ -1413,57 +1407,6 @@
       return { val: m[1], unidad: m[2].toLowerCase() };
     }
 
-    function extraerDatosCapturaGuardados(notaStr) {
-      if (!notaStr) return "";
-      const m = String(notaStr).match(/\[⌚ Datos Captura:\s*([^\]]+)\]/i);
-      return m ? m[1].trim() : "";
-    }
-
-    async function procesarCapturaReloj(event, idx) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const statusEl = document.getElementById(`ocr-status-${idx}`);
-      statusEl.style.color = "var(--warning)";
-      statusEl.textContent = "⏳ Analizando imagen con precisión...";
-
-      try {
-        const result = await Tesseract.recognize(file, 'spa+eng');
-        const texto = result.data.text.replace(/\n/g, " ");
-
-        const matchKm = texto.match(/(\d{1,2}[.,]\d{2})\s*km/i) || texto.match(/(\d{1,2}[.,]\d{1})\s*km/i);
-        const matchTiempo = texto.match(/(\d{2}:\d{2}:\d{2})/i) || texto.match(/(\d{2}:\d{2})/i);
-        const matchRitmo = texto.match(/(\d{1,2}[':]\d{2})/i);
-
-        let extras = [];
-        if (matchRitmo) extras.push(`Ritmo: ${matchRitmo[1].replace("'", ":")}/km`);
-        if (matchTiempo && matchTiempo[1] !== "00:00:00" && matchTiempo[1] !== "00:40:00") {
-          extras.push(`Tiempo: ${matchTiempo[1]}`);
-        }
-
-        const ocrMetaInput = document.getElementById(`ocr-meta-${idx}`);
-        if (ocrMetaInput && extras.length > 0) {
-          ocrMetaInput.value = extras.join(" | ");
-        }
-
-        if (matchKm) {
-          const kmLimpio = parseFloat(matchKm[1].replace(",", "."));
-          document.getElementById(`vol-real-${idx}`).value = kmLimpio;
-          document.getElementById(`vol-unidad-${idx}`).value = "km";
-          document.getElementById(`comp-${idx}`).value = "Sí";
-
-          statusEl.style.color = "var(--accent)";
-          statusEl.textContent = `✔ ¡Detectado con éxito: ${kmLimpio} km! Toca Guardar.`;
-        } else {
-          statusEl.style.color = "var(--danger)";
-          statusEl.textContent = "⚠️ No se leyó el valor en km con claridad. Tipealo a mano.";
-        }
-      } catch (err) {
-        statusEl.style.color = "var(--danger)";
-        statusEl.textContent = "❌ Error al procesar la imagen.";
-      }
-    }
-
     function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
       const idx = s.originalIdx;
       const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
@@ -1488,36 +1431,21 @@
       }).join("");
 
       const volGuardado = extraerVolumenRealGuardado(s.notaAtleta);
-      const datosCapturaPrevios = extraerDatosCapturaGuardados(s.notaAtleta);
       const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
       const badgeRealHeader = volGuardado.val ? `<span class="badge" style="background:rgba(16, 185, 129, 0.2); color:var(--accent); border:1px solid var(--accent);">📊 Real: ${volGuardado.val} ${volGuardado.unidad}</span>` : "";
-      const badgeCapturaHeader = datosCapturaPrevios ? `<span class="badge" style="background:rgba(59, 130, 246, 0.18); color:#60a5fa; border:1px solid var(--primary);">⌚ ${datosCapturaPrevios}</span>` : "";
 
       const notaLimpiaTexto = s.notaAtleta
-        ? s.notaAtleta.replace(/\[📊 Real:[^\]]+\]\s*/gi, "").replace(/\[⌚ Datos Captura:[^\]]+\]\s*/gi, "").trim()
+        ? s.notaAtleta.replace(/\[📊 Real:[^\]]+\]\s*/gi, "").trim()
         : "";
 
       return `<div class="card" style="background:#152033; margin-bottom:14px;">
           <div class="rutina-header" onclick="toggleSesion(${idx})">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeRealHeader}${badgeCapturaHeader}</div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeRealHeader}</div>
             <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.88rem; color:var(--muted); font-weight:700;">Plan: ${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
           </div>
           
           <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
             ${notaProfeHtml} ${bloquesHtml}
-
-            <!-- LECTOR AUTOMÁTICO DE CAPTURAS OCR -->
-            <div class="ocr-box">
-              <div>
-                <strong style="color:var(--primary); font-size:0.88rem; display:block;">📸 Autocompletar con Captura de Reloj / Strava</strong>
-                <span id="ocr-status-${idx}" style="color:var(--muted); font-size:0.78rem; font-weight:600;">${datosCapturaPrevios ? '✔ Captura registrada (' + datosCapturaPrevios + ')' : 'Sube captura de tu actividad para extraer km, ritmo y FC'}</span>
-              </div>
-              <label for="ocr-file-${idx}" class="ocr-btn-label">
-                📂 Elegir Captura
-              </label>
-              <input type="file" id="ocr-file-${idx}" accept="image/*" class="hidden" onchange="procesarCapturaReloj(event, ${idx})" />
-              <input type="hidden" id="ocr-meta-${idx}" value="${datosCapturaPrevios}" />
-            </div>
 
             <div class="grid-2" style="margin-top:12px; gap:10px;">
               <div>
@@ -1645,12 +1573,10 @@
       
       const volVal = document.getElementById(`vol-real-${idx}`).value.trim();
       const volUnidad = document.getElementById(`vol-unidad-${idx}`).value;
-      const ocrMeta = document.getElementById(`ocr-meta-${idx}`) ? document.getElementById(`ocr-meta-${idx}`).value.trim() : "";
       const notaLimpia = document.getElementById(`nota-${idx}`).value.trim();
       
       let tags = [];
       if (volVal) tags.push(`[📊 Real: ${volVal} ${volUnidad}]`);
-      if (ocrMeta) tags.push(`[⌚ Datos Captura: ${ocrMeta}]`);
 
       const prefijoTags = tags.join(" ");
       s.notaAtleta = prefijoTags ? (notaLimpia ? `${prefijoTags}\n${notaLimpia}` : prefijoTags) : notaLimpia;
