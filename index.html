@@ -55,9 +55,8 @@
     .help-text { font-size: 0.88rem; color: var(--muted); margin-bottom: 12px; line-height: 1.4; background: rgba(15, 23, 42, 0.6); padding: 9px 12px; border-radius: 6px; border-left: 3px solid var(--primary); }
     .field-hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; display: block; line-height: 1.2; }
 
-    .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-    .avatar-container { position: relative; width: 75px; height: 75px; border-radius: 50%; overflow: hidden; background: #0b1120; border: 2px solid var(--primary); flex-shrink: 0; }
-    .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .avatar-initials { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-style: italic; font-size: 1.35rem; font-weight: 800; border: 2px solid rgba(255,255,255,0.15); flex-shrink: 0; }
 
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
@@ -78,6 +77,8 @@
     .badge-pagado { background: var(--accent); color: #000; }
     .badge-pendiente { background: var(--warning); color: #000; }
     .badge-vencido { background: var(--danger); color: #fff; }
+    .badge-club { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
+    .badge-grupo { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid #a855f7; }
     
     .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 10px 12px; border-radius: 0 8px 8px 0; margin: 10px 0; font-size: 0.92rem; color: var(--text); line-height: 1.4; }
     .coach-notes strong { color: var(--primary); display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
@@ -223,25 +224,26 @@
         <div class="card" id="cardGraficoVolumen">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
             <h2 style="margin: 0; border: none; padding: 0;">📊 Planificado vs. Real vs. RPE</h2>
-            <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 175px; padding: 6px 10px; font-size: 0.88rem;">
-              <option value="Running">🏃‍♂️ Running (km)</option>
-              <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (series/min)</option>
-              <option value="Todas">🌐 Todas las disciplinas</option>
+            <select id="filtroDisciplinaVolumen" onchange="renderVolumenChart()" style="width: auto; min-width: 195px; padding: 6px 10px; font-size: 0.88rem;">
+              <option value="Running_km">🏃‍♂️ Running en KM (Plan vs Real)</option>
+              <option value="Running_min">⏱️ Running / Cardio en MINUTOS</option>
+              <option value="Fuerza">🏋️‍♂️ Fuerza / Gym (Series / Min)</option>
+              <option value="Todas">🌐 Todas las disciplinas (Con unidad)</option>
             </select>
           </div>
-          <div class="help-text">
+          <div id="resumenVolumenAtleta" class="coach-notes" style="margin-bottom: 12px;">
             📈 <strong>Análisis de Triple Capa:</strong> Compara el <strong>Volumen Planificado</strong> (azul), el <strong>Volumen Real Completado</strong> (verde) y tu <strong>Esfuerzo RPE promedio</strong> (línea naranja) semana a semana.
           </div>
           <div class="chart-wrapper">
             <canvas id="volumenSemanalChart"></canvas>
           </div>
           <p id="volumenEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.9rem; padding: 20px;">
-            Aún no hay registros de volumen para esta disciplina en las sesiones cargadas.
+            Aún no hay registros de volumen para este filtro en las sesiones cargadas.
           </p>
         </div>
       </section>
 
-      <!-- SECCIÓN 2: PERFIL Y FICHA -->
+      <!-- SECCIÓN 2: PERFIL Y FICHA (SIN URL DE FOTO DE PERFIL) -->
       <section id="tab-atleta" class="hidden">
         <div class="card">
           <h2>Datos Personales & Seguridad</h2>
@@ -249,11 +251,13 @@
             👤 <strong>Tu Ficha Personal:</strong> Aquí puedes personalizar tu PIN de ingreso y mantener al día tus datos de contacto y seguridad médica para entrenamientos y carreras.
           </div>
           <div class="profile-header">
-            <div class="avatar-container"><img id="avatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Foto" /></div>
+            <div class="avatar-initials" id="avatarIniciales">AT</div>
             <div style="flex: 1;">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                 <h3 id="perfilNombreCompleto" style="font-size: 1.25rem; color: var(--text);">Nombre</h3>
                 <span id="perfilEdadBadge" class="badge hidden" style="background:var(--primary);">-- años</span>
+                <span id="perfilClubBadge" class="badge badge-club hidden">🏢 --</span>
+                <span id="perfilGrupoBadge" class="badge badge-grupo hidden">👟 --</span>
               </div>
               <p id="perfilEmailText" style="font-size: 0.9rem; color: var(--muted); margin-top: 2px;"></p>
             </div>
@@ -271,7 +275,6 @@
             <div><label>Celular Personal <span style="color:var(--danger)">*</span></label><input type="tel" id="inputCelular" placeholder="Ej: 2235947122 (Sin puntos)" /></div>
             <div><label>Dirección / Domicilio</label><input type="text" id="inputDireccion" placeholder="Ej: Av. Colón 1234" /></div>
           </div>
-          <div style="margin-top: 12px;"><label>URL de Foto de Perfil</label><input type="text" id="inputFotoUrl" placeholder="https://ejemplo.com/mi-foto.jpg" /></div>
         </div>
 
         <div class="card" style="border-left: 4px solid var(--danger);">
@@ -452,10 +455,10 @@
 
   <script>
     // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
-const APIS_POR_INQUILINO = {
-  "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
-  "default": "https://script.google.com/macros/s/AKfycbyQiT_dyrUqOkNWj1weckQenX6NaGP3dE4tON1BTBKPvxVYnuclcoYkSj4_RSrNHRmS8Q/exec"
-};
+    const APIS_POR_INQUILINO = {
+      "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
+      "default": "https://script.google.com/macros/s/AKfycbyQiT_dyrUqOkNWj1weckQenX6NaGP3dE4tON1BTBKPvxVYnuclcoYkSj4_RSrNHRmS8Q/exec"
+    };
 
     function getApiUrl() {
       const tenant = localStorage.getItem("etrain_tenant") || "default";
@@ -492,7 +495,7 @@ const APIS_POR_INQUILINO = {
     const hoyInit = new Date();
     const state = {
       perfil: { 
-        email: "", nombre: "", dni: "", fechaNac: "", fotoUrl: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
+        email: "", nombre: "", dni: "", fechaNac: "", club: "", grupo: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
         celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
@@ -510,6 +513,13 @@ const APIS_POR_INQUILINO = {
     function limpiarTelefonoPuntos(val) {
       if (!val) return "";
       return String(val).trim().replace(/(\d)\.(?=\d{3}(\D|$))/g, "$1");
+    }
+
+    function obtenerInicialesNombre(nombreStr) {
+      const limpio = String(nombreStr || "Atleta").trim();
+      const partes = limpio.split(/\s+/).filter(Boolean);
+      if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+      return limpio.slice(0, 2).toUpperCase();
     }
 
     function formatSimpleDate(val) {
@@ -710,7 +720,8 @@ const APIS_POR_INQUILINO = {
           nombre: p["Nombre y Apellido"] || p["Nombre"] || "Atleta",
           dni: p["PIN"] || p["DNI"] || localStorage.getItem("etrain_pin") || "",
           fechaNac: formatSimpleDate(p["Fecha de Nacimiento"] || p["Fecha Nacimiento"]),
-          fotoUrl: p["Foto URL"] || "",
+          club: p["Club"] || p["Institución"] || "",
+          grupo: p["Grupo"] || p["Grupo de Trabajo"] || "",
           vam: vamExtraida > 0 ? vamExtraida : "",
           fcr: parseNum(p["FCR (Reposo)"] || p["FC Reposo"], 52),
           fcmax: parseNum(p["FCmáx"] || p["FC Max"], 188),
@@ -804,9 +815,8 @@ const APIS_POR_INQUILINO = {
           
           // Bloqueo inteligente:
           if (est.includes("vencid")) {
-             state.cuotaVencida = true; // Bloqueo directo si el profe marcó "Vencido"
+             state.cuotaVencida = true;
           } else if (est.includes("pendient")) {
-             // Bloqueo automático si está "Pendiente" y la fecha ya expiró (o no tiene fecha asignada)
              if (!fVenc || fVenc < hoy) {
                  state.cuotaVencida = true;
              }
@@ -826,20 +836,41 @@ const APIS_POR_INQUILINO = {
     }
 
     function actualizarUIPerfil() {
-      document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre; document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
-      document.getElementById("perfilEmailText").textContent = state.perfil.email; document.getElementById("inputDNI").value = state.perfil.dni;
-      document.getElementById("inputFechaNac").value = state.perfil.fechaNac; document.getElementById("inputFotoUrl").value = state.perfil.fotoUrl;
-      if (state.perfil.fotoUrl) document.getElementById("avatarImg").src = state.perfil.fotoUrl;
+      document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre;
+      document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
+      document.getElementById("avatarIniciales").textContent = obtenerInicialesNombre(state.perfil.nombre);
+      document.getElementById("perfilEmailText").textContent = state.perfil.email;
+      document.getElementById("inputDNI").value = state.perfil.dni;
+      document.getElementById("inputFechaNac").value = state.perfil.fechaNac;
       
+      const badgeClub = document.getElementById("perfilClubBadge");
+      if (state.perfil.club) {
+        badgeClub.textContent = `🏢 ${state.perfil.club}`;
+        badgeClub.classList.remove("hidden");
+      } else {
+        badgeClub.classList.add("hidden");
+      }
+
+      const badgeGrupo = document.getElementById("perfilGrupoBadge");
+      if (state.perfil.grupo) {
+        badgeGrupo.textContent = `👟 ${state.perfil.grupo}`;
+        badgeGrupo.classList.remove("hidden");
+      } else {
+        badgeGrupo.classList.add("hidden");
+      }
+
       document.getElementById("inputVAM").value = state.perfil.vam || "";
       document.getElementById("inputFCR").value = state.perfil.fcr;
       document.getElementById("inputFCMax").value = state.perfil.fcmax;
       
       document.getElementById("inputCelular").value = limpiarTelefonoPuntos(state.perfil.celular);
       document.getElementById("inputEmergencia").value = limpiarTelefonoPuntos(state.perfil.emergencia);
-      document.getElementById("inputDireccion").value = state.perfil.direccion; document.getElementById("inputObraSocial").value = state.perfil.obraSocial;
-      document.getElementById("inputClinica").value = state.perfil.clinica; document.getElementById("inputSangre").value = state.perfil.sangre;
-      document.getElementById("inputDonante").value = state.perfil.donante; document.getElementById("inputAlergias").value = state.perfil.alergias;
+      document.getElementById("inputDireccion").value = state.perfil.direccion;
+      document.getElementById("inputObraSocial").value = state.perfil.obraSocial;
+      document.getElementById("inputClinica").value = state.perfil.clinica;
+      document.getElementById("inputSangre").value = state.perfil.sangre;
+      document.getElementById("inputDonante").value = state.perfil.donante;
+      document.getElementById("inputAlergias").value = state.perfil.alergias;
       
       actualizarBadgeEdadPerfil();
       previewTestResistencia(); previewTestFuerza(); previewPBRitmo();
@@ -847,17 +878,21 @@ const APIS_POR_INQUILINO = {
 
     function syncSeguroAtleta() {
       state.perfil.dni = document.getElementById("inputDNI").value.trim() || state.perfil.dni;
-      state.perfil.fechaNac = document.getElementById("inputFechaNac").value; state.perfil.fotoUrl = document.getElementById("inputFotoUrl").value;
-      state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr); state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
+      state.perfil.fechaNac = document.getElementById("inputFechaNac").value;
+      state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr);
+      state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
       
       state.perfil.celular = limpiarTelefonoPuntos(document.getElementById("inputCelular").value);
       state.perfil.emergencia = limpiarTelefonoPuntos(document.getElementById("inputEmergencia").value);
       document.getElementById("inputCelular").value = state.perfil.celular;
       document.getElementById("inputEmergencia").value = state.perfil.emergencia;
 
-      state.perfil.direccion = document.getElementById("inputDireccion").value.trim(); state.perfil.obraSocial = document.getElementById("inputObraSocial").value.trim();
-      state.perfil.clinica = document.getElementById("inputClinica").value.trim(); state.perfil.sangre = document.getElementById("inputSangre").value.trim();
-      state.perfil.donante = document.getElementById("inputDonante").value.trim(); state.perfil.alergias = document.getElementById("inputAlergias").value.trim();
+      state.perfil.direccion = document.getElementById("inputDireccion").value.trim();
+      state.perfil.obraSocial = document.getElementById("inputObraSocial").value.trim();
+      state.perfil.clinica = document.getElementById("inputClinica").value.trim();
+      state.perfil.sangre = document.getElementById("inputSangre").value.trim();
+      state.perfil.donante = document.getElementById("inputDonante").value.trim();
+      state.perfil.alergias = document.getElementById("inputAlergias").value.trim();
     }
 
     async function cambiarPinDirecto() {
@@ -899,7 +934,7 @@ const APIS_POR_INQUILINO = {
       if(btn){ btn.disabled = true; btn.textContent = "Guardando..."; }
       try {
         const payload = { 
-          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, pin: state.perfil.dni, fechaNac: state.perfil.fechaNac, fotoUrl: state.perfil.fotoUrl, 
+          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, pin: state.perfil.dni, fechaNac: state.perfil.fechaNac, 
           vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax,
           celular: state.perfil.celular, emergencia: state.perfil.emergencia, direccion: state.perfil.direccion, obraSocial: state.perfil.obraSocial,
           clinica: state.perfil.clinica, sangre: state.perfil.sangre, donante: state.perfil.donante, alergias: state.perfil.alergias, nuevoTest: testObj 
@@ -915,7 +950,6 @@ const APIS_POR_INQUILINO = {
       if (!state.perfil.celular || !state.perfil.emergencia) {
         alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia."); return;
       }
-      if (document.getElementById("inputFotoUrl").value) document.getElementById("avatarImg").src = document.getElementById("inputFotoUrl").value;
       await guardarPerfilEnSheets(null, null); alert("Ficha Médica y PIN guardados con éxito.");
     }
     
@@ -1121,12 +1155,25 @@ const APIS_POR_INQUILINO = {
       return d;
     }
 
+    function detectarUnidadVolumenAtleta(volStr) {
+      const s = String(volStr || "").toLowerCase();
+      if (s.includes("km")) return "km";
+      if (s.includes("min") || s.includes("'")) return "min";
+      if (s.includes("serie")) return "series";
+      if (s.includes("pasada")) return "pasadas";
+      if (s.includes("rep")) return "reps";
+      if (s.includes("kg")) return "kg";
+      return "unid.";
+    }
+
+    /* GRÁFICO DE TRIPLE CAPA CON SEPARACIÓN CLARA DE UNIDADES (KM vs MIN vs SERIES) */
     function renderVolumenChart() {
       const canvas = document.getElementById("volumenSemanalChart");
       const emptyMsg = document.getElementById("volumenEmptyMsg");
       const badgeState = document.getElementById("periodBadgeState");
+      const resumenBox = document.getElementById("resumenVolumenAtleta");
       const selDisc = document.getElementById("filtroDisciplinaVolumen");
-      const discFiltro = selDisc ? selDisc.value : "Running";
+      const discFiltro = selDisc ? selDisc.value : "Running_km";
       if (!canvas) return;
 
       const semanasMap = new Map();
@@ -1136,19 +1183,25 @@ const APIS_POR_INQUILINO = {
 
         const tipoLower = String(s.tipo || "").toLowerCase();
         const volLower = String(s.volumen || "").toLowerCase();
+        const matchVolReal = String(s.notaAtleta || "").match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
 
-        if (discFiltro === "Running" && (tipoLower.includes("fuerza") || tipoLower.includes("gym") || volLower.includes("series") || volLower.includes("kg"))) {
-          return;
-        }
-        if (discFiltro === "Fuerza" && (tipoLower.includes("running") || volLower.includes("km"))) {
-          return;
+        const uniPlan = detectarUnidadVolumenAtleta(volLower);
+        const uniReal = matchVolReal ? matchVolReal[2].toLowerCase().trim() : uniPlan;
+        const esFuerza = tipoLower.includes("fuerza") || tipoLower.includes("gym") || uniPlan === "series" || uniPlan === "kg";
+
+        if (discFiltro === "Running_km") {
+          if (esFuerza) return;
+          if (uniPlan !== "km" && uniReal !== "km") return;
+        } else if (discFiltro === "Running_min") {
+          if (esFuerza) return;
+          if (uniPlan !== "min" && uniReal !== "min") return;
+        } else if (discFiltro === "Fuerza") {
+          if (!esFuerza) return;
         }
 
         const matchNum = volLower.match(/([\d.,]+)/);
         const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
         const rpeVal = parseNum(s.rpe, 0);
-        
-        const matchVolReal = String(s.notaAtleta || "").match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
         const realVal = matchVolReal ? parseFloat(matchVolReal[1].replace(",", ".")) : 0;
 
         if (valNum <= 0 && rpeVal <= 0 && realVal <= 0) return;
@@ -1158,11 +1211,26 @@ const APIS_POR_INQUILINO = {
         const labelSem = `Sem ${String(lunes.getDate()).padStart(2, '0')}/${String(lunes.getMonth() + 1).padStart(2, '0')}`;
 
         if (!semanasMap.has(sortKey)) {
-          semanasMap.set(sortKey, { key: sortKey, label: labelSem, total: 0, realTotal: 0, rpeSum: 0, rpeCount: 0 });
+          semanasMap.set(sortKey, {
+            key: sortKey,
+            label: labelSem,
+            total: 0,
+            realTotal: 0,
+            rpeSum: 0,
+            rpeCount: 0,
+            desglosePlan: {},
+            desgloseReal: {}
+          });
         }
         const entry = semanasMap.get(sortKey);
-        if (valNum > 0) entry.total += valNum;
-        if (realVal > 0) entry.realTotal += realVal;
+        if (valNum > 0) {
+          entry.total += valNum;
+          entry.desglosePlan[uniPlan] = (entry.desglosePlan[uniPlan] || 0) + valNum;
+        }
+        if (realVal > 0) {
+          entry.realTotal += realVal;
+          entry.desgloseReal[uniReal] = (entry.desgloseReal[uniReal] || 0) + realVal;
+        }
         if (rpeVal > 0) {
           entry.rpeSum += rpeVal;
           entry.rpeCount += 1;
@@ -1175,24 +1243,34 @@ const APIS_POR_INQUILINO = {
       let dataReal = semanasOrdenadas.map(x => +(x.realTotal.toFixed(2)));
       let dataRpe = semanasOrdenadas.map(x => x.rpeCount > 0 ? +((x.rpeSum / x.rpeCount).toFixed(1)) : null);
 
-      if (!labels.length && discFiltro === "Todas" && state.periodizacion && Array.isArray(state.periodizacion.semanasLabels)) {
-        labels = state.periodizacion.semanasLabels;
-        dataVols = state.periodizacion.volumenes || [];
-        dataReal = labels.map(() => 0);
-        dataRpe = labels.map(() => null);
-      }
-
       if (volumenChartInstance) { volumenChartInstance.destroy(); volumenChartInstance = null; }
 
       if (!labels.length || (!dataVols.some(v => v > 0) && !dataRpe.some(r => r !== null) && !dataReal.some(w => w > 0))) {
         canvas.parentElement.classList.add("hidden");
         emptyMsg.classList.remove("hidden");
         if (badgeState) { badgeState.textContent = "🟢 Fase Base"; badgeState.style.background = "var(--primary)"; }
+        if (resumenBox) resumenBox.innerHTML = `📈 <strong>Análisis de Triple Capa:</strong> Selecciona otra unidad en el desplegable superior si tus sesiones fueron cargadas en minutos o kilómetros.`;
         return;
       }
 
       canvas.parentElement.classList.remove("hidden");
       emptyMsg.classList.add("hidden");
+
+      const unidadLabel = discFiltro === "Running_km" ? "km" : (discFiltro === "Running_min" ? "min" : (discFiltro === "Fuerza" ? "series" : "unid."));
+
+      const formatearDesglose = (obj, fallbackUni) => {
+        const entries = Object.entries(obj || {});
+        if (!entries.length) return `0 ${fallbackUni}`;
+        return entries.map(([u, v]) => `${+(v.toFixed(1))} ${u}`).join(" + ");
+      };
+
+      const ultObj = semanasOrdenadas[semanasOrdenadas.length - 1];
+      if (resumenBox && ultObj) {
+        const txtPlan = formatearDesglose(ultObj.desglosePlan, unidadLabel);
+        const txtReal = formatearDesglose(ultObj.desgloseReal, unidadLabel);
+        const txtRpe = ultObj.rpeCount > 0 ? (ultObj.rpeSum / ultObj.rpeCount).toFixed(1) : "-";
+        resumenBox.innerHTML = `📌 <strong>Última Semana (${ultObj.label}):</strong> Planificado: <strong>${txtPlan}</strong> | Real Completado: <strong style="color:var(--accent);">${txtReal}</strong> | RPE Promedio: <strong style="color:var(--warning);">${txtRpe}/10</strong>`;
+      }
 
       let ultimaSemana = dataVols[dataVols.length - 1];
       let promedioAnterior = dataVols.length > 1 ? dataVols.slice(0, -1).reduce((a, b) => a + b, 0) / (dataVols.length - 1) : ultimaSemana;
@@ -1209,8 +1287,6 @@ const APIS_POR_INQUILINO = {
           badgeState.style.background = "var(--primary)";
         }
       }
-
-      const unidadLabel = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
 
       const datasets = [
         {
@@ -1261,7 +1337,29 @@ const APIS_POR_INQUILINO = {
           maintainAspectRatio: false,
           plugins: {
             legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
-            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1 }
+            tooltip: {
+              backgroundColor: "#0f172a",
+              titleColor: "#3b82f6",
+              bodyColor: "#f8fafc",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  const idx = context.dataIndex;
+                  const semObj = semanasOrdenadas[idx];
+                  if (context.dataset.yAxisID === "y1") {
+                    return `RPE Promedio: ${context.parsed.y !== null ? context.parsed.y + ' / 10' : '-'}`;
+                  }
+                  if (context.datasetIndex === 0 && semObj) {
+                    return `Planificado: ${formatearDesglose(semObj.desglosePlan, unidadLabel)}`;
+                  }
+                  if (context.datasetIndex === 1 && semObj) {
+                    return `Real Completado: ${formatearDesglose(semObj.desgloseReal, unidadLabel)}`;
+                  }
+                  return `${context.dataset.label}: ${context.parsed.y}`;
+                }
+              }
+            }
           },
           scales: {
             x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
@@ -1413,10 +1511,12 @@ const APIS_POR_INQUILINO = {
     function obtenerGrupoVideo(v) { return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || ""; }
     function obtenerDescVideo(v) { return v["Descripción"] || v["Descripcion"] || v.descripcion || ""; }
 
-    function extraerVolumenRealGuardado(notaStr) {
-      if (!notaStr) return { val: "", unidad: "km" };
+    function extraerVolumenRealGuardado(notaStr, volumenPlanStr) {
+      const uniDef = detectarUnidadVolumenAtleta(volumenPlanStr);
+      const fallbackUni = ["km", "min", "series", "pasadas", "reps"].includes(uniDef) ? uniDef : "km";
+      if (!notaStr) return { val: "", unidad: fallbackUni };
       const m = String(notaStr).match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
-      if (!m) return { val: "", unidad: "km" };
+      if (!m) return { val: "", unidad: fallbackUni };
       return { val: m[1], unidad: m[2].toLowerCase() };
     }
 
@@ -1443,7 +1543,7 @@ const APIS_POR_INQUILINO = {
           </div>`;
       }).join("");
 
-      const volGuardado = extraerVolumenRealGuardado(s.notaAtleta);
+      const volGuardado = extraerVolumenRealGuardado(s.notaAtleta, s.volumen);
       const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
       const badgeRealHeader = volGuardado.val ? `<span class="badge" style="background:rgba(16, 185, 129, 0.2); color:var(--accent); border:1px solid var(--accent);">📊 Real: ${volGuardado.val} ${volGuardado.unidad}</span>` : "";
 
