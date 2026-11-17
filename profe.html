@@ -27,7 +27,7 @@
     .container { max-width: 880px; margin: 20px auto; padding: 0 16px; }
     
     .coach-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-    .coach-tab-btn { flex: 1; min-width: 140px; padding: 10px 8px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 700; font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; text-align: center; transition: 0.2s; }
+    .coach-tab-btn { flex: 1; min-width: 130px; padding: 10px 8px; background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-weight: 700; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; text-align: center; transition: 0.2s; }
     .coach-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
@@ -116,12 +116,20 @@
 
     .bulk-toolbar { background: rgba(239, 68, 68, 0.08); border: 1px dashed var(--danger); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
+    .export-bar { background: rgba(16, 185, 129, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+
     .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
     .kpi-box .kpi-val { font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
     .kpi-box .kpi-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
     
     .chart-wrapper { position: relative; height: 270px; width: 100%; margin-top: 12px; }
     .hidden { display: none !important; }
+
+    @media print {
+      header, .coach-tabs, #cardSelectorEspejoTop, .export-bar, button { display: none !important; }
+      body { background: #fff; color: #000; padding: 0; }
+      .card { border: 1px solid #ccc; background: #fff; color: #000; page-break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -173,6 +181,7 @@
         <button id="tab-btn-gestion" class="coach-tab-btn" onclick="cambiarSeccionCoach('gestion', this)">📋 Rutinas Asignadas</button>
         <button id="tab-btn-alumnos" class="coach-tab-btn" onclick="cambiarSeccionCoach('alumnos', this)">👥 Alumnos & Pagos</button>
         <button id="tab-btn-espejo" class="coach-tab-btn" onclick="cambiarSeccionCoach('espejo', this)">🩺 FICHAS ATLETAS</button>
+        <button id="tab-btn-videoteca" class="coach-tab-btn" onclick="cambiarSeccionCoach('videoteca', this)">🎥 Videoteca</button>
       </div>
 
       <!-- SECCIÓN 1: ASIGNAR RUTINA -->
@@ -442,9 +451,9 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 4: FICHAS ATLETAS -->
+      <!-- SECCIÓN 4: FICHAS ATLETAS + EXPORTACIÓN WHATSAPP / PDF -->
       <section id="coach-sec-espejo" class="hidden">
-        <div class="card">
+        <div class="card" id="cardSelectorEspejoTop">
           <h2>🩺 Seleccionar Atleta (FICHAS ATLETAS)</h2>
           <div class="grid-2" style="align-items: end;">
             <div>
@@ -458,6 +467,19 @@
         </div>
 
         <div id="contenedorContenidoEspejo" class="hidden">
+          <!-- BARRA DE EXPORTACIÓN RÁPIDA WHATSAPP / TXT / PDF -->
+          <div class="export-bar">
+            <div>
+              <strong style="color:var(--accent); text-transform:uppercase; font-size:0.9rem;">📲 Exportar Evolución y Resumen del Atleta</strong>
+              <div style="font-size:0.8rem; color:var(--muted);">Armá el reporte automático con VAM, Semana Actual, RPE, Tests y Cuota para mandarle por WhatsApp.</div>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-success" onclick="enviarReporteWhatsAppDirecto()" style="width:auto; padding:8px 14px; font-size:0.84rem;">📲 Enviar por WhatsApp</button>
+              <button type="button" class="btn btn-outline" onclick="copiarReporteTextoPortapapeles()" style="border-color:var(--accent); color:var(--accent); padding:8px 12px; font-size:0.84rem;">📋 Copiar TXT</button>
+              <button type="button" class="btn btn-outline" onclick="window.print()" style="padding:8px 12px; font-size:0.84rem;">📄 Imprimir / PDF</button>
+            </div>
+          </div>
+
           <div class="card">
             <h2>
               <span id="espejoTituloNombre">Ficha del Atleta</span>
@@ -572,6 +594,44 @@
           </div>
         </div>
       </section>
+
+      <!-- SECCIÓN 5: GESTIÓN Y EDICIÓN DE VIDEOTECA -->
+      <section id="coach-sec-videoteca" class="hidden">
+        <div class="card">
+          <h2>
+            <span id="tituloFormVideo">🎥 Agregar / Editar Ejercicio en Videoteca</span>
+            <button type="button" class="btn btn-outline" onclick="limpiarFormularioVideo()">🧹 Limpiar campos</button>
+          </h2>
+          <input type="hidden" id="videoNombreOriginal" value="" />
+          <div class="grid-3">
+            <div>
+              <label>Nombre del Ejercicio</label>
+              <input type="text" id="videoInputNombre" placeholder="Ej: Sentadilla Búlgara / Skipping A" />
+            </div>
+            <div>
+              <label>Grupo Muscular / Categoría</label>
+              <input type="text" id="videoInputCategoria" list="listaCategoriasVideo" placeholder="Ej: Tren Inferior / Técnica Carrera" />
+            </div>
+            <div>
+              <label>URL del Video (YouTube / Reels / Drive)</label>
+              <input type="url" id="videoInputUrl" placeholder="https://youtube.com/..." />
+            </div>
+          </div>
+          <div>
+            <label>Descripción / Indicaciones Técnicas</label>
+            <textarea id="videoInputDesc" placeholder="Puntos clave de la postura, errores comunes o variantes..." style="min-height:55px;"></textarea>
+          </div>
+          <button type="button" class="btn btn-success" id="btnGuardarVideoProfe" onclick="guardarVideoDesdeProfe()">💾 Guardar Ejercicio en Videoteca</button>
+        </div>
+
+        <div class="card">
+          <h2>
+            <span>📚 Catálogo de Ejercicios (<span id="contadorVideosTotal">0</span>)</span>
+          </h2>
+          <input type="text" id="buscadorVideotecaProfe" placeholder="🔎 Buscar por ejercicio, categoría o descripción..." oninput="renderizarVideotecaProfe()" />
+          <div id="contenedorListaVideotecaProfe"></div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -588,6 +648,14 @@
     <option value="10K"></option>
     <option value="21K"></option>
     <option value="Adaptado"></option>
+  </datalist>
+  <datalist id="listaCategoriasVideo">
+    <option value="Técnica de Carrera"></option>
+    <option value="Tren Inferior"></option>
+    <option value="Tren Superior"></option>
+    <option value="Zona Media / Core"></option>
+    <option value="Movilidad / Activación"></option>
+    <option value="Pliometría / Potencia"></option>
   </datalist>
 
   <script>
@@ -608,9 +676,11 @@
     let filtroAlumnosActual = "todos";
     let listaAtletasGlobal = [];
     let pagosGlobalMap = {};
+    let videotecaGlobal = [];
     let cacheRutinasAtletaGestion = [];
     let plantillasPersonalizadas = [];
     let paqueteEspejoActual = null;
+    let ultimoResumenSemanaTexto = "";
     let volumenManualEditado = false;
     let espejoTripleChartInstance = null;
     let gestionCalMes = new Date().getMonth();
@@ -969,6 +1039,7 @@
             grupo: a.grupo || (a.ficha && a.ficha["Grupo"]) || ""
           }));
           pagosGlobalMap = data.pagos || {};
+          videotecaGlobal = data.videoteca || [];
 
           if (Array.isArray(data.plantillas) && data.plantillas.length > 0) {
             plantillasPersonalizadas = data.plantillas;
@@ -978,12 +1049,8 @@
           actualizarOpcionesClubYGrupo();
           poblarSelectoresAtletas();
           renderizarListadoAlumnos();
-
-          const datalist = document.getElementById("listaEjercicios");
-          datalist.innerHTML = "";
-          (data.ejercicios || []).forEach(ej => {
-            const opt = document.createElement("option"); opt.value = ej; datalist.appendChild(opt);
-          });
+          actualizarDatalistEjercicios(data.ejercicios || []);
+          renderizarVideotecaProfe();
 
           document.getElementById("loginCoachScreen").classList.add("hidden");
           document.getElementById("panelContainer").classList.remove("hidden");
@@ -998,6 +1065,17 @@
         btn.disabled = false;
         btn.textContent = "Desbloquear Panel";
       }
+    }
+
+    function actualizarDatalistEjercicios(listaNombres) {
+      const datalist = document.getElementById("listaEjercicios");
+      if (!datalist) return;
+      datalist.innerHTML = "";
+      (listaNombres || []).forEach(ej => {
+        const opt = document.createElement("option");
+        opt.value = ej;
+        datalist.appendChild(opt);
+      });
     }
 
     function actualizarOpcionesClubYGrupo() {
@@ -1375,6 +1453,90 @@
       }
     }
 
+    // --- GENERADOR DE REPORTE PARA WHATSAPP / PORTAPAPELES ---
+    function armarTextoReporteWhatsApp() {
+      if (!paqueteEspejoActual) return "";
+      const p = paqueteEspejoActual.perfil || {};
+      const email = document.getElementById("espejoSelectAtleta").value;
+      const nombre = document.getElementById("fichaNombre").value.trim() || p["Nombre"] || email;
+      const club = document.getElementById("fichaClub").value.trim();
+      const grupo = document.getElementById("fichaGrupo").value.trim();
+      const vam = document.getElementById("fichaVam").value.trim();
+      const fcr = document.getElementById("fichaFcr").value.trim() || "52";
+      const fcmax = document.getElementById("fichaFcmax").value.trim() || "188";
+      const infoCuota = evaluarEstadoCuotaAtleta(email);
+
+      let ritmoVamTxt = "";
+      const vamNum = parseFloat(String(vam).replace(",", "."));
+      if (!isNaN(vamNum) && vamNum > 0) {
+        const minTot = 60 / vamNum;
+        const m = Math.floor(minTot);
+        const s = Math.round((minTot - m) * 60);
+        ritmoVamTxt = ` (Ritmo 100% VAM: ${m}:${s < 10 ? '0' : ''}${s} min/km)`;
+      }
+
+      const tests = (paqueteEspejoActual.tests || []).slice(-3).reverse();
+      const testsTxt = tests.length
+        ? tests.map(t => `  • ${limpiarFechaVisual(t["Fecha"])}: ${t["Ejercicio / Prueba"] || t["Tipo Test"]} → *${t["Resultado / Marca"] || "-"}* (${t["VAM / 1RM Estimado"] || "-"})`).join("\n")
+        : "  • Sin evaluaciones recientes.";
+
+      const feedbacks = (paqueteEspejoActual.feedback || []).slice(-3).reverse();
+      const feedTxt = feedbacks.length
+        ? feedbacks.map(f => {
+            const parsed = parsearNotaAtletaProfe(f["Comentarios"]);
+            const realStr = parsed.realTexto ? ` | Real: ${parsed.realTexto}` : "";
+            return `  • ${limpiarFechaVisual(f["Fecha"])} (${f["Tipo de Sesión"]})${realStr} | RPE: *${f["RPE"] || "-"}/10*`;
+          }).join("\n")
+        : "  • Sin sesiones registradas recientemente.";
+
+      const tagClubGrupo = [club, grupo].filter(Boolean).join(" • ");
+
+      return [
+        `📊 *REPORTE DE EVOLUCIÓN E-TRAIN*`,
+        `👤 *Atleta:* ${nombre}${tagClubGrupo ? ' (' + tagClubGrupo + ')' : ''}`,
+        `────────────────────`,
+        `🏃‍♂️ *Parámetros Fisiológicos:*`,
+        `  • *VAM Actual:* ${vam ? vam + ' km/h' + ritmoVamTxt : 'Sin registrar'}`,
+        `  • *FC Reposo / Máx:* ${fcr} / ${fcmax} ppm`,
+        ``,
+        `📈 *Resumen de Carga Semanal:*`,
+        `  • ${ultimoResumenSemanaTexto || 'Sin datos en la semana seleccionada'}`,
+        ``,
+        `⏱️ *Últimos Tests / Evaluaciones:*`,
+        testsTxt,
+        ``,
+        `💬 *Últimas Sesiones Completadas:*`,
+        feedTxt,
+        `────────────────────`,
+        `💳 *Estado de Membresía:* ${infoCuota.label}`,
+        `🚀 _Seguimos entrenando inteligente con E-TRAIN_`
+      ].join("\n");
+    }
+
+    async function copiarReporteTextoPortapapeles() {
+      const txt = armarTextoReporteWhatsApp();
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        alert("✅ ¡Reporte copiado al portapapeles! Ya podés pegarlo en WhatsApp.");
+      } catch (e) {
+        prompt("Copiá el reporte desde acá:", txt);
+      }
+    }
+
+    function enviarReporteWhatsAppDirecto() {
+      const txt = armarTextoReporteWhatsApp();
+      if (!txt) return;
+      let cel = limpiarTelefonoPuntos(document.getElementById("fichaCelular").value).replace(/\D/g, "");
+      if (cel.startsWith("0")) cel = cel.substring(1);
+      if (cel.length === 10 && !cel.startsWith("54")) cel = "549" + cel;
+
+      const urlWa = cel
+        ? `https://wa.me/${cel}?text=${encodeURIComponent(txt)}`
+        : `https://wa.me/?text=${encodeURIComponent(txt)}`;
+      window.open(urlWa, "_blank");
+    }
+
     function actualizarVistaEdadEnVivo() {
       const fNac = document.getElementById("fichaFechaNac").value;
       const edad = calcularEdadExacta(fNac);
@@ -1563,6 +1725,7 @@
 
       const semanasArr = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
       if (!semanasArr.length) {
+        ultimoResumenSemanaTexto = "Sin sesiones registradas";
         contResumen.innerHTML = `No hay sesiones registradas para el filtro seleccionado.`;
         if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
         return;
@@ -1585,10 +1748,10 @@
         const txtPlan = formatearDesglose(semObj.desglosePlan, semObj.desglosePlan);
         const txtReal = formatearDesglose(semObj.desgloseReal, semObj.desglosePlan);
         const txtRpe = semObj.rpeCount > 0 ? (semObj.rpeSum / semObj.rpeCount).toFixed(1) : "-";
+        ultimoResumenSemanaTexto = `${semObj.label} → Plan: ${txtPlan} | Real: ${txtReal} | RPE Prom: ${txtRpe}/10`;
         contResumen.innerHTML = `📌 <strong>Semanal (${semObj.label}):</strong> Planificado: <strong>${txtPlan}</strong> | Real Completado: <strong style="color:var(--accent);">${txtReal}</strong> | RPE Promedio: <strong style="color:var(--warning);">${txtRpe}/10</strong> <small style="color:var(--muted); margin-left:6px;">(Tocá otra barra para cambiar de semana)</small>`;
       };
 
-      // Selección inteligente: 1° Semana actual, 2° Última con datos reales/RPE, 3° Última planificada
       const lunesHoy = obtenerLunesDeSemana(new Date());
       const keyHoy = `${lunesHoy.getFullYear()}-${String(lunesHoy.getMonth() + 1).padStart(2, '0')}-${String(lunesHoy.getDate()).padStart(2, '0')}`;
       let semanaDestacada = semanasArr.find(s => s.key === keyHoy);
@@ -1795,6 +1958,141 @@
       }
     }
 
+    // --- GESTIÓN Y EDICIÓN DE VIDEOTECA DESDE EL PANEL PROFE ---
+    function renderizarVideotecaProfe() {
+      const cont = document.getElementById("contenedorListaVideotecaProfe");
+      const spanTotal = document.getElementById("contadorVideosTotal");
+      const q = (document.getElementById("buscadorVideotecaProfe")?.value || "").trim().toLowerCase();
+      if (!cont) return;
+
+      if (spanTotal) spanTotal.textContent = videotecaGlobal.length;
+
+      const filtrados = videotecaGlobal.filter(v => {
+        const nom = String(v.nombre || v["Ejercicio / Movimiento"] || "").toLowerCase();
+        const cat = String(v.categoria || v["Grupo Muscular"] || "").toLowerCase();
+        const desc = String(v.descripcion || v["Descripción"] || "").toLowerCase();
+        return !q || nom.includes(q) || cat.includes(q) || desc.includes(q);
+      });
+
+      if (!filtrados.length) {
+        cont.innerHTML = `<p style="color:var(--muted); text-align:center; padding:18px;">No hay ejercicios cargados en la videoteca que coincidan con la búsqueda.</p>`;
+        return;
+      }
+
+      cont.innerHTML = filtrados.map((v, i) => {
+        const nom = String(v.nombre || v["Ejercicio / Movimiento"] || "").trim();
+        const cat = String(v.categoria || v["Grupo Muscular"] || "General").trim();
+        const url = String(v.url || v["URL del Video"] || "").trim();
+        const desc = String(v.descripcion || v["Descripción"] || "").trim();
+        const nomEsc = nom.replace(/'/g, "\\'");
+
+        return `
+          <div class="alumno-row">
+            <div class="alumno-info" style="flex:1;">
+              <h4>
+                <span>${nom}</span>
+                <span class="badge badge-club">${cat}</span>
+              </h4>
+              <p>${desc ? desc : '<em style="color:var(--muted);">Sin descripción técnica</em>'}</p>
+              ${url ? `<div style="margin-top:4px;"><a href="${url}" target="_blank" style="color:var(--accent); font-size:0.82rem; text-decoration:none;">🔗 Ver video (${url.slice(0, 45)}...)</a></div>` : ''}
+            </div>
+            <div class="alumno-actions">
+              <button type="button" class="btn btn-outline" onclick="cargarVideoEnFormulario('${nomEsc}')">✏️ Editar</button>
+              <button type="button" class="btn btn-outline" onclick="eliminarVideoDesdeProfe('${nomEsc}')" style="border-color:var(--danger); color:var(--danger);">🗑️ Borrar</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function cargarVideoEnFormulario(nombreBuscado) {
+      const v = videotecaGlobal.find(x => String(x.nombre || x["Ejercicio / Movimiento"] || "").trim().toLowerCase() === String(nombreBuscado).trim().toLowerCase());
+      if (!v) return;
+      const nom = String(v.nombre || v["Ejercicio / Movimiento"] || "").trim();
+      document.getElementById("videoNombreOriginal").value = nom;
+      document.getElementById("videoInputNombre").value = nom;
+      document.getElementById("videoInputCategoria").value = String(v.categoria || v["Grupo Muscular"] || "").trim();
+      document.getElementById("videoInputUrl").value = String(v.url || v["URL del Video"] || "").trim();
+      document.getElementById("videoInputDesc").value = String(v.descripcion || v["Descripción"] || "").trim();
+      document.getElementById("tituloFormVideo").textContent = `✏️ Editando: ${nom}`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function limpiarFormularioVideo() {
+      document.getElementById("videoNombreOriginal").value = "";
+      document.getElementById("videoInputNombre").value = "";
+      document.getElementById("videoInputCategoria").value = "";
+      document.getElementById("videoInputUrl").value = "";
+      document.getElementById("videoInputDesc").value = "";
+      document.getElementById("tituloFormVideo").textContent = "🎥 Agregar / Editar Ejercicio en Videoteca";
+    }
+
+    async function guardarVideoDesdeProfe() {
+      const nombreOrig = document.getElementById("videoNombreOriginal").value.trim();
+      const nombre = document.getElementById("videoInputNombre").value.trim();
+      const categoria = document.getElementById("videoInputCategoria").value.trim() || "General";
+      const url = document.getElementById("videoInputUrl").value.trim();
+      const descripcion = document.getElementById("videoInputDesc").value.trim();
+
+      if (!nombre) return alert("Escribí el nombre del ejercicio.");
+
+      const btn = document.getElementById("btnGuardarVideoProfe");
+      btn.disabled = true;
+      btn.textContent = "⏳ Guardando en Videoteca...";
+
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "guardarVideo",
+            pass: claveGuardada,
+            nombreOriginal: nombreOrig || nombre,
+            nombre: nombre,
+            categoria: categoria,
+            url: url,
+            descripcion: descripcion
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          videotecaGlobal = json.videoteca || [];
+          actualizarDatalistEjercicios(json.ejercicios || []);
+          renderizarVideotecaProfe();
+          limpiarFormularioVideo();
+          alert(`✅ Ejercicio "${nombre}" guardado en la videoteca.`);
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al guardar en la videoteca.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "💾 Guardar Ejercicio en Videoteca";
+      }
+    }
+
+    async function eliminarVideoDesdeProfe(nombreEjercicio) {
+      if (!confirm(`¿Seguro que querés eliminar "${nombreEjercicio}" de la videoteca?`)) return;
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "borrarVideo", pass: claveGuardada, nombre: nombreEjercicio })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          videotecaGlobal = json.videoteca || [];
+          actualizarDatalistEjercicios(json.ejercicios || []);
+          renderizarVideotecaProfe();
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al borrar ejercicio.");
+      }
+    }
+
     function salirProfe() {
       localStorage.removeItem("etrain_coach_pass");
       localStorage.removeItem("etrain_tenant_profe");
@@ -1808,6 +2106,7 @@
       document.getElementById("coach-sec-gestion").classList.toggle("hidden", sec !== "gestion");
       document.getElementById("coach-sec-alumnos").classList.toggle("hidden", sec !== "alumnos");
       document.getElementById("coach-sec-espejo").classList.toggle("hidden", sec !== "espejo");
+      document.getElementById("coach-sec-videoteca").classList.toggle("hidden", sec !== "videoteca");
     }
 
     function cambiarModoAsignacion(modo) {
