@@ -57,13 +57,18 @@
     .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
     .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
     .badge-muted { background: rgba(148, 163, 184, 0.15); color: var(--muted); border: 1px solid var(--border); }
+    .badge-club { background: rgba(59, 130, 246, 0.18); color: #93c5fd; border: 1px solid #3b82f6; }
+    .badge-grupo { background: rgba(168, 85, 247, 0.18); color: #d8b4fe; border: 1px solid #a855f7; }
 
     .coach-notes { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); padding: 8px 10px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 0.88rem; color: var(--text); }
     .bloque-item-admin { background: #152033; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-top: 6px; font-size: 0.9rem; }
 
-    .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; }
+    .bloque-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; position: relative; transition: transform 0.15s, border-color 0.15s; }
     .bloque-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 5px; }
+    .bloque-controls { display: flex; align-items: center; gap: 4px; }
+    .btn-move { background: #1e293b; color: var(--text); border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; cursor: pointer; padding: 2px 8px; font-weight: 700; transition: 0.15s; }
+    .btn-move:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-remove { background: transparent; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 6px; margin-left: 4px; }
     
     .template-bar { background: rgba(16, 185, 129, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
     .template-bar select { margin-bottom: 0; flex: 1; min-width: 200px; border-color: var(--accent); }
@@ -76,7 +81,11 @@
     .quick-chip { background: rgba(59, 130, 246, 0.12); border: 1px solid var(--primary); color: #93c5fd; padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: 0.15s; }
     .quick-chip:hover { background: var(--primary); color: #fff; }
 
-    .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 170px; overflow-y: auto; margin-bottom: 12px; }
+    .fechas-chips-box { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; margin-bottom: 10px; }
+    .fecha-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 16px; font-size: 0.82rem; font-weight: 700; }
+    .fecha-chip button { background: transparent; border: none; color: var(--danger); font-weight: 800; cursor: pointer; font-size: 0.9rem; line-height: 1; }
+
+    .multi-atleta-box { background: #0b1120; border: 1px solid var(--border); border-radius: 6px; padding: 10px; max-height: 195px; overflow-y: auto; margin-bottom: 12px; }
     .atleta-check-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 4px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); font-size: 0.92rem; cursor: pointer; }
     .atleta-check-item:last-child { border-bottom: none; }
     .atleta-check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; accent-color: var(--accent); }
@@ -101,9 +110,11 @@
     .filter-pill { background: #0b1120; border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
     .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .alumno-row { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .alumno-info h4 { font-size: 1.02rem; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .alumno-info h4 { font-size: 1.02rem; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .alumno-info p { font-size: 0.84rem; color: var(--muted); }
     .alumno-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .bulk-toolbar { background: rgba(239, 68, 68, 0.08); border: 1px dashed var(--danger); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
     .kpi-box { background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
     .kpi-box .kpi-val { font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px; word-break: break-word; }
@@ -189,17 +200,31 @@
               </div>
               <select id="selectAtleta"><option value="">Seleccionar atleta...</option></select>
               <div id="contenedorGrupal" class="hidden">
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem;">
-                  <a href="#" onclick="marcarTodos(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar todos</a>
-                  <a href="#" onclick="marcarAlDia(); return false;" style="color:var(--accent); text-decoration:none;">💳 Solo cuotas al día</a>
-                  <a href="#" onclick="marcarTodos(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Ninguno</a>
+                <div class="grid-2" style="gap:6px; margin-bottom:6px;">
+                  <select id="filtroGrupalClub" onchange="filtrarChecksGrupales()" style="margin-bottom:0; padding:6px; font-size:0.82rem;">
+                    <option value="">🏢 Todos los Clubes</option>
+                  </select>
+                  <select id="filtroGrupalGrupo" onchange="filtrarChecksGrupales()" style="margin-bottom:0; padding:6px; font-size:0.82rem;">
+                    <option value="">👟 Todos los Grupos</option>
+                  </select>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem; flex-wrap:wrap; gap:4px;">
+                  <a href="#" onclick="marcarVisibles(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar visibles</a>
+                  <a href="#" onclick="marcarAlDiaVisibles(); return false;" style="color:var(--accent); text-decoration:none;">💳 Visibles al día</a>
+                  <a href="#" onclick="marcarVisibles(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar</a>
                 </div>
                 <div class="multi-atleta-box" id="listaCheckAtletas"></div>
               </div>
             </div>
+
             <div>
-              <label>Fecha del Entrenamiento</label>
-              <input type="date" id="inputFecha" />
+              <label>Fecha(s) del Entrenamiento</label>
+              <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+                <input type="date" id="inputFecha" style="margin-bottom:0; flex:1;" />
+                <button type="button" class="btn btn-outline" onclick="agregarFechaACola()" style="padding:10px 12px; border-color:var(--accent); color:var(--accent); white-space:nowrap;">+ Sumar fecha</button>
+              </div>
+              <small style="color:var(--muted); display:block; font-size:0.78rem; margin-bottom:4px;">Podés elegir 1 fecha arriba, o tocar <strong>+ Sumar fecha</strong> para cargar la misma rutina en varios días a la vez.</small>
+              <div id="contenedorFechasCola" class="fechas-chips-box"></div>
             </div>
           </div>
 
@@ -238,7 +263,7 @@
 
         <div class="card">
           <h2>
-            <span>Ejercicios de la Sesión</span>
+            <span>Ejercicios de la Sesión <small style="font-size:0.75rem; color:var(--muted); font-style:normal;">(Usá ⬆️⬇️ para cambiar el orden)</small></span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
               <button class="btn btn-outline" onclick="agregarBloque()" style="padding: 5px 10px; font-size:0.8rem;">+ Ejercicio</button>
             </div>
@@ -264,10 +289,39 @@
       <!-- SECCIÓN 2: RUTINAS ASIGNADAS -->
       <section id="coach-sec-gestion" class="hidden">
         <div class="card">
-          <h2>🔍 Consultar Rutinas de un Atleta</h2>
+          <h2>
+            <span>🔍 Consultar y Borrar Rutinas</span>
+            <button type="button" class="btn btn-outline" onclick="toggleBorradoGrupalPanel()" style="border-color:var(--danger); color:var(--danger);">🧹 Borrar Rutina a Varios Atletas</button>
+          </h2>
+
+          <!-- PANEL DESPLEGABLE PARA BORRAR RUTINA MAL ASIGNADA A VARIOS ATLETAS -->
+          <div id="panelBorradoGrupal" class="hidden" style="background:#0b1120; border:1px dashed var(--danger); border-radius:8px; padding:14px; margin-bottom:16px;">
+            <h4 style="color:var(--danger); margin-bottom:8px; text-transform:uppercase;">🧹 Borrado Masivo entre Varios Atletas</h4>
+            <p style="font-size:0.84rem; color:var(--muted); margin-bottom:12px;">Si te equivocaste al asignar una rutina a un grupo, seleccioná la fecha (y opcionalmente el nombre de la sesión), marcá los atletas y borrala de todos en un solo paso.</p>
+            <div class="grid-2">
+              <div>
+                <label>Fecha de la Rutina a Borrar</label>
+                <input type="date" id="borradoGrupalFecha" />
+                <label>Nombre / Tipo de Sesión (Opcional: vacío borra todas las de esa fecha)</label>
+                <input type="text" id="borradoGrupalTipo" placeholder="Ej: Running - Pasadas VAM (o dejar vacío)" />
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label style="margin:0;">Atletas Afectados</label>
+                  <div style="font-size:0.78rem;">
+                    <a href="#" onclick="marcarChecksBorradoGrupal(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Todos</a> | 
+                    <a href="#" onclick="marcarChecksBorradoGrupal(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Ninguno</a>
+                  </div>
+                </div>
+                <div class="multi-atleta-box" id="listaCheckBorradoGrupal" style="max-height:130px;"></div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-danger" id="btnEjecutarBorradoGrupal" onclick="ejecutarBorradoMasivoMultiAtleta()">🗑️ Eliminar Rutinas de los Atletas Seleccionados</button>
+          </div>
+
           <div class="grid-2" style="align-items: end;">
             <div>
-              <label>Seleccionar Atleta</label>
+              <label>Seleccionar Atleta Individual</label>
               <select id="gestionSelectAtleta" onchange="cargarRutinasParaGestionar()"><option value="">Elegir atleta...</option></select>
             </div>
             <div>
@@ -286,7 +340,15 @@
         </div>
 
         <div class="card">
-          <h2>📋 Listado de Sesiones Cargadas</h2>
+          <h2>📋 Listado de Sesiones del Atleta</h2>
+          <div id="barraAccionesMasivasRutinas" class="bulk-toolbar hidden">
+            <label style="display:flex; align-items:center; gap:8px; margin:0; cursor:pointer; color:var(--text); font-size:0.88rem;">
+              <input type="checkbox" id="checkTodasRutinasGestion" onchange="seleccionarTodasRutinasGestion(this.checked)" style="width:18px; height:18px; margin:0; accent-color:var(--danger);">
+              <span>Seleccionar todas las visibles</span>
+            </label>
+            <button type="button" class="btn btn-danger" id="btnBorrarSeleccionadasGestion" onclick="borrarRutinasSeleccionadasAtleta()" style="width:auto; padding:6px 14px; font-size:0.84rem;">🗑️ Borrar seleccionadas (<span id="contadorRutinasSel">0</span>)</button>
+          </div>
+
           <div id="gestionListaContainer">
             <p style="color: var(--muted); text-align: center; padding: 20px;">Selecciona un atleta arriba para ver sus rutinas cargadas.</p>
           </div>
@@ -297,7 +359,7 @@
       <section id="coach-sec-alumnos" class="hidden">
         <div class="card">
           <h2>
-            <span>📊 Estado de Alumnos y Cuotas</span>
+            <span>📊 Estado de Alumnos, Clubes y Cuotas</span>
             <span id="contadorTotalAlumnos" style="font-size:0.82rem; color:var(--muted);"></span>
           </h2>
 
@@ -309,9 +371,23 @@
             <button class="filter-pill" onclick="filtrarListadoAlumnos('baja', this)" id="pill-baja">🚫 Dados de Baja</button>
           </div>
 
-          <input type="text" id="buscadorAlumnosInput" placeholder="🔎 Buscar por nombre o correo..." oninput="renderizarListadoAlumnos()" style="margin-bottom: 14px;" />
+          <div class="grid-3" style="margin-bottom: 6px;">
+            <div>
+              <input type="text" id="buscadorAlumnosInput" placeholder="🔎 Buscar nombre, email, club..." oninput="renderizarListadoAlumnos()" style="margin-bottom:0;" />
+            </div>
+            <div>
+              <select id="filtroAlumnosClub" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;">
+                <option value="">🏢 Todos los Clubes</option>
+              </select>
+            </div>
+            <div>
+              <select id="filtroAlumnosGrupo" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;">
+                <option value="">👟 Todos los Grupos</option>
+              </select>
+            </div>
+          </div>
 
-          <div id="contenedorListadoAlumnos"></div>
+          <div id="contenedorListadoAlumnos" style="margin-top: 12px;"></div>
         </div>
 
         <div class="card" id="cardGestionPagos">
@@ -351,6 +427,16 @@
             <div><label>PIN Inicial (Temporal)</label><input type="text" id="nuevoPin" value="1234" placeholder="1234"></div>
             <div><label>Fecha de Nacimiento</label><input type="date" id="nuevoFechaNac"></div>
             <div><label>Celular (Sin puntos)</label><input type="tel" id="nuevoCelular" placeholder="Ej: 2235947122"></div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label>Club / Entidad</label>
+              <input type="text" id="nuevoClub" list="listaClubesSugeridos" placeholder="Ej: Oxígeno / RunClub / Particular">
+            </div>
+            <div>
+              <label>Grupo de Trabajo / Ritmo</label>
+              <input type="text" id="nuevoGrupo" list="listaGruposSugeridos" placeholder="Ej: Grupo A / 10K / Inicial / Adaptado">
+            </div>
           </div>
           <button class="btn btn-success" onclick="crearAtleta()">💾 Registrar Nuevo Atleta</button>
         </div>
@@ -400,11 +486,21 @@
             </div>
 
             <div style="border-top: 1px solid var(--border); padding-top: 14px;">
-              <h3 style="font-size:1rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase;">📋 Datos Personales, Médicos y PIN (Editables por el Profe)</h3>
+              <h3 style="font-size:1rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase;">📋 Datos Personales, Club, Grupo y Ficha Médica</h3>
               <div class="grid-3">
                 <div><label>Nombre y Apellido</label><input type="text" id="fichaNombre"></div>
                 <div><label>Fecha de Nacimiento</label><input type="date" id="fichaFechaNac" onchange="actualizarVistaEdadEnVivo()"></div>
                 <div><label>PIN de Acceso</label><input type="text" id="fichaPin"></div>
+              </div>
+              <div class="grid-2">
+                <div>
+                  <label>Club / Entidad</label>
+                  <input type="text" id="fichaClub" list="listaClubesSugeridos" placeholder="Ej: Oxígeno / RunClub">
+                </div>
+                <div>
+                  <label>Grupo de Trabajo / Subgrupo</label>
+                  <input type="text" id="fichaGrupo" list="listaGruposSugeridos" placeholder="Ej: Grupo A / 21K / Base">
+                </div>
               </div>
               <div class="grid-3">
                 <div><label>Celular (Sin puntos)</label><input type="tel" id="fichaCelular"></div>
@@ -431,9 +527,10 @@
             <h2>
               <span>📈 Periodización y Volumen por Semana (Triple Capa)</span>
               <select id="espejoFiltroDisciplina" onchange="renderizarGraficoVolumenEspejo()" style="width:auto; margin:0; padding:5px 10px; font-size:0.84rem;">
-                <option value="Running">🏃‍♂️ Running (Planificado vs Real)</option>
-                <option value="Fuerza">🏋️‍♂️ Fuerza (series/min)</option>
-                <option value="Todas">🌐 Todas las Sesiones</option>
+                <option value="Running_km">🏃‍♂️ Running en KM (Plan vs Real)</option>
+                <option value="Running_min">⏱️ Running / Cardio en MINUTOS</option>
+                <option value="Fuerza">🏋️‍♂️ Fuerza (Series / Min)</option>
+                <option value="Todas">🌐 Todas las Sesiones (Con detalle de unidad)</option>
               </select>
             </h2>
             <div id="espejoResumenSemanaActual" class="coach-notes" style="margin-bottom:14px;"></div>
@@ -479,13 +576,26 @@
   </div>
 
   <datalist id="listaEjercicios"></datalist>
+  <datalist id="listaClubesSugeridos">
+    <option value="Oxígeno"></option>
+    <option value="RunClub"></option>
+    <option value="Particular"></option>
+  </datalist>
+  <datalist id="listaGruposSugeridos">
+    <option value="Grupo A"></option>
+    <option value="Grupo B"></option>
+    <option value="Inicial / Base"></option>
+    <option value="10K"></option>
+    <option value="21K"></option>
+    <option value="Adaptado"></option>
+  </datalist>
 
   <script>
-   // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
-const APIS_POR_INQUILINO = {
-  "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
-  "default": "https://script.google.com/macros/s/AKfycbyQiT_dyrUqOkNWj1weckQenX6NaGP3dE4tON1BTBKPvxVYnuclcoYkSj4_RSrNHRmS8Q/exec"
-};
+    // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
+    const APIS_POR_INQUILINO = {
+      "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
+      "default": "https://script.google.com/macros/s/AKfycbyQiT_dyrUqOkNWj1weckQenX6NaGP3dE4tON1BTBKPvxVYnuclcoYkSj4_RSrNHRmS8Q/exec"
+    };
 
     function getApiUrl() {
       const tenant = localStorage.getItem("etrain_tenant_profe") || "default";
@@ -507,6 +617,8 @@ const APIS_POR_INQUILINO = {
     let gestionCalAnio = new Date().getFullYear();
     let gestionCalFechaSeleccionada = null;
     let cacheRutinasAtletaCalendario = [];
+    let fechasEnCola = [];
+    let sesionesSeleccionadasBorrar = new Set();
 
     const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
@@ -639,6 +751,8 @@ const APIS_POR_INQUILINO = {
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("inputFecha").valueAsDate = new Date();
       document.getElementById("pagoVenc").valueAsDate = new Date();
+      const bFecha = document.getElementById("borradoGrupalFecha");
+      if (bFecha) bFecha.valueAsDate = new Date();
 
       const savedTenant = localStorage.getItem("etrain_tenant_profe");
       if (savedTenant) {
@@ -658,6 +772,36 @@ const APIS_POR_INQUILINO = {
         verificarProfe();
       }
     });
+
+    // --- GESTIÓN DE MÚLTIPLES FECHAS EN ASIGNACIÓN ---
+    function agregarFechaACola() {
+      const inp = document.getElementById("inputFecha");
+      if (!inp.value) return alert("Elegí una fecha en el calendario primero.");
+      const fFmt = formatFechaEnvio(inp.value);
+      if (!fechasEnCola.includes(fFmt)) {
+        fechasEnCola.push(fFmt);
+      }
+      renderizarFechasEnCola();
+    }
+
+    function quitarFechaDeCola(fechaStr) {
+      fechasEnCola = fechasEnCola.filter(f => f !== fechaStr);
+      renderizarFechasEnCola();
+    }
+
+    function renderizarFechasEnCola() {
+      const box = document.getElementById("contenedorFechasCola");
+      if (!fechasEnCola.length) {
+        box.innerHTML = "";
+        return;
+      }
+      box.innerHTML = fechasEnCola.map(f => `
+        <span class="fecha-chip">
+          📅 ${f}
+          <button type="button" onclick="quitarFechaDeCola('${f}')" title="Quitar fecha">✖</button>
+        </span>
+      `).join("");
+    }
 
     function ajustarUnidadPorDisciplina() {
       const disc = document.getElementById("inputDisciplina").value;
@@ -685,7 +829,9 @@ const APIS_POR_INQUILINO = {
 
       bloquesNodes.forEach(nodo => {
         const id = nodo.id.replace("bloque-", "");
-        const serVal = (document.getElementById(`series-${id}`).value || "").toLowerCase().trim();
+        const serInput = document.getElementById(`series-${id}`);
+        if (!serInput) return;
+        const serVal = (serInput.value || "").toLowerCase().trim();
 
         const mPasadas = serVal.match(/(\d+)\s*x\s*([\d.]+)\s*(m|km)/i);
         if (mPasadas) {
@@ -817,7 +963,11 @@ const APIS_POR_INQUILINO = {
           claveGuardada = pass;
           localStorage.setItem("etrain_coach_pass", pass);
 
-          listaAtletasGlobal = data.atletas || [];
+          listaAtletasGlobal = (data.atletas || []).map(a => ({
+            ...a,
+            club: a.club || (a.ficha && a.ficha["Club"]) || "",
+            grupo: a.grupo || (a.ficha && a.ficha["Grupo"]) || ""
+          }));
           pagosGlobalMap = data.pagos || {};
 
           if (Array.isArray(data.plantillas) && data.plantillas.length > 0) {
@@ -825,6 +975,7 @@ const APIS_POR_INQUILINO = {
             localStorage.setItem("etrain_custom_templates", JSON.stringify(plantillasPersonalizadas));
           }
           renderizarSelectorPlantillas();
+          actualizarOpcionesClubYGrupo();
           poblarSelectoresAtletas();
           renderizarListadoAlumnos();
 
@@ -849,12 +1000,48 @@ const APIS_POR_INQUILINO = {
       }
     }
 
+    function actualizarOpcionesClubYGrupo() {
+      const clubesSet = new Set(["Oxígeno", "RunClub", "Particular"]);
+      const gruposSet = new Set(["Grupo A", "Grupo B", "Inicial / Base", "10K", "21K", "Adaptado"]);
+
+      const clubesActivos = new Set();
+      const gruposActivos = new Set();
+
+      listaAtletasGlobal.forEach(a => {
+        const c = String(a.club || "").trim();
+        const g = String(a.grupo || "").trim();
+        if (c) { clubesSet.add(c); clubesActivos.add(c); }
+        if (g) { gruposSet.add(g); gruposActivos.add(g); }
+      });
+
+      const dlClub = document.getElementById("listaClubesSugeridos");
+      if (dlClub) dlClub.innerHTML = Array.from(clubesSet).map(c => `<option value="${c}"></option>`).join("");
+
+      const dlGrupo = document.getElementById("listaGruposSugeridos");
+      if (dlGrupo) dlGrupo.innerHTML = Array.from(gruposSet).map(g => `<option value="${g}"></option>`).join("");
+
+      const poblarSelectFiltro = (idSelect, labelDefault, itemsSet) => {
+        const sel = document.getElementById(idSelect);
+        if (!sel) return;
+        const valPrev = sel.value;
+        sel.innerHTML = `<option value="">${labelDefault}</option>` +
+          Array.from(itemsSet).sort().map(x => `<option value="${x}">${x}</option>`).join("");
+        if (valPrev && itemsSet.has(valPrev)) sel.value = valPrev;
+      };
+
+      poblarSelectFiltro("filtroAlumnosClub", "🏢 Todos los Clubes", clubesActivos);
+      poblarSelectFiltro("filtroAlumnosGrupo", "👟 Todos los Grupos", gruposActivos);
+      poblarSelectFiltro("filtroGrupalClub", "🏢 Todos los Clubes", clubesActivos);
+      poblarSelectFiltro("filtroGrupalGrupo", "👟 Todos los Grupos", gruposActivos);
+    }
+
     function poblarSelectoresAtletas() {
       const selectAtleta = document.getElementById("selectAtleta");
       const gestionSelectAtleta = document.getElementById("gestionSelectAtleta");
       const pagoSelectAtleta = document.getElementById("pagoSelectAtleta");
       const espejoSelectAtleta = document.getElementById("espejoSelectAtleta");
       const checkContainer = document.getElementById("listaCheckAtletas");
+      const checkBorradoGrupal = document.getElementById("listaCheckBorradoGrupal");
 
       const prevPagoSel = pagoSelectAtleta.value;
       const prevEspejoSel = espejoSelectAtleta.value;
@@ -865,37 +1052,62 @@ const APIS_POR_INQUILINO = {
       pagoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
       espejoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
       checkContainer.innerHTML = '';
+      if (checkBorradoGrupal) checkBorradoGrupal.innerHTML = '';
 
       listaAtletasGlobal.forEach(a => {
         const emailNorm = String(a.email || "").trim().toLowerCase();
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
         const infoCuota = evaluarEstadoCuotaAtleta(emailNorm);
         const edad = calcularEdadExacta(a.fechaNac);
-        const edadTxt = edad !== null ? ` • ${edad} años` : "";
+        const edadTxt = edad !== null ? ` • ${edad}a` : "";
+        const clubStr = String(a.club || "").trim();
+        const grupoStr = String(a.grupo || "").trim();
+        const extraTag = (clubStr || grupoStr) ? ` (${[clubStr, grupoStr].filter(Boolean).join(" - ")})` : "";
 
         if (!esBaja) {
           const opt1 = document.createElement("option");
           opt1.value = emailNorm;
-          opt1.textContent = `${a.nombre}${edadTxt} [${infoCuota.labelCorto}]`;
+          opt1.textContent = `${a.nombre}${extraTag}${edadTxt} [${infoCuota.labelCorto}]`;
           selectAtleta.appendChild(opt1);
 
+          const badgesClubGrupo = `
+            ${clubStr ? `<span class="badge badge-club">${clubStr}</span>` : ""}
+            ${grupoStr ? `<span class="badge badge-grupo">${grupoStr}</span>` : ""}
+          `;
+
           const label = document.createElement("label");
-          label.className = "atleta-check-item";
+          label.className = "atleta-check-item item-asignacion-grupal";
+          label.setAttribute("data-club", clubStr.toLowerCase());
+          label.setAttribute("data-grupo", grupoStr.toLowerCase());
           label.innerHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" class="check-atleta" data-cuota="${infoCuota.codigo}" value="${emailNorm}">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <input type="checkbox" class="check-atleta" data-cuota="${infoCuota.codigo}" data-club="${clubStr.toLowerCase()}" data-grupo="${grupoStr.toLowerCase()}" value="${emailNorm}">
               <span><strong>${a.nombre}</strong> <small style="color:var(--muted);">${edadTxt}</small></span>
+              ${badgesClubGrupo}
             </div>
             <span class="badge ${infoCuota.badgeClass}">${infoCuota.labelCorto}</span>
           `;
           checkContainer.appendChild(label);
+
+          if (checkBorradoGrupal) {
+            const lblB = document.createElement("label");
+            lblB.className = "atleta-check-item";
+            lblB.innerHTML = `
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <input type="checkbox" class="check-borrado-grupal" value="${emailNorm}">
+                <span><strong>${a.nombre}</strong></span>
+                ${badgesClubGrupo}
+              </div>
+            `;
+            checkBorradoGrupal.appendChild(lblB);
+          }
         }
 
         const sufijoBaja = esBaja ? " [DE BAJA]" : "";
         [gestionSelectAtleta, pagoSelectAtleta, espejoSelectAtleta].forEach(sel => {
           const opt = document.createElement("option");
           opt.value = emailNorm;
-          opt.textContent = `${a.nombre}${edadTxt}${sufijoBaja}`;
+          opt.textContent = `${a.nombre}${extraTag}${edadTxt}${sufijoBaja}`;
           sel.appendChild(opt);
         });
       });
@@ -906,6 +1118,39 @@ const APIS_POR_INQUILINO = {
         gestionSelectAtleta.value = prevGestionSel;
         cargarRutinasParaGestionar();
       }
+    }
+
+    function filtrarChecksGrupales() {
+      const fClub = (document.getElementById("filtroGrupalClub").value || "").toLowerCase();
+      const fGrupo = (document.getElementById("filtroGrupalGrupo").value || "").toLowerCase();
+      document.querySelectorAll(".item-asignacion-grupal").forEach(row => {
+        const c = row.getAttribute("data-club") || "";
+        const g = row.getAttribute("data-grupo") || "";
+        const okClub = !fClub || c === fClub;
+        const okGrupo = !fGrupo || g === fGrupo;
+        row.classList.toggle("hidden", !(okClub && okGrupo));
+      });
+    }
+
+    function marcarVisibles(estado) {
+      document.querySelectorAll(".item-asignacion-grupal").forEach(row => {
+        if (!row.classList.contains("hidden")) {
+          const chk = row.querySelector(".check-atleta");
+          if (chk) chk.checked = estado;
+        }
+      });
+    }
+
+    function marcarAlDiaVisibles() {
+      document.querySelectorAll(".item-asignacion-grupal").forEach(row => {
+        if (!row.classList.contains("hidden")) {
+          const chk = row.querySelector(".check-atleta");
+          if (chk) {
+            const c = chk.getAttribute("data-cuota");
+            chk.checked = (c === "activa" || c === "por_vencer");
+          }
+        }
+      });
     }
 
     function calcularEdadExacta(fechaStr) {
@@ -973,12 +1218,16 @@ const APIS_POR_INQUILINO = {
     function renderizarListadoAlumnos() {
       const cont = document.getElementById("contenedorListadoAlumnos");
       const q = (document.getElementById("buscadorAlumnosInput").value || "").trim().toLowerCase();
+      const fClub = (document.getElementById("filtroAlumnosClub").value || "").trim().toLowerCase();
+      const fGrupo = (document.getElementById("filtroAlumnosGrupo").value || "").trim().toLowerCase();
 
       let cActivos = 0, cAlDia = 0, cPorVencer = 0, cVencida = 0, cBaja = 0;
 
       const filtrados = listaAtletasGlobal.filter(a => {
         const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
         const cuota = evaluarEstadoCuotaAtleta(a.email);
+        const clubAtleta = String(a.club || "").trim().toLowerCase();
+        const grupoAtleta = String(a.grupo || "").trim().toLowerCase();
 
         if (esBaja) { cBaja++; } 
         else {
@@ -988,7 +1237,10 @@ const APIS_POR_INQUILINO = {
           else cVencida++;
         }
 
-        if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q)) return false;
+        if (fClub && clubAtleta !== fClub) return false;
+        if (fGrupo && grupoAtleta !== fGrupo) return false;
+
+        if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q) && !clubAtleta.includes(q) && !grupoAtleta.includes(q)) return false;
         if (filtroAlumnosActual === "baja") return esBaja;
         if (esBaja) return false;
         if (filtroAlumnosActual === "todos") return true;
@@ -1003,7 +1255,7 @@ const APIS_POR_INQUILINO = {
       document.getElementById("contadorTotalAlumnos").textContent = `Mostrando ${filtrados.length} de ${listaAtletasGlobal.length} registrados`;
 
       if (!filtrados.length) {
-        cont.innerHTML = `<p style="color:var(--muted); text-align:center; padding:18px;">No hay atletas en esta categoría.</p>`;
+        cont.innerHTML = `<p style="color:var(--muted); text-align:center; padding:18px;">No hay atletas que coincidan con este filtro.</p>`;
         return;
       }
 
@@ -1013,6 +1265,8 @@ const APIS_POR_INQUILINO = {
         const cuota = evaluarEstadoCuotaAtleta(emailNorm);
         const edad = calcularEdadExacta(a.fechaNac);
         const edadBadge = edad !== null ? `<span class="badge badge-muted">${edad} años</span>` : "";
+        const clubBadge = a.club ? `<span class="badge badge-club">🏢 ${a.club}</span>` : "";
+        const grupoBadge = a.grupo ? `<span class="badge badge-grupo">👟 ${a.grupo}</span>` : "";
 
         return `
           <div class="alumno-row" style="${esBaja ? 'opacity:0.65;' : ''}">
@@ -1020,6 +1274,8 @@ const APIS_POR_INQUILINO = {
               <h4>
                 <span>${a.nombre}</span>
                 ${edadBadge}
+                ${clubBadge}
+                ${grupoBadge}
                 <span class="badge ${esBaja ? 'badge-muted' : cuota.badgeClass}">${esBaja ? 'DE BAJA' : cuota.label}</span>
               </h4>
               <p>📧 ${a.email} | 📱 ${limpiarTelefonoPuntos(a.celular) || "-"} | 🔑 PIN: <strong>${a.pin || "1234"}</strong></p>
@@ -1093,6 +1349,8 @@ const APIS_POR_INQUILINO = {
         document.getElementById("fichaNombre").value = p["Nombre"] || "";
         document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || p["Fecha de Nacimiento"] || "");
         document.getElementById("fichaPin").value = p["PIN"] || "";
+        document.getElementById("fichaClub").value = p["Club"] || p["Institución"] || "";
+        document.getElementById("fichaGrupo").value = p["Grupo"] || p["Grupo de Trabajo"] || "";
         document.getElementById("fichaCelular").value = limpiarTelefonoPuntos(p["Celular"] || "");
         document.getElementById("fichaVam").value = vamLimpia;
         document.getElementById("fichaFcr").value = p["FC Reposo"] || "";
@@ -1155,6 +1413,8 @@ const APIS_POR_INQUILINO = {
         nombre: document.getElementById("fichaNombre").value.trim(),
         fechaNac: formatFechaEnvio(document.getElementById("fichaFechaNac").value),
         pin: document.getElementById("fichaPin").value.trim(),
+        club: document.getElementById("fichaClub").value.trim(),
+        grupo: document.getElementById("fichaGrupo").value.trim(),
         celular: celLimpio,
         vam: document.getElementById("fichaVam").value.trim(),
         fcr: document.getElementById("fichaFcr").value.trim(),
@@ -1169,7 +1429,7 @@ const APIS_POR_INQUILINO = {
         const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
-          alert("✅ Ficha médica y datos del atleta actualizados correctamente.");
+          alert("✅ Ficha médica, Club y Grupo actualizados correctamente.");
           cargarFichaYEspejoAtleta();
           verificarProfe();
         } else {
@@ -1187,13 +1447,14 @@ const APIS_POR_INQUILINO = {
       return new Date(d.setDate(diff));
     }
 
-    /* PARSER INTELIGENTE DE NOTAS PARA EL PROFESOR (VOLUMEN REAL + DATOS CAPTURA) */
+    /* PARSER INTELIGENTE DE NOTAS PARA EL PROFESOR (VOLUMEN REAL + UNIDAD + DATOS CAPTURA) */
     function parsearNotaAtletaProfe(notaStr) {
-      if (!notaStr) return { realVal: 0, realTexto: "", capturaTexto: "", notaLimpia: "" };
+      if (!notaStr) return { realVal: 0, realUnidad: "", realTexto: "", capturaTexto: "", notaLimpia: "" };
       const str = String(notaStr);
 
       const mReal = str.match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
       const realNum = mReal ? parseFloat(mReal[1].replace(",", ".")) : 0;
+      const realUni = mReal ? mReal[2].toLowerCase().trim() : "";
       const realTxt = mReal ? `${mReal[1]} ${mReal[2]}` : "";
 
       const mCap = str.match(/\[⌚ Datos Captura:\s*([^\]]+)\]/i);
@@ -1207,13 +1468,25 @@ const APIS_POR_INQUILINO = {
 
       return {
         realVal: isNaN(realNum) ? 0 : realNum,
+        realUnidad: realUni,
         realTexto: realTxt,
         capturaTexto: capTxt,
         notaLimpia: limpia
       };
     }
 
-    /* GRÁFICO DE TRIPLE CAPA CON DATOS REALES EXTRAÍDOS */
+    function detectarUnidadVolumen(volStr) {
+      const s = String(volStr || "").toLowerCase();
+      if (s.includes("km")) return "km";
+      if (s.includes("min") || s.includes("'")) return "min";
+      if (s.includes("serie")) return "series";
+      if (s.includes("pasada")) return "pasadas";
+      if (s.includes("rep")) return "reps";
+      if (s.includes("kg")) return "kg";
+      return "unid.";
+    }
+
+    /* GRÁFICO DE TRIPLE CAPA CON SEPARACIÓN CLARA DE UNIDADES (KM vs MIN vs SERIES) */
     function renderizarGraficoVolumenEspejo() {
       if (!paqueteEspejoActual) return;
       const rutinas = paqueteEspejoActual.rutinas || [];
@@ -1236,15 +1509,26 @@ const APIS_POR_INQUILINO = {
 
         const tipo = String(s["Tipo de Sesión"] || "").toLowerCase();
         const volStr = String(s["Volumen Sesión"] || "").toLowerCase();
+        const parsedNota = parsearNotaAtletaProfe(s["Notas del Atleta"]);
 
-        if (discFiltro === "Running" && (tipo.includes("fuerza") || tipo.includes("gym") || volStr.includes("series"))) return;
-        if (discFiltro === "Fuerza" && (tipo.includes("running") || volStr.includes("km"))) return;
+        const uniPlan = detectarUnidadVolumen(volStr);
+        const uniReal = parsedNota.realUnidad || uniPlan;
+
+        const esFuerza = tipo.includes("fuerza") || tipo.includes("gym") || uniPlan === "series" || uniPlan === "kg";
+
+        if (discFiltro === "Running_km") {
+          if (esFuerza) return;
+          if (uniPlan !== "km" && uniReal !== "km") return;
+        } else if (discFiltro === "Running_min") {
+          if (esFuerza) return;
+          if (uniPlan !== "min" && uniReal !== "min") return;
+        } else if (discFiltro === "Fuerza") {
+          if (!esFuerza) return;
+        }
 
         const match = volStr.match(/([\d.,]+)/);
         const valorPlan = match ? parseFloat(match[1].replace(",", ".")) : 0;
-        
-        const parsedNota = parsearNotaAtletaProfe(s["Notas del Atleta"]);
-        const valorReal = (discFiltro !== "Fuerza") ? parsedNota.realVal : 0;
+        const valorReal = parsedNota.realVal;
         const rpeVal = parseFloat(s["Esfuerzo RPE (0-10)"] || s["RPE"]) || 0;
 
         const lunes = obtenerLunesDeSemana(fObj);
@@ -1252,11 +1536,26 @@ const APIS_POR_INQUILINO = {
         const labelSem = `Sem ${String(lunes.getDate()).padStart(2,'0')}/${String(lunes.getMonth()+1).padStart(2,'0')}`;
 
         if (!semanasMap.has(keySem)) {
-          semanasMap.set(keySem, { key: keySem, label: labelSem, plan: 0, real: 0, rpeSum: 0, rpeCount: 0 });
+          semanasMap.set(keySem, {
+            key: keySem,
+            label: labelSem,
+            plan: 0,
+            real: 0,
+            rpeSum: 0,
+            rpeCount: 0,
+            desglosePlan: {},
+            desgloseReal: {}
+          });
         }
         const item = semanasMap.get(keySem);
-        if (valorPlan > 0) item.plan += valorPlan;
-        if (valorReal > 0) item.real += valorReal;
+        if (valorPlan > 0) {
+          item.plan += valorPlan;
+          item.desglosePlan[uniPlan] = (item.desglosePlan[uniPlan] || 0) + valorPlan;
+        }
+        if (valorReal > 0) {
+          item.real += valorReal;
+          item.desgloseReal[uniReal] = (item.desgloseReal[uniReal] || 0) + valorReal;
+        }
         if (rpeVal > 0) {
           item.rpeSum += rpeVal;
           item.rpeCount += 1;
@@ -1264,20 +1563,29 @@ const APIS_POR_INQUILINO = {
       });
 
       const semanasArr = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
+      if (!semanasArr.length) {
+        contResumen.innerHTML = `No hay sesiones registradas para el filtro seleccionado.`;
+        if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
+        return;
+      }
+
+      const formatearDesglose = (obj, fallbackUni) => {
+        const entries = Object.entries(obj);
+        if (!entries.length) return `0 ${fallbackUni}`;
+        return entries.map(([u, v]) => `${+(v.toFixed(1))} ${u}`).join(" + ");
+      };
+
+      const unidadRef = discFiltro === "Running_km" ? "km" : (discFiltro === "Running_min" ? "min" : (discFiltro === "Fuerza" ? "series" : "unid."));
       const labels = semanasArr.map(s => s.label);
       const dataPlan = semanasArr.map(s => +(s.plan.toFixed(1)));
       const dataReal = semanasArr.map(s => +(s.real.toFixed(2)));
       const dataRpe = semanasArr.map(s => s.rpeCount > 0 ? +((s.rpeSum / s.rpeCount).toFixed(1)) : null);
 
-      if (!semanasArr.length) {
-        contResumen.innerHTML = `No hay sesiones registradas para el filtro <strong>${discFiltro}</strong>.`;
-        if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
-        return;
-      }
-
-      const unidadRef = discFiltro === "Running" ? "km" : (discFiltro === "Fuerza" ? "series/min" : "unid.");
       const ultimaSem = semanasArr[semanasArr.length - 1];
-      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${ultimaSem.plan.toFixed(1)} ${unidadRef}</strong> | Real Completado: <strong style="color:var(--accent);">${ultimaSem.real.toFixed(1)} ${unidadRef}</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
+      const txtPlanUlt = formatearDesglose(ultimaSem.desglosePlan, unidadRef);
+      const txtRealUlt = formatearDesglose(ultimaSem.desgloseReal, unidadRef);
+
+      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${txtPlanUlt}</strong> | Real Completado: <strong style="color:var(--accent);">${txtRealUlt}</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
 
       if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
 
@@ -1292,13 +1600,10 @@ const APIS_POR_INQUILINO = {
           borderRadius: 6,
           yAxisID: "y",
           order: 3
-        }
-      ];
-
-      if (discFiltro !== "Fuerza") {
-        datasets.push({
+        },
+        {
           type: "bar",
-          label: "Real Completado",
+          label: `Real Completado (${unidadRef})`,
           data: dataReal,
           backgroundColor: "rgba(16, 185, 129, 0.7)",
           borderColor: "#10b981",
@@ -1306,24 +1611,23 @@ const APIS_POR_INQUILINO = {
           borderRadius: 6,
           yAxisID: "y",
           order: 2
-        });
-      }
-
-      datasets.push({
-        type: "line",
-        label: "RPE Promedio (1-10)",
-        data: dataRpe,
-        borderColor: "#f59e0b",
-        backgroundColor: "rgba(245, 158, 11, 0.2)",
-        borderWidth: 3,
-        pointBackgroundColor: "#f59e0b",
-        pointBorderColor: "#fff",
-        pointRadius: 5,
-        tension: 0.3,
-        spanGaps: true,
-        yAxisID: "y1",
-        order: 1
-      });
+        },
+        {
+          type: "line",
+          label: "RPE Promedio (1-10)",
+          data: dataRpe,
+          borderColor: "#f59e0b",
+          backgroundColor: "rgba(245, 158, 11, 0.2)",
+          borderWidth: 3,
+          pointBackgroundColor: "#f59e0b",
+          pointBorderColor: "#fff",
+          pointRadius: 5,
+          tension: 0.3,
+          spanGaps: true,
+          yAxisID: "y1",
+          order: 1
+        }
+      ];
 
       const ctx = canvas.getContext("2d");
       espejoTripleChartInstance = new Chart(ctx, {
@@ -1334,7 +1638,29 @@ const APIS_POR_INQUILINO = {
           maintainAspectRatio: false,
           plugins: {
             legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
-            tooltip: { backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1 }
+            tooltip: {
+              backgroundColor: "#0f172a",
+              titleColor: "#3b82f6",
+              bodyColor: "#f8fafc",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  const idx = context.dataIndex;
+                  const semObj = semanasArr[idx];
+                  if (context.dataset.yAxisID === "y1") {
+                    return `RPE Promedio: ${context.parsed.y !== null ? context.parsed.y + ' / 10' : '-'}`;
+                  }
+                  if (context.datasetIndex === 0) {
+                    return `Planificado: ${formatearDesglose(semObj.desglosePlan, unidadRef)}`;
+                  }
+                  if (context.datasetIndex === 1) {
+                    return `Real Completado: ${formatearDesglose(semObj.desgloseReal, unidadRef)}`;
+                  }
+                  return `${context.dataset.label}: ${context.parsed.y}`;
+                }
+              }
+            }
           },
           scales: {
             x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
@@ -1468,16 +1794,6 @@ const APIS_POR_INQUILINO = {
       document.getElementById("contenedorGrupal").classList.toggle("hidden", modo !== "grupal");
     }
 
-    function marcarTodos(estado) {
-      document.querySelectorAll(".check-atleta").forEach(chk => chk.checked = estado);
-    }
-
-    function marcarAlDia() {
-      document.querySelectorAll(".check-atleta").forEach(chk => {
-        chk.checked = (chk.getAttribute("data-cuota") === "activa" || chk.getAttribute("data-cuota") === "por_vencer");
-      });
-    }
-
     function cargarPlantilla() {
       const val = document.getElementById("selectPlantilla").value;
       const btnBorrar = document.getElementById("btnBorrarPlantilla");
@@ -1599,10 +1915,82 @@ const APIS_POR_INQUILINO = {
       } catch (e) {}
     }
 
+    // --- SECCIÓN 2: GESTIÓN Y BORRADO MASIVO DE RUTINAS ---
+    function toggleBorradoGrupalPanel() {
+      document.getElementById("panelBorradoGrupal").classList.toggle("hidden");
+    }
+
+    function marcarChecksBorradoGrupal(estado) {
+      document.querySelectorAll(".check-borrado-grupal").forEach(c => c.checked = estado);
+    }
+
+    async function ejecutarBorradoMasivoMultiAtleta() {
+      const fVal = document.getElementById("borradoGrupalFecha").value;
+      const tipoFiltro = (document.getElementById("borradoGrupalTipo").value || "").trim().toLowerCase();
+      if (!fVal) return alert("Seleccioná la fecha de la rutina que querés borrar.");
+      const fechaTarget = formatFechaEnvio(fVal);
+
+      const emailsSel = [];
+      document.querySelectorAll(".check-borrado-grupal:checked").forEach(c => emailsSel.push(c.value));
+      if (!emailsSel.length) return alert("Marcá al menos un atleta.");
+
+      if (!confirm(`¿Seguro que querés buscar y borrar las rutinas del día ${fechaTarget} para los ${emailsSel.length} atletas seleccionados?`)) return;
+
+      const btn = document.getElementById("btnEjecutarBorradoGrupal");
+      btn.disabled = true;
+      btn.textContent = "⏳ Buscando y eliminando sesiones...";
+
+      try {
+        const sesionesABorrar = [];
+        for (let i = 0; i < emailsSel.length; i++) {
+          const em = emailsSel[i];
+          const res = await fetch(`${getApiUrl()}?modo=profe&pass=${encodeURIComponent(claveGuardada)}&emailConsulta=${encodeURIComponent(em)}&cb=${new Date().getTime()}`);
+          const data = await res.json();
+          const ruts = data.rutinas || [];
+          ruts.forEach(r => {
+            const fLimpia = limpiarFechaVisual(r["Fecha"] || "");
+            const tSesion = String(r["Tipo de Sesión"] || "").trim();
+            if (fLimpia === fechaTarget) {
+              if (!tipoFiltro || tSesion.toLowerCase().includes(tipoFiltro)) {
+                sesionesABorrar.push({ email: em, fecha: fLimpia, tipo: tSesion });
+              }
+            }
+          });
+        }
+
+        if (!sesionesABorrar.length) {
+          alert(`No se encontraron rutinas cargadas el ${fechaTarget} para esos atletas.`);
+        } else {
+          const resDel = await fetch(getApiUrl(), {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "borrarRutinasMasivo", pass: claveGuardada, sesiones: sesionesABorrar })
+          });
+          const jsonDel = await resDel.json();
+          if (jsonDel.status === "success") {
+            alert(`✅ Se eliminaron correctamente las rutinas del ${fechaTarget} en los atletas seleccionados.`);
+            cargarRutinasParaGestionar();
+          } else {
+            alert("Error: " + jsonDel.message);
+          }
+        }
+      } catch (e) {
+        alert("Error de conexión durante el borrado masivo.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🗑️ Eliminar Rutinas de los Atletas Seleccionados";
+      }
+    }
+
     async function cargarRutinasParaGestionar() {
       const email = document.getElementById("gestionSelectAtleta").value;
       const container = document.getElementById("gestionListaContainer");
+      const barraMasiva = document.getElementById("barraAccionesMasivasRutinas");
+      sesionesSeleccionadasBorrar.clear();
+      actualizarContadorRutinasSel();
+
       if (!email) {
+        if (barraMasiva) barraMasiva.classList.add("hidden");
         container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">Selecciona un atleta arriba para ver sus rutinas cargadas.</p>`;
         return;
       }
@@ -1620,6 +2008,7 @@ const APIS_POR_INQUILINO = {
           const key = `${fecha}__${tipo}`;
           if (!mapaSesiones.has(key)) {
             mapaSesiones.set(key, {
+              key: key,
               fechaRaw: fecha,
               tipo: tipo,
               volumen: r["Volumen Sesión"] || "-",
@@ -1691,19 +2080,27 @@ const APIS_POR_INQUILINO = {
 
     function renderGestionListadoSesiones() {
       const container = document.getElementById("gestionListaContainer");
-      let sesionesFiltradas = cacheRutinasAtletaCalendario;
+      const barraMasiva = document.getElementById("barraAccionesMasivasRutinas");
+      const chkAll = document.getElementById("checkTodasRutinasGestion");
+      if (chkAll) chkAll.checked = false;
 
+      let sesionesFiltradas = cacheRutinasAtletaCalendario;
       if (gestionCalFechaSeleccionada) {
         sesionesFiltradas = cacheRutinasAtletaCalendario.filter(s => s.fechaRaw === gestionCalFechaSeleccionada);
       }
 
       if (!sesionesFiltradas.length) {
+        if (barraMasiva) barraMasiva.classList.add("hidden");
         container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 20px;">${gestionCalFechaSeleccionada ? 'No hay rutinas para el ' + gestionCalFechaSeleccionada : 'No hay rutinas cargadas.'}</p>`;
         return;
       }
 
+      if (barraMasiva) barraMasiva.classList.remove("hidden");
+
       container.innerHTML = sesionesFiltradas.map((s) => {
         const index = cacheRutinasAtletaCalendario.findIndex(x => x.fechaRaw === s.fechaRaw && x.tipo === s.tipo);
+        const checkedAttr = sesionesSeleccionadasBorrar.has(s.key) ? "checked" : "";
+
         const bloquesHtml = s.bloques.map(b => `
           <div class="bloque-item-admin">
             <strong>${b["Orden / Bloque"] || "-"}: ${b["Ejercicio"] || "-"}</strong><br>
@@ -1720,16 +2117,19 @@ const APIS_POR_INQUILINO = {
         return `
           <div class="rutina-card-admin">
             <div class="rutina-admin-header" onclick="toggleAdminRutina(${index})">
-              <div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
-                  <span class="badge">${s.fechaRaw}</span>
-                  <strong style="font-size: 1.05rem; color: var(--text);">${s.tipo}</strong>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" class="check-rutina-item" data-key="${s.key}" ${checkedAttr} onclick="event.stopPropagation(); toggleSeleccionRutinaBorrar('${s.key}', this.checked)" style="width:18px; height:18px; margin:0; accent-color:var(--danger); cursor:pointer;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom: 4px;">
+                    <span class="badge">${s.fechaRaw}</span>
+                    <strong style="font-size: 1.05rem; color: var(--text);">${s.tipo}</strong>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
               </div>
               <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
                 <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
-                <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion('${s.fechaRaw}', '${s.tipo}')" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
+                <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion(${index})" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
               </div>
             </div>
 
@@ -1740,6 +2140,60 @@ const APIS_POR_INQUILINO = {
           </div>
         `;
       }).join("");
+    }
+
+    function toggleSeleccionRutinaBorrar(key, isChecked) {
+      if (isChecked) sesionesSeleccionadasBorrar.add(key);
+      else sesionesSeleccionadasBorrar.delete(key);
+      actualizarContadorRutinasSel();
+    }
+
+    function seleccionarTodasRutinasGestion(isChecked) {
+      document.querySelectorAll(".check-rutina-item").forEach(chk => {
+        chk.checked = isChecked;
+        const k = chk.getAttribute("data-key");
+        if (isChecked) sesionesSeleccionadasBorrar.add(k);
+        else sesionesSeleccionadasBorrar.delete(k);
+      });
+      actualizarContadorRutinasSel();
+    }
+
+    function actualizarContadorRutinasSel() {
+      const span = document.getElementById("contadorRutinasSel");
+      if (span) span.textContent = sesionesSeleccionadasBorrar.size;
+    }
+
+    async function borrarRutinasSeleccionadasAtleta() {
+      const email = document.getElementById("gestionSelectAtleta").value;
+      if (!email || sesionesSeleccionadasBorrar.size === 0) return alert("Marcá al menos una rutina con el casillero para borrar.");
+      if (!confirm(`¿Eliminar las ${sesionesSeleccionadasBorrar.size} rutinas seleccionadas?`)) return;
+
+      const btn = document.getElementById("btnBorrarSeleccionadasGestion");
+      btn.disabled = true;
+
+      const lista = Array.from(sesionesSeleccionadasBorrar).map(k => {
+        const [fecha, tipo] = k.split("__");
+        return { email: email, fecha: fecha, tipo: tipo };
+      });
+
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "borrarRutinasMasivo", pass: claveGuardada, sesiones: lista })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          sesionesSeleccionadasBorrar.clear();
+          cargarRutinasParaGestionar();
+        } else {
+          alert("Error al borrar rutinas.");
+        }
+      } catch (e) {
+        alert("Error de conexión.");
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     function toggleAdminRutina(index) {
@@ -1762,8 +2216,11 @@ const APIS_POR_INQUILINO = {
       if (!s) return;
 
       cambiarSeccionCoach('asignar', document.getElementById('tab-btn-asignar'));
+      cambiarModoAsignacion('individual');
       document.getElementById("selectAtleta").value = document.getElementById("gestionSelectAtleta").value;
       document.getElementById("inputFecha").value = formatFechaInput(s.fechaRaw);
+      fechasEnCola = [];
+      renderizarFechasEnCola();
 
       let disc = "Running";
       let nombreLimpio = s.tipo;
@@ -1801,12 +2258,13 @@ const APIS_POR_INQUILINO = {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    async function borrarRutinaDesdeGestion(fecha, tipo) {
+    async function borrarRutinaDesdeGestion(index) {
+      const s = cacheRutinasAtletaCalendario[index];
       const email = document.getElementById("gestionSelectAtleta").value;
-      if (!email || !confirm(`¿Eliminar la rutina "${tipo}" del día ${fecha}?`)) return;
+      if (!s || !email || !confirm(`¿Eliminar la rutina "${s.tipo}" del día ${s.fechaRaw}?`)) return;
 
       try {
-        const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: fecha, tipo: tipo };
+        const payload = { action: "borrarRutina", pass: claveGuardada, email: email, fecha: s.fechaRaw, tipo: s.tipo };
         const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") { cargarRutinasParaGestionar(); }
@@ -1814,14 +2272,19 @@ const APIS_POR_INQUILINO = {
       } catch (e) { alert("Error de conexión."); }
     }
 
+    // --- BLOQUES DE EJERCICIOS CON FLECHAS DE REORDENAMIENTO (⬆️ / ⬇️) ---
     function agregarBloque(datos = null) {
       contadorBloques++;
       const id = contadorBloques;
       const html = `
         <div class="bloque-row" id="bloque-${id}">
           <div class="bloque-header">
-            <span style="font-weight:bold; color:var(--primary); text-transform:uppercase;">Ejercicio #${id}</span>
-            <button class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar">✖</button>
+            <span class="bloque-titulo-num" style="font-weight:bold; color:var(--primary); text-transform:uppercase;">Ejercicio #${id}</span>
+            <div class="bloque-controls">
+              <button type="button" class="btn-move" onclick="moverBloque(${id}, -1)" title="Subir ejercicio">⬆️</button>
+              <button type="button" class="btn-move" onclick="moverBloque(${id}, 1)" title="Bajar ejercicio">⬇️</button>
+              <button type="button" class="btn-remove" onclick="eliminarBloque(${id})" title="Eliminar">✖</button>
+            </div>
           </div>
           <div class="grid-2">
             <div><label>Orden / Letra</label><input type="text" id="orden-${id}" value="${datos ? datos.orden : ''}" placeholder="A1"></div>
@@ -1838,12 +2301,34 @@ const APIS_POR_INQUILINO = {
         </div>
       `;
       document.getElementById("bloquesContainer").insertAdjacentHTML('beforeend', html);
+      renumerarTitulosBloques();
       recalcularVolumenAutomatico();
+    }
+
+    function moverBloque(id, direccion) {
+      const actual = document.getElementById(`bloque-${id}`);
+      const container = document.getElementById("bloquesContainer");
+      if (!actual || !container) return;
+
+      if (direccion === -1 && actual.previousElementSibling) {
+        container.insertBefore(actual, actual.previousElementSibling);
+      } else if (direccion === 1 && actual.nextElementSibling) {
+        container.insertBefore(actual.nextElementSibling, actual);
+      }
+      renumerarTitulosBloques();
+    }
+
+    function renumerarTitulosBloques() {
+      document.querySelectorAll("#bloquesContainer .bloque-row").forEach((nodo, idx) => {
+        const tit = nodo.querySelector(".bloque-titulo-num");
+        if (tit) tit.textContent = `Ejercicio #${idx + 1}`;
+      });
     }
 
     function eliminarBloque(id) {
       const b = document.getElementById(`bloque-${id}`);
       if (b) b.remove();
+      renumerarTitulosBloques();
       recalcularVolumenAutomatico();
     }
 
@@ -1864,6 +2349,10 @@ const APIS_POR_INQUILINO = {
       }
 
       const fechaRaw = document.getElementById("inputFecha").value;
+      const listaFechasFinal = fechasEnCola.length > 0
+        ? [...fechasEnCola]
+        : (fechaRaw ? [formatFechaEnvio(fechaRaw)] : []);
+
       const disc = document.getElementById("inputDisciplina").value;
       const tipoRaw = document.getElementById("inputTipoSesion").value.trim();
       const volVal = document.getElementById("inputVolumenValor").value.trim();
@@ -1871,12 +2360,12 @@ const APIS_POR_INQUILINO = {
       const ind = document.getElementById("inputIndicaciones").value.trim();
 
       if (destinatarios.length === 0) return alert("Selecciona al menos un atleta.");
-      if (!fechaRaw || !tipoRaw) return alert("Completa la fecha y el nombre de la sesión.");
+      if (listaFechasFinal.length === 0 || !tipoRaw) return alert("Completa al menos una fecha y el nombre de la sesión.");
 
       const tipoFinal = tipoRaw.toLowerCase().startsWith(disc.toLowerCase()) ? tipoRaw : `${disc} - ${tipoRaw}`;
       const volFinal = volVal ? `${volVal} ${volUni}` : "-";
 
-      const bloquesNodes = document.querySelectorAll(".bloque-row");
+      const bloquesNodes = document.querySelectorAll("#bloquesContainer .bloque-row");
       if (bloquesNodes.length === 0) return alert("Agrega al menos un ejercicio.");
 
       const bloques = [];
@@ -1901,34 +2390,37 @@ const APIS_POR_INQUILINO = {
       const btn = document.getElementById("btnGuardarRutina");
       const msj = document.getElementById("mensajeResultado");
       btn.disabled = true;
+      msj.textContent = "";
 
       try {
-        const fechaFmt = formatFechaEnvio(fechaRaw);
-        for (let i = 0; i < destinatarios.length; i++) {
-          btn.textContent = `⏳ Guardando (${i + 1}/${destinatarios.length})...`;
-          const payload = {
-            action: "asignarRutina",
-            pass: claveGuardada,
-            email: destinatarios[i],
-            fecha: fechaFmt,
-            tipoSesion: tipoFinal,
-            volumen: volFinal,
-            indicaciones: ind,
-            bloques: bloques,
-            reemplazar: true,
-            fechaOriginal: fechaFmt,
-            tipoOriginal: tipoFinal
-          };
+        btn.textContent = `⏳ Guardando (${destinatarios.length} atleta(s) • ${listaFechasFinal.length} fecha(s))...`;
+        const payload = {
+          action: "asignarRutina",
+          pass: claveGuardada,
+          email: destinatarios[0],
+          emails: destinatarios,
+          fecha: listaFechasFinal[0],
+          fechas: listaFechasFinal,
+          tipoSesion: tipoFinal,
+          volumen: volFinal,
+          indicaciones: ind,
+          bloques: bloques,
+          reemplazar: true,
+          fechaOriginal: listaFechasFinal[0],
+          tipoOriginal: tipoFinal
+        };
 
-          const res = await fetch(getApiUrl(), {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-          });
-          const json = await res.json();
-          if (json.status !== "success") throw new Error(json.message);
-        }
+        const res = await fetch(getApiUrl(), {
+          method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.status !== "success") throw new Error(json.message);
+
+        fechasEnCola = [];
+        renderizarFechasEnCola();
 
         btn.style.background = "var(--primary)";
-        btn.textContent = `✅ ¡Rutina Guardada con Éxito!`;
+        btn.textContent = `✅ ¡Rutina Guardada (${listaFechasFinal.length} fecha/s)!`;
         setTimeout(() => {
           btn.style.background = "";
           btn.disabled = false;
@@ -1949,10 +2441,32 @@ const APIS_POR_INQUILINO = {
       const pin = document.getElementById("nuevoPin").value.trim();
       const fechaNac = formatFechaEnvio(document.getElementById("nuevoFechaNac").value);
       const cel = limpiarTelefonoPuntos(document.getElementById("nuevoCelular").value);
+      const club = document.getElementById("nuevoClub").value.trim();
+      const grupo = document.getElementById("nuevoGrupo").value.trim();
       if (!nombre || !email || !pin) return alert("Completa al menos Nombre, Email y PIN.");
 
       try {
-        const payload = { action: "crearAtleta", pass: claveGuardada, nombre: nombre, email: email, pin: pin, celular: cel, fechaNac: fechaNac, fotoUrl: "", vam: "", fcr: 52, fcmax: 188, emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" };
+        const payload = {
+          action: "crearAtleta",
+          pass: claveGuardada,
+          nombre: nombre,
+          email: email,
+          pin: pin,
+          celular: cel,
+          fechaNac: fechaNac,
+          club: club,
+          grupo: grupo,
+          vam: "",
+          fcr: 52,
+          fcmax: 188,
+          emergencia: "",
+          direccion: "",
+          obraSocial: "",
+          clinica: "",
+          sangre: "",
+          donante: "",
+          alergias: ""
+        };
         const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
@@ -1962,6 +2476,8 @@ const APIS_POR_INQUILINO = {
           document.getElementById("nuevoPin").value = "1234";
           document.getElementById("nuevoFechaNac").value = "";
           document.getElementById("nuevoCelular").value = "";
+          document.getElementById("nuevoClub").value = "";
+          document.getElementById("nuevoGrupo").value = "";
           verificarProfe();
         } else { alert("Error: " + json.message); }
       } catch (e) { alert("Error de conexión al dar de alta."); }
