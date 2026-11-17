@@ -1486,7 +1486,7 @@
       return "unid.";
     }
 
-    /* GRÁFICO DE TRIPLE CAPA CON SEPARACIÓN CLARA DE UNIDADES (KM vs MIN vs SERIES) */
+    /* GRÁFICO DE TRIPLE CAPA CON SEMANA INTELIGENTE Y CLIC INTERACTIVO EN BARRAS */
     function renderizarGraficoVolumenEspejo() {
       if (!paqueteEspejoActual) return;
       const rutinas = paqueteEspejoActual.rutinas || [];
@@ -1513,7 +1513,6 @@
 
         const uniPlan = detectarUnidadVolumen(volStr);
         const uniReal = parsedNota.realUnidad || uniPlan;
-
         const esFuerza = tipo.includes("fuerza") || tipo.includes("gym") || uniPlan === "series" || uniPlan === "kg";
 
         if (discFiltro === "Running_km") {
@@ -1532,7 +1531,7 @@
         const rpeVal = parseFloat(s["Esfuerzo RPE (0-10)"] || s["RPE"]) || 0;
 
         const lunes = obtenerLunesDeSemana(fObj);
-        const keySem = lunes.toISOString().split("T")[0];
+        const keySem = `${lunes.getFullYear()}-${String(lunes.getMonth() + 1).padStart(2, '0')}-${String(lunes.getDate()).padStart(2, '0')}`;
         const labelSem = `Sem ${String(lunes.getDate()).padStart(2,'0')}/${String(lunes.getMonth()+1).padStart(2,'0')}`;
 
         if (!semanasMap.has(keySem)) {
@@ -1569,23 +1568,42 @@
         return;
       }
 
-      const formatearDesglose = (obj, fallbackUni) => {
-        const entries = Object.entries(obj);
-        if (!entries.length) return `0 ${fallbackUni}`;
-        return entries.map(([u, v]) => `${+(v.toFixed(1))} ${u}`).join(" + ");
+      const unidadRef = discFiltro === "Running_km" ? "km" : (discFiltro === "Running_min" ? "min" : (discFiltro === "Fuerza" ? "series" : "km"));
+
+      const formatearDesglose = (obj, objPlanReferencia) => {
+        const entries = Object.entries(obj || {});
+        if (entries.length > 0) {
+          return entries.map(([u, v]) => `${+(v.toFixed(1))} ${u}`).join(" + ");
+        }
+        const unidadesPlan = Object.keys(objPlanReferencia || {});
+        const uniFallback = unidadesPlan.length > 0 ? unidadesPlan[0] : unidadRef;
+        return `0 ${uniFallback}`;
       };
 
-      const unidadRef = discFiltro === "Running_km" ? "km" : (discFiltro === "Running_min" ? "min" : (discFiltro === "Fuerza" ? "series" : "unid."));
+      const pintarResumenSemana = (semObj) => {
+        if (!semObj) return;
+        const txtPlan = formatearDesglose(semObj.desglosePlan, semObj.desglosePlan);
+        const txtReal = formatearDesglose(semObj.desgloseReal, semObj.desglosePlan);
+        const txtRpe = semObj.rpeCount > 0 ? (semObj.rpeSum / semObj.rpeCount).toFixed(1) : "-";
+        contResumen.innerHTML = `📌 <strong>Semanal (${semObj.label}):</strong> Planificado: <strong>${txtPlan}</strong> | Real Completado: <strong style="color:var(--accent);">${txtReal}</strong> | RPE Promedio: <strong style="color:var(--warning);">${txtRpe}/10</strong> <small style="color:var(--muted); margin-left:6px;">(Tocá otra barra para cambiar de semana)</small>`;
+      };
+
+      // Selección inteligente: 1° Semana actual, 2° Última con datos reales/RPE, 3° Última planificada
+      const lunesHoy = obtenerLunesDeSemana(new Date());
+      const keyHoy = `${lunesHoy.getFullYear()}-${String(lunesHoy.getMonth() + 1).padStart(2, '0')}-${String(lunesHoy.getDate()).padStart(2, '0')}`;
+      let semanaDestacada = semanasArr.find(s => s.key === keyHoy);
+      if (!semanaDestacada) {
+        semanaDestacada = semanasArr.slice().reverse().find(s => s.real > 0 || s.rpeCount > 0);
+      }
+      if (!semanaDestacada) {
+        semanaDestacada = semanasArr[semanasArr.length - 1];
+      }
+      pintarResumenSemana(semanaDestacada);
+
       const labels = semanasArr.map(s => s.label);
       const dataPlan = semanasArr.map(s => +(s.plan.toFixed(1)));
       const dataReal = semanasArr.map(s => +(s.real.toFixed(2)));
       const dataRpe = semanasArr.map(s => s.rpeCount > 0 ? +((s.rpeSum / s.rpeCount).toFixed(1)) : null);
-
-      const ultimaSem = semanasArr[semanasArr.length - 1];
-      const txtPlanUlt = formatearDesglose(ultimaSem.desglosePlan, unidadRef);
-      const txtRealUlt = formatearDesglose(ultimaSem.desgloseReal, unidadRef);
-
-      contResumen.innerHTML = `📌 <strong>Semanal (${ultimaSem.label}):</strong> Planificado: <strong>${txtPlanUlt}</strong> | Real Completado: <strong style="color:var(--accent);">${txtRealUlt}</strong> | RPE Promedio: <strong style="color:var(--warning);">${ultimaSem.rpeCount > 0 ? (ultimaSem.rpeSum / ultimaSem.rpeCount).toFixed(1) : '-'}/10</strong>`;
 
       if (espejoTripleChartInstance) { espejoTripleChartInstance.destroy(); espejoTripleChartInstance = null; }
 
@@ -1636,6 +1654,12 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          onClick: (evt, activeEls) => {
+            if (activeEls && activeEls.length > 0) {
+              const idx = activeEls[0].index;
+              if (semanasArr[idx]) pintarResumenSemana(semanasArr[idx]);
+            }
+          },
           plugins: {
             legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
             tooltip: {
@@ -1651,11 +1675,11 @@
                   if (context.dataset.yAxisID === "y1") {
                     return `RPE Promedio: ${context.parsed.y !== null ? context.parsed.y + ' / 10' : '-'}`;
                   }
-                  if (context.datasetIndex === 0) {
-                    return `Planificado: ${formatearDesglose(semObj.desglosePlan, unidadRef)}`;
+                  if (context.datasetIndex === 0 && semObj) {
+                    return `Planificado: ${formatearDesglose(semObj.desglosePlan, semObj.desglosePlan)}`;
                   }
-                  if (context.datasetIndex === 1) {
-                    return `Real Completado: ${formatearDesglose(semObj.desgloseReal, unidadRef)}`;
+                  if (context.datasetIndex === 1 && semObj) {
+                    return `Real Completado: ${formatearDesglose(semObj.desgloseReal, semObj.desglosePlan)}`;
                   }
                   return `${context.dataset.label}: ${context.parsed.y}`;
                 }
