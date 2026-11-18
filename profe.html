@@ -360,37 +360,36 @@
 
       <!-- SECCIÓN 3: ALUMNOS & PAGOS -->
       <section id="coach-sec-alumnos" class="hidden">
+        
         <div class="card">
-          <h2>
-            <span>📊 Estado de Alumnos, Clubes y Cuotas</span>
-            <span id="contadorTotalAlumnos" style="font-size:0.82rem; color:var(--muted);"></span>
-          </h2>
+          <details id="acordeonAlumnos" open>
+            <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:12px;">
+              <div>
+                <span>📊 Estado de Alumnos, Clubes y Cuotas</span>
+                <span id="contadorTotalAlumnos" style="font-size:0.82rem; color:var(--muted); margin-left:8px;"></span>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="button" class="btn btn-outline" onclick="event.preventDefault(); exportarTablaSeguro();" style="padding:4px 10px; font-size:0.8rem; border-color:var(--accent); color:var(--accent);">📄 Exportar Tabla</button>
+                <span>▼</span>
+              </div>
+            </summary>
 
-          <div class="filter-pills">
-            <button class="filter-pill active" onclick="filtrarListadoAlumnos('todos', this)" id="pill-todos">Activos</button>
-            <button class="filter-pill" onclick="filtrarListadoAlumnos('activa', this)" id="pill-activa">✅ Cuota al Día</button>
-            <button class="filter-pill" onclick="filtrarListadoAlumnos('por_vencer', this)" id="pill-por_vencer">⚠️ Por Vencer (≤5d)</button>
-            <button class="filter-pill" onclick="filtrarListadoAlumnos('vencida', this)" id="pill-vencida">❌ Vencida / Pendiente</button>
-            <button class="filter-pill" onclick="filtrarListadoAlumnos('baja', this)" id="pill-baja">🚫 Dados de Baja</button>
-          </div>
+            <div class="filter-pills">
+              <button class="filter-pill active" onclick="filtrarListadoAlumnos('todos', this)" id="pill-todos">Activos</button>
+              <button class="filter-pill" onclick="filtrarListadoAlumnos('activa', this)" id="pill-activa">✅ Cuota al Día</button>
+              <button class="filter-pill" onclick="filtrarListadoAlumnos('por_vencer', this)" id="pill-por_vencer">⚠️ Por Vencer (≤5d)</button>
+              <button class="filter-pill" onclick="filtrarListadoAlumnos('vencida', this)" id="pill-vencida">❌ Vencida / Pendiente</button>
+              <button class="filter-pill" onclick="filtrarListadoAlumnos('baja', this)" id="pill-baja">🚫 Dados de Baja</button>
+            </div>
 
-          <div class="grid-3" style="margin-bottom: 6px;">
-            <div>
-              <input type="text" id="buscadorAlumnosInput" placeholder="🔎 Buscar nombre, email, club..." oninput="renderizarListadoAlumnos()" style="margin-bottom:0;" />
+            <div class="grid-3" style="margin-bottom: 6px;">
+              <div><input type="text" id="buscadorAlumnosInput" placeholder="🔎 Buscar nombre, email, club..." oninput="renderizarListadoAlumnos()" style="margin-bottom:0;" /></div>
+              <div><select id="filtroAlumnosClub" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;"><option value="">🏢 Todos los Clubes</option></select></div>
+              <div><select id="filtroAlumnosGrupo" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;"><option value="">👟 Todos los Grupos</option></select></div>
             </div>
-            <div>
-              <select id="filtroAlumnosClub" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;">
-                <option value="">🏢 Todos los Clubes</option>
-              </select>
-            </div>
-            <div>
-              <select id="filtroAlumnosGrupo" onchange="renderizarListadoAlumnos()" style="margin-bottom:0;">
-                <option value="">👟 Todos los Grupos</option>
-              </select>
-            </div>
-          </div>
 
-          <div id="contenedorListadoAlumnos" style="margin-top: 12px;"></div>
+            <div id="contenedorListadoAlumnos" style="margin-top: 12px;"></div>
+          </details>
         </div>
 
         <div class="card" id="cardGestionPagos">
@@ -426,7 +425,8 @@
             <div><label>Nombre y Apellido</label><input type="text" id="nuevoNombre" placeholder="Juan Pérez"></div>
             <div><label>Correo Electrónico</label><input type="email" id="nuevoEmail" placeholder="juan@gmail.com"></div>
           </div>
-          <div class="grid-3">
+          <div class="grid-4">
+            <div><label>DNI (Seguro / Legal)</label><input type="number" id="nuevoDNI" placeholder="Ej: 38123456"></div>
             <div><label>PIN Inicial (Temporal)</label><input type="text" id="nuevoPin" value="1234" placeholder="1234"></div>
             <div><label>Fecha de Nacimiento</label><input type="date" id="nuevoFechaNac"></div>
             <div><label>Celular (Sin puntos)</label><input type="tel" id="nuevoCelular" placeholder="Ej: 2235947122"></div>
@@ -503,8 +503,9 @@
 
             <div style="border-top: 1px solid var(--border); padding-top: 14px;">
               <h3 style="font-size:1rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase;">📋 Datos Personales, Club, Grupo y Ficha Médica</h3>
-              <div class="grid-3">
+              <div class="grid-4">
                 <div><label>Nombre y Apellido</label><input type="text" id="fichaNombre"></div>
+                <div><label>DNI (Documento)</label><input type="number" id="fichaDNI"></div>
                 <div><label>Fecha de Nacimiento</label><input type="date" id="fichaFechaNac" onchange="actualizarVistaEdadEnVivo()"></div>
                 <div><label>PIN de Acceso</label><input type="text" id="fichaPin"></div>
               </div>
@@ -583,8 +584,14 @@
           </div>
 
           <div class="card">
-            <h2>💬 Últimos Feedbacks y RPE Registrados por el Atleta</h2>
-            <div id="espejoListaFeedback"></div>
+            <details id="acordeonFeedbackEspejo">
+              <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <span>💬 Últimos Feedbacks y RPE Registrados ▼</span>
+              </summary>
+              <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; cursor:default;" onclick="event.stopPropagation()">
+                <div id="espejoListaFeedback"></div>
+              </div>
+            </details>
           </div>
         </div>
       </section>
@@ -837,6 +844,67 @@
       }
     });
 
+    // --- FUNCION PARA EXPORTAR TABLA DEL SEGURO ---
+    function exportarTablaSeguro() {
+      const q = (document.getElementById("buscadorAlumnosInput").value || "").trim().toLowerCase();
+      const fClub = (document.getElementById("filtroAlumnosClub").value || "").trim().toLowerCase();
+      const fGrupo = (document.getElementById("filtroAlumnosGrupo").value || "").trim().toLowerCase();
+
+      const filtrados = listaAtletasGlobal.filter(a => {
+        const esBaja = String(a.estado || "Activo").toLowerCase() === "baja";
+        const cuota = evaluarEstadoCuotaAtleta(a.email);
+        const clubAtleta = String(a.club || "").trim().toLowerCase();
+        const grupoAtleta = String(a.grupo || "").trim().toLowerCase();
+        
+        if (fClub && clubAtleta !== fClub) return false;
+        if (fGrupo && grupoAtleta !== fGrupo) return false;
+        if (q && !a.nombre.toLowerCase().includes(q) && !a.email.toLowerCase().includes(q) && !clubAtleta.includes(q) && !grupoAtleta.includes(q)) return false;
+        if (filtroAlumnosActual === "baja") return esBaja;
+        if (esBaja) return false;
+        if (filtroAlumnosActual === "todos") return true;
+        return cuota.codigo === filtroAlumnosActual;
+      });
+
+      if (!filtrados.length) return alert("No hay atletas en la vista actual para exportar.");
+
+      let filas = filtrados.map(a => `
+        <tr>
+          <td>${a.nombre}</td>
+          <td>${a.dni || "-"}</td>
+          <td>${limpiarFechaVisual(a.fechaNac) || "-"}</td>
+          <td>${a.club || "-"}</td>
+        </tr>
+      `).join("");
+
+      const ventana = window.open("", "_blank");
+      ventana.document.write(`
+        <html>
+          <head>
+            <title>Planilla de Seguro / Buena Fe - E-TRAIN</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+              th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+              th { background: #f0f0f0; text-transform: uppercase; }
+              h2 { margin-bottom: 5px; color: #1e3a8a; }
+            </style>
+          </head>
+          <body>
+            <h2>Planilla de Atletas (Seguros y Listas de Buena Fe)</h2>
+            <p>Filtro aplicado: <strong>${document.querySelector('.filter-pill.active').textContent}</strong> | Fecha: ${new Date().toLocaleDateString()}</p>
+            <table>
+              <thead>
+                <tr><th>Nombre y Apellido</th><th>DNI</th><th>Fecha Nacimiento</th><th>Club / Institución</th></tr>
+              </thead>
+              <tbody>${filas}</tbody>
+            </table>
+            <script>window.onload = function() { window.print(); }<\/script>
+          </body>
+        </html>
+      `);
+      ventana.document.close();
+    }
+
     // --- GESTIÓN DE MÚLTIPLES FECHAS EN ASIGNACIÓN ---
     function agregarFechaACola() {
       const inp = document.getElementById("inputFecha");
@@ -1029,6 +1097,7 @@
 
           listaAtletasGlobal = (data.atletas || []).map(a => ({
             ...a,
+            dni: a.dni || (a.ficha && a.ficha["DNI"]) || "",
             club: a.club || (a.ficha && a.ficha["Club"]) || "",
             grupo: a.grupo || (a.ficha && a.ficha["Grupo"]) || ""
           }));
@@ -1421,6 +1490,7 @@
         document.getElementById("fichaNombre").value = p["Nombre"] || "";
         document.getElementById("fichaFechaNac").value = formatFechaInput(p["Fecha Nacimiento"] || p["Fecha de Nacimiento"] || "");
         document.getElementById("fichaPin").value = p["PIN"] || "";
+        document.getElementById("fichaDNI").value = limpiarTelefonoPuntos(p["DNI"] || ""); 
         document.getElementById("fichaClub").value = p["Club"] || p["Institución"] || "";
         document.getElementById("fichaGrupo").value = p["Grupo"] || p["Grupo de Trabajo"] || "";
         document.getElementById("fichaCelular").value = limpiarTelefonoPuntos(p["Celular"] || "");
@@ -1707,6 +1777,7 @@
         nombre: document.getElementById("fichaNombre").value.trim(),
         fechaNac: formatFechaEnvio(document.getElementById("fichaFechaNac").value),
         pin: document.getElementById("fichaPin").value.trim(),
+        dni: document.getElementById("fichaDNI").value.trim(), 
         club: document.getElementById("fichaClub").value.trim(),
         grupo: document.getElementById("fichaGrupo").value.trim(),
         celular: celLimpio,
@@ -2894,6 +2965,7 @@
       const nombre = document.getElementById("nuevoNombre").value.trim();
       const email = document.getElementById("nuevoEmail").value.trim();
       const pin = document.getElementById("nuevoPin").value.trim();
+      const dni = document.getElementById("nuevoDNI").value.trim(); 
       const fechaNac = formatFechaEnvio(document.getElementById("nuevoFechaNac").value);
       const cel = limpiarTelefonoPuntos(document.getElementById("nuevoCelular").value);
       const club = document.getElementById("nuevoClub").value.trim();
@@ -2907,6 +2979,7 @@
           nombre: nombre,
           email: email,
           pin: pin,
+          dni: dni, 
           celular: cel,
           fechaNac: fechaNac,
           club: club,
@@ -2928,6 +3001,7 @@
           alert(`¡Atleta ${nombre} registrado con éxito! PIN inicial: ${pin}`);
           document.getElementById("nuevoNombre").value = "";
           document.getElementById("nuevoEmail").value = "";
+          document.getElementById("nuevoDNI").value = ""; 
           document.getElementById("nuevoPin").value = "1234";
           document.getElementById("nuevoFechaNac").value = "";
           document.getElementById("nuevoCelular").value = "";
