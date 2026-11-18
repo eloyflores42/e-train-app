@@ -167,11 +167,11 @@
 
     <div class="container">
       <div class="tabs">
-        <button class="tab-btn active" id="nav-btn-rutinas" onclick="switchTab('rutinas', this)">Rutinas</button>
-        <button class="tab-btn" id="nav-btn-atleta" onclick="switchTab('atleta', this)">Perfil y Ficha</button>
-        <button class="tab-btn" id="nav-btn-calculadora" onclick="switchTab('calculadora', this)">Tests y Progreso</button>
-        <button class="tab-btn" id="nav-btn-videoteca" onclick="switchTab('videoteca', this)">Videos</button>
-        <button class="tab-btn" id="nav-btn-pagos" onclick="switchTab('pagos', this)">Pagos</button>
+        <button class="tab-btn active" id="nav-btn-rutinas" onclick="switchTab('rutinas', this)">1. Rutinas</button>
+        <button class="tab-btn" id="nav-btn-atleta" onclick="switchTab('atleta', this)">2. Perfil & Ficha</button>
+        <button class="tab-btn" id="nav-btn-calculadora" onclick="switchTab('calculadora', this)">3. Tests</button>
+        <button class="tab-btn" id="nav-btn-videoteca" onclick="switchTab('videoteca', this)">4. Videos</button>
+        <button class="tab-btn" id="nav-btn-pagos" onclick="switchTab('pagos', this)">5. Pagos</button>
       </div>
 
       <!-- SECCIÓN 1: RUTINAS & PERIODIZACIÓN -->
@@ -243,7 +243,7 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 2: PERFIL Y FICHA -->
+      <!-- SECCIÓN 2: PERFIL Y FICHA (SIN URL DE FOTO DE PERFIL) -->
       <section id="tab-atleta" class="hidden">
         <div class="card">
           <h2>Datos Personales & Seguridad</h2>
@@ -264,17 +264,14 @@
           </div>
           <div class="grid-2">
             <div>
-              <label>DNI / Documento</label>
-              <input type="text" id="inputDocumentoReal" placeholder="Ej: 35123456" />
-            </div>
-            <div>
-              <label>Mi PIN de Acceso 🔑 (Clave de la App)</label>
+              <label>Mi PIN de Acceso 🔑 (Personalizable)</label>
               <div style="display:flex; gap:6px;">
                 <input type="text" id="inputDNI" placeholder="Ej: 1234" />
                 <button type="button" class="btn btn-outline" onclick="cambiarPinDirecto()" id="btnCambiarPinRapido" style="white-space:nowrap;">Guardar PIN</button>
               </div>
+              <span class="field-hint">Elige un código que recuerdes fácil y toca "Guardar PIN".</span>
             </div>
-            <div><label>Fecha de Nacimiento</label><input type="date" id="inputFechaNac" oninput="actualizarBadgeEdadPerfil()" /></div>
+            <div><label>Fecha de Nacimiento</label><input type="text" id="inputFechaNac" placeholder="Ej: 14/05/1995" oninput="actualizarBadgeEdadPerfil()" /></div>
             <div><label>Celular Personal <span style="color:var(--danger)">*</span></label><input type="tel" id="inputCelular" placeholder="Ej: 2235947122 (Sin puntos)" /></div>
             <div><label>Dirección / Domicilio</label><input type="text" id="inputDireccion" placeholder="Ej: Av. Colón 1234" /></div>
           </div>
@@ -307,34 +304,6 @@
 
       <!-- SECCIÓN 3: TESTS Y MARCAS -->
       <section id="tab-calculadora" class="hidden">
-        
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-            <h2 style="margin: 0; border: none; padding: 0;">📈 Mi Progreso Histórico</h2>
-            <select id="chartSelector" onchange="renderChart()" style="width: auto; min-width: 190px; padding: 6px 10px; font-size: 0.88rem;">
-              <optgroup label="Parámetros Generales">
-                <option value="Test de 5 Min (VAM)">VAM (km/h)</option>
-                <option value="Test de Cooper (VO2 Max)">Cooper - VO2máx (ml/kg/min)</option>
-              </optgroup>
-              <optgroup label="Tiempos / PBs (En segundos)">
-                <option value="Marca PB 100m">100m Sprint</option><option value="Marca PB 200m">200m Sprint</option><option value="Marca PB 400m">400m Sprint</option><option value="Marca PB 800m">800m</option><option value="Marca PB 1500m">1500m</option><option value="Marca PB 3k">3 km</option><option value="Marca PB 5k">5 km</option><option value="Marca PB 10k">10 km</option><option value="Marca PB 21k">Media Maratón (21k)</option><option value="Marca PB 42k">Maratón (42k)</option>
-              </optgroup>
-              <optgroup label="Fuerza 1RM (kg)">
-                <option value="Sentadilla">1RM Sentadilla</option><option value="Hip Thrust">1RM Hip Thrust</option><option value="Peso Muerto">1RM Peso Muerto</option><option value="Press de Banca">1RM Press de Banca</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="help-text" style="margin-top: 10px;">
-            📊 Selecciona cualquier test o distancia arriba para visualizar la curva de evolución de tus marcas a lo largo del tiempo.
-          </div>
-          <div class="chart-wrapper">
-            <canvas id="evolucionChart"></canvas>
-          </div>
-          <p id="chartEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.9rem; padding: 30px 10px;">
-            Aún no tienes registros guardados en el historial para esta métrica.
-          </p>
-        </div>
-
         <div class="card">
           <h2>Test de Resistencia (VAM / VO2máx)</h2>
           <div class="help-text">
@@ -430,6 +399,33 @@
           <h2>Mis Marcas 1RM y Cargas (%)</h2>
           <table><thead><tr><th>Ejercicio</th><th>1RM</th><th>65%</th><th>75%</th><th>85%</th></tr></thead><tbody id="rmTableBody"></tbody></table>
         </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <h2 style="margin: 0; border: none; padding: 0;">📈 Mi Progreso Histórico</h2>
+            <select id="chartSelector" onchange="renderChart()" style="width: auto; min-width: 190px; padding: 6px 10px; font-size: 0.88rem;">
+              <optgroup label="Parámetros Generales">
+                <option value="Test de 5 Min (VAM)">VAM (km/h)</option>
+                <option value="Test de Cooper (VO2 Max)">Cooper - VO2máx (ml/kg/min)</option>
+              </optgroup>
+              <optgroup label="Tiempos / PBs (En segundos)">
+                <option value="Marca PB 100m">100m Sprint</option><option value="Marca PB 200m">200m Sprint</option><option value="Marca PB 400m">400m Sprint</option><option value="Marca PB 800m">800m</option><option value="Marca PB 1500m">1500m</option><option value="Marca PB 3k">3 km</option><option value="Marca PB 5k">5 km</option><option value="Marca PB 10k">10 km</option><option value="Marca PB 21k">Media Maratón (21k)</option><option value="Marca PB 42k">Maratón (42k)</option>
+              </optgroup>
+              <optgroup label="Fuerza 1RM (kg)">
+                <option value="Sentadilla">1RM Sentadilla</option><option value="Hip Thrust">1RM Hip Thrust</option><option value="Peso Muerto">1RM Peso Muerto</option><option value="Press de Banca">1RM Press de Banca</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="help-text" style="margin-top: 10px;">
+            📊 Selecciona cualquier test o distancia arriba para visualizar la curva de evolución de tus marcas a lo largo del tiempo.
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="evolucionChart"></canvas>
+          </div>
+          <p id="chartEmptyMsg" class="hidden" style="color: var(--muted); text-align: center; font-size: 0.9rem; padding: 30px 10px;">
+            Aún no tienes registros guardados en el historial para esta métrica.
+          </p>
+        </div>
       </section>
 
       <!-- SECCIÓN 4: VIDEOTECA -->
@@ -458,100 +454,1327 @@
   </div>
 
   <script>
+    // --- MULTI-TENANT ROUTING (Diccionario SaaS) ---
     const APIS_POR_INQUILINO = {
       "mariaisis.dicroche@hotmail.com": "https://script.google.com/macros/s/AKfycbzLO_zHWbA8Jr6w5BavgOl6VxUHcAo8mBNbJpJ3wioUqm2dqDU-XTD6lQSwZqTeZmLXaw/exec",
       "default": "https://script.google.com/macros/s/AKfycbyQiT_dyrUqOkNWj1weckQenX6NaGP3dE4tON1BTBKPvxVYnuclcoYkSj4_RSrNHRmS8Q/exec"
     };
 
-    function getApiUrl() { const tenant = localStorage.getItem("etrain_tenant") || "default"; return APIS_POR_INQUILINO[tenant] || APIS_POR_INQUILINO["default"]; }
-    const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-    let deferredPrompt = null; let chartInstance = null; let volumenChartInstance = null;
+    function getApiUrl() {
+      const tenant = localStorage.getItem("etrain_tenant") || "default";
+      return APIS_POR_INQUILINO[tenant] || APIS_POR_INQUILINO["default"];
+    }
 
-    function ocultarSplash() { const splash = document.getElementById('etrain-splash'); if (splash && !splash.classList.contains('fade-out')) { splash.classList.add('fade-out'); setTimeout(() => { if (splash.parentNode) splash.remove(); }, 450); } }
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.remove('hidden'); });
-    async function instalarPWA() { if (!deferredPrompt) return; deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null; const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden'); }
-    window.addEventListener('appinstalled', () => { const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden'); });
+    const MESES_NOMBRES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+    let deferredPrompt = null;
+    let chartInstance = null;
+    let volumenChartInstance = null;
+
+    function ocultarSplash() {
+      const splash = document.getElementById('etrain-splash');
+      if (splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+        setTimeout(() => { if (splash.parentNode) splash.remove(); }, 450);
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e;
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.remove('hidden');
+    });
+    async function instalarPWA() {
+      if (!deferredPrompt) return; deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null;
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
+    }
+    window.addEventListener('appinstalled', () => {
+      const btn = document.getElementById('btnInstalarApp'); if (btn) btn.classList.add('hidden');
+    });
 
     const hoyInit = new Date();
     const state = {
-      perfil: { email: "", nombre: "", documento: "", dni: "", fechaNac: "", club: "", grupo: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800, celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "" },
+      perfil: { 
+        email: "", nombre: "", dni: "", fechaNac: "", club: "", grupo: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
+        celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
+      },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
       pbs: { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null },
-      historialRaw: [], sesionesAgrupadas: [], periodizacion: { semanasLabels: [], volumenes: [] }, videoteca: [], pagos: [], filtroRutina: "semana", vistaRutina: "lista", calMes: hoyInit.getMonth(), calAnio: hoyInit.getFullYear(), calFechaSeleccionada: null, cuotaVencida: false
+      historialRaw: [],
+      sesionesAgrupadas: [], periodizacion: { semanasLabels: [], volumenes: [] }, videoteca: [], pagos: [],
+      filtroRutina: "semana",
+      vistaRutina: "lista",
+      calMes: hoyInit.getMonth(),
+      calAnio: hoyInit.getFullYear(),
+      calFechaSeleccionada: null,
+      cuotaVencida: false
     };
 
-    function limpiarTelefonoPuntos(val) { if (!val) return ""; return String(val).trim().replace(/(\d)\.(?=\d{3}(\D|$))/g, "$1"); }
-    function obtenerInicialesNombre(nombreStr) { const limpio = String(nombreStr || "Atleta").trim(); const partes = limpio.split(/\s+/).filter(Boolean); if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase(); return limpio.slice(0, 2).toUpperCase(); }
-    
+    function limpiarTelefonoPuntos(val) {
+      if (!val) return "";
+      return String(val).trim().replace(/(\d)\.(?=\d{3}(\D|$))/g, "$1");
+    }
+
+    function obtenerInicialesNombre(nombreStr) {
+      const limpio = String(nombreStr || "Atleta").trim();
+      const partes = limpio.split(/\s+/).filter(Boolean);
+      if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+      return limpio.slice(0, 2).toUpperCase();
+    }
+
     function formatSimpleDate(val) {
-      if (!val || val === "-") return ""; const str = String(val).trim();
-      if (/^\d{4}-\d{2}-\d{2}/.test(str)) { const partes = str.split("T")[0].split("-"); return `${partes[2]}/${partes[1]}/${partes[0]}`; }
-      const regexFecha = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/; const coincidencia = str.match(regexFecha);
-      if (coincidencia) { const dia = coincidencia[1].padStart(2, '0'); const mes = coincidencia[2].padStart(2, '0'); let anio = coincidencia[3]; if (anio.length === 2) anio = "20" + anio; return `${dia}/${mes}/${anio}`; }
-      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) { const d = new Date(str); if (!isNaN(d.getTime())) { return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; } }
+      if (!val || val === "-") return "";
+      const str = String(val).trim();
+
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const partes = str.split("T")[0].split("-");
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+
+      const regexFecha = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/;
+      const coincidencia = str.match(regexFecha);
+      if (coincidencia) {
+        const dia = coincidencia[1].padStart(2, '0');
+        const mes = coincidencia[2].padStart(2, '0');
+        let anio = coincidencia[3];
+        if (anio.length === 2) anio = "20" + anio;
+        return `${dia}/${mes}/${anio}`;
+      }
+
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+          return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
+      }
+
       return str;
     }
-    
-    function formatFechaInput(fechaStr) { if (!fechaStr) return ""; const limpia = formatSimpleDate(fechaStr); if (limpia.includes("/")) { const p = limpia.split("/"); if (p.length === 3) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; } return limpia; }
-    function formatFechaEnvio(fechaYYYYMMDD) { if (!fechaYYYYMMDD) return ""; const p = fechaYYYYMMDD.split("-"); if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`; return fechaYYYYMMDD; }
-    function formatPeriodoTexto(val) { if (!val || val === "-") return "-"; const str = String(val).trim(); if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) { const d = new Date(str); if (!isNaN(d.getTime())) return `${MESES_NOMBRES[d.getMonth()]} ${d.getFullYear()}`; } const m = str.match(/^0?1\/(\d{1,2})\/(\d{4})$/); if (m) { const idx = parseInt(m[1], 10) - 1; if (idx >= 0 && idx < 12) return `${MESES_NOMBRES[idx]} ${m[2]}`; } return str; }
-    
-    function rescatarVamNumero(rawVal) { if (!rawVal) return 0; const str = String(rawVal).trim(); if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) { const d = new Date(str); if (!isNaN(d.getTime())) return parseFloat(`${d.getDate()}.${d.getMonth() + 1}`); } const mFecha = str.match(/^(\d{1,2})\/0?(\d{1,2})\/\d{4}$/); if (mFecha) return parseFloat(`${parseInt(mFecha[1], 10)}.${parseInt(mFecha[2], 10)}`); const n = parseFloat(str.replace(",", ".")); return (!isNaN(n) && n > 0 && n < 35) ? n : 0; }
-    function parseFechaDDMMYYYY(str) { if (!str) return null; const limpia = formatSimpleDate(str); const partes = String(limpia).trim().split("/"); if (partes.length === 3) { const d = parseInt(partes[0], 10); const m = parseInt(partes[1], 10) - 1; let y = parseInt(partes[2], 10); if (y < 100) y += 2000; const fechaObj = new Date(y, m, d); if (!isNaN(fechaObj.getTime())) return fechaObj; } return null; }
-    function calcularEdadDesdeTexto(fechaStr) { const f = parseFechaDDMMYYYY(formatSimpleDate(fechaStr)); if (!f || f.getFullYear() < 1920) return null; const hoy = new Date(); let edad = hoy.getFullYear() - f.getFullYear(); const m = hoy.getMonth() - f.getMonth(); if (m < 0 || (m === 0 && hoy.getDate() < f.getDate())) edad--; return edad >= 0 ? edad : null; }
-    function actualizarBadgeEdadPerfil() { const val = document.getElementById("inputFechaNac").value; const edad = calcularEdadDesdeTexto(val); const badge = document.getElementById("perfilEdadBadge"); if (edad !== null) { badge.textContent = `${edad} años`; badge.classList.remove("hidden"); } else { badge.classList.add("hidden"); } }
-    function esDeEstaSemana(fechaStr) { const f = parseFechaDDMMYYYY(fechaStr); if (!f) return false; const hoy = new Date(); hoy.setHours(0, 0, 0, 0); const diaSemana = hoy.getDay(); const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1); const lunes = new Date(hoy); lunes.setDate(diffLunes); lunes.setHours(0, 0, 0, 0); const domingo = new Date(lunes); domingo.setDate(lunes.getDate() + 6); domingo.setHours(23, 59, 59, 999); return f >= lunes && f <= domingo; }
-    function parseNum(val, fallback = 0) { if (val === undefined || val === null || val === "") return fallback; const n = parseFloat(String(val).replace(",", ".")); return isNaN(n) ? fallback : n; }
-    function kmhToPace(kmh) { if (!kmh || kmh <= 0) return "-:--"; const totalMin = 60 / kmh; const min = Math.floor(totalMin); const sec = Math.round((totalMin - min) * 60); return sec === 60 ? `${min + 1}:00 /km` : `${min}:${sec < 10 ? "0" : ""}${sec} /km`; }
+
+    function formatPeriodoTexto(val) {
+      if (!val || val === "-") return "-";
+      const str = String(val).trim();
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return `${MESES_NOMBRES[d.getMonth()]} ${d.getFullYear()}`;
+      }
+      const m = str.match(/^0?1\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const idx = parseInt(m[1], 10) - 1;
+        if (idx >= 0 && idx < 12) return `${MESES_NOMBRES[idx]} ${m[2]}`;
+      }
+      return str;
+    }
+
+    function rescatarVamNumero(rawVal) {
+      if (!rawVal) return 0;
+      const str = String(rawVal).trim();
+      if (str.includes("GMT") || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{4}/.test(str)) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return parseFloat(`${d.getDate()}.${d.getMonth() + 1}`);
+      }
+      const mFecha = str.match(/^(\d{1,2})\/0?(\d{1,2})\/\d{4}$/);
+      if (mFecha) return parseFloat(`${parseInt(mFecha[1], 10)}.${parseInt(mFecha[2], 10)}`);
+
+      const n = parseFloat(str.replace(",", "."));
+      return (!isNaN(n) && n > 0 && n < 35) ? n : 0;
+    }
+
+    function parseFechaDDMMYYYY(str) {
+      if (!str) return null;
+      const limpia = formatSimpleDate(str);
+      const partes = String(limpia).trim().split("/");
+      if (partes.length === 3) {
+        const d = parseInt(partes[0], 10);
+        const m = parseInt(partes[1], 10) - 1;
+        let y = parseInt(partes[2], 10);
+        if (y < 100) y += 2000;
+        const fechaObj = new Date(y, m, d);
+        if (!isNaN(fechaObj.getTime())) return fechaObj;
+      }
+      return null;
+    }
+
+    function calcularEdadDesdeTexto(fechaStr) {
+      const f = parseFechaDDMMYYYY(formatSimpleDate(fechaStr));
+      if (!f || f.getFullYear() < 1920) return null;
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - f.getFullYear();
+      const m = hoy.getMonth() - f.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < f.getDate())) edad--;
+      return edad >= 0 ? edad : null;
+    }
+
+    function actualizarBadgeEdadPerfil() {
+      const val = document.getElementById("inputFechaNac").value;
+      const edad = calcularEdadDesdeTexto(val);
+      const badge = document.getElementById("perfilEdadBadge");
+      if (edad !== null) {
+        badge.textContent = `${edad} años`;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
+    function esDeEstaSemana(fechaStr) {
+      const f = parseFechaDDMMYYYY(fechaStr);
+      if (!f) return false;
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const diaSemana = hoy.getDay();
+      const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+      const lunes = new Date(hoy);
+      lunes.setDate(diffLunes);
+      lunes.setHours(0, 0, 0, 0);
+
+      const domingo = new Date(lunes);
+      domingo.setDate(lunes.getDate() + 6);
+      domingo.setHours(23, 59, 59, 999);
+
+      return f >= lunes && f <= domingo;
+    }
+
+    function parseNum(val, fallback = 0) {
+      if (val === undefined || val === null || val === "") return fallback;
+      const n = parseFloat(String(val).replace(",", ".")); return isNaN(n) ? fallback : n;
+    }
+    function kmhToPace(kmh) {
+      if (!kmh || kmh <= 0) return "-:--"; const totalMin = 60 / kmh; const min = Math.floor(totalMin); const sec = Math.round((totalMin - min) * 60);
+      return sec === 60 ? `${min + 1}:00 /km` : `${min}:${sec < 10 ? "0" : ""}${sec} /km`;
+    }
     function calcBrzycki(peso, reps) { return reps <= 1 ? peso : peso / (1.0278 - 0.0278 * reps); }
     function calcCooperVO2(metros) { return (metros - 504.9) / 44.73; }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const savedEmail = localStorage.getItem("etrain_email"); const savedPin = localStorage.getItem("etrain_pin"); const savedTenant = localStorage.getItem("etrain_tenant");
-      if (savedTenant) { const selTenant = document.getElementById("loginTenant"); if (selTenant) selTenant.value = savedTenant; }
-      if (savedEmail && savedPin) { const st = document.getElementById("splashStatusText"); if (st) st.textContent = "Sincronizando tus rutinas..."; document.getElementById("loginEmail").value = savedEmail; document.getElementById("loginPin").value = savedPin; iniciarSesion(); } else { setTimeout(ocultarSplash, 450); }
+      const savedEmail = localStorage.getItem("etrain_email");
+      const savedPin = localStorage.getItem("etrain_pin");
+      const savedTenant = localStorage.getItem("etrain_tenant");
+
+      if (savedTenant) {
+        const selTenant = document.getElementById("loginTenant");
+        if (selTenant) selTenant.value = savedTenant;
+      }
+
+      if (savedEmail && savedPin) {
+        const st = document.getElementById("splashStatusText");
+        if (st) st.textContent = "Sincronizando tus rutinas...";
+        document.getElementById("loginEmail").value = savedEmail;
+        document.getElementById("loginPin").value = savedPin;
+        iniciarSesion();
+      } else {
+        setTimeout(ocultarSplash, 450);
+      }
     });
 
     async function iniciarSesion() {
-      const email = document.getElementById("loginEmail").value.trim(); const pin = document.getElementById("loginPin").value.trim(); const tenant = document.getElementById("loginTenant").value; const errDiv = document.getElementById("loginError"); const btn = document.getElementById("btnLoginBtn");
-      if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; ocultarSplash(); return; } errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
+      const email = document.getElementById("loginEmail").value.trim(); 
+      const pin = document.getElementById("loginPin").value.trim();
+      const tenant = document.getElementById("loginTenant").value;
+      const errDiv = document.getElementById("loginError"); 
+      const btn = document.getElementById("btnLoginBtn");
+      
+      if (!email || !pin) { errDiv.textContent = "Completa tu correo y tu PIN."; ocultarSplash(); return; }
+      errDiv.textContent = ""; btn.disabled = true; btn.textContent = "Validando...";
+
       try {
-        localStorage.setItem("etrain_tenant", tenant); const apiUrl = getApiUrl(); const res = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${new Date().getTime()}`); const data = await res.json();
-        if (data.status === "error") { errDiv.textContent = data.message; btn.disabled = false; btn.textContent = "Ingresar a la App"; ocultarSplash(); return; }
-        localStorage.setItem("etrain_email", email); localStorage.setItem("etrain_pin", pin); procesarDatosRecibidos(data); document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("appContainer").classList.remove("hidden"); ocultarSplash();
-      } catch (err) { errDiv.textContent = "Error de conexión."; btn.disabled = false; btn.textContent = "Ingresar"; ocultarSplash(); }
+        localStorage.setItem("etrain_tenant", tenant);
+        const apiUrl = getApiUrl();
+        const cacheBuster = new Date().getTime(); 
+        
+        const res = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&cb=${cacheBuster}`);
+        const data = await res.json();
+        if (data.status === "error") {
+          errDiv.textContent = data.message;
+          btn.disabled = false;
+          btn.textContent = "Ingresar a la App";
+          ocultarSplash();
+          return;
+        }
+        localStorage.setItem("etrain_email", email); 
+        localStorage.setItem("etrain_pin", pin);
+        procesarDatosRecibidos(data);
+        document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("appContainer").classList.remove("hidden");
+        ocultarSplash();
+      } catch (err) {
+        errDiv.textContent = "Error de conexión.";
+        btn.disabled = false;
+        btn.textContent = "Ingresar";
+        ocultarSplash();
+      }
     }
 
-    function cerrarSesion() { localStorage.removeItem("etrain_email"); localStorage.removeItem("etrain_pin"); localStorage.removeItem("etrain_tenant"); location.reload(); }
+    function cerrarSesion() { 
+      localStorage.removeItem("etrain_email"); 
+      localStorage.removeItem("etrain_pin"); 
+      localStorage.removeItem("etrain_tenant"); 
+      location.reload(); 
+    }
 
     function procesarDatosRecibidos(data) {
       if (data.perfil) {
-        const p = data.perfil; const vamExtraida = rescatarVamNumero(p["VAM (km/h)"] || p["VAM"]);
+        const p = data.perfil;
+        const vamExtraida = rescatarVamNumero(p["VAM (km/h)"] || p["VAM"]);
         state.perfil = {
           email: p["Correo Electrónico"] || p["Email"] || localStorage.getItem("etrain_email") || "",
           nombre: p["Nombre y Apellido"] || p["Nombre"] || "Atleta",
-          documento: p["DNI"] || p["Documento"] || "",
-          dni: p["PIN"] || p["Clave"] || localStorage.getItem("etrain_pin") || "",
+          dni: p["PIN"] || p["DNI"] || localStorage.getItem("etrain_pin") || "",
           fechaNac: formatSimpleDate(p["Fecha de Nacimiento"] || p["Fecha Nacimiento"]),
           club: p["Club"] || p["Institución"] || "",
           grupo: p["Grupo"] || p["Grupo de Trabajo"] || "",
           vam: vamExtraida > 0 ? vamExtraida : "",
-          fcr: parseNum(p["FCR (Reposo)"] || p["FC Reposo"], 52), fcmax: parseNum(p["FCmáx"] || p["FC Max"], 188), cooperMetros: 2800,
-          celular: limpiarTelefonoPuntos(p["Celular"] || ""), emergencia: limpiarTelefonoPuntos(p["Contacto de Emergencia"] || p["Contacto Emergencia"] || ""),
-          direccion: p["Dirección"] || p["Direccion"] || "", obraSocial: p["Obra Social"] || "", clinica: p["Clínica"] || p["Clínica Derivación"] || "", sangre: p["Grupo Sanguíneo"] || "", donante: p["Donante"] || "", alergias: p["Alergias / Lesiones"] || p["Alergias / Observaciones"] || ""
+          fcr: parseNum(p["FCR (Reposo)"] || p["FC Reposo"], 52),
+          fcmax: parseNum(p["FCmáx"] || p["FC Max"], 188),
+          cooperMetros: 2800,
+          celular: limpiarTelefonoPuntos(p["Celular"] || ""),
+          emergencia: limpiarTelefonoPuntos(p["Contacto de Emergencia"] || p["Contacto Emergencia"] || ""),
+          direccion: p["Dirección"] || p["Direccion"] || "",
+          obraSocial: p["Obra Social"] || "",
+          clinica: p["Clínica"] || p["Clínica Derivación"] || "",
+          sangre: p["Grupo Sanguíneo"] || "",
+          donante: p["Donante"] || "",
+          alergias: p["Alergias / Lesiones"] || p["Alergias / Observaciones"] || ""
         };
       }
+      
       state.pbs = { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null };
-      const histArray = Array.isArray(data.historial) ? data.historial : (Array.isArray(data.tests) ? data.tests : []); state.historialRaw = histArray;
+      
+      const histArray = Array.isArray(data.historial) ? data.historial : (Array.isArray(data.tests) ? data.tests : []);
+      state.historialRaw = histArray;
       histArray.forEach(h => {
-        const tipo = String(h["Ejercicio o Test"] || h["Ejercicio / Prueba"] || h["Tipo Test"] || "").trim(); const in1 = h["Métrica 1"] !== undefined ? h["Métrica 1"] : h["Resultado / Marca"]; const in2 = parseNum(h["Métrica 2"]); const resCalcStr = h["Marca Calculada"] !== undefined ? h["Marca Calculada"] : h["VAM / 1RM Estimado"]; const resCalc = rescatarVamNumero(resCalcStr) || parseNum(resCalcStr);
-        if (state.rms[tipo] && parseNum(in1) > 0) { state.rms[tipo] = { peso: parseNum(in1), reps: in2 || 1, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2 || 1) }; } 
-        else if (!state.perfil.vam && (tipo.toLowerCase().includes("5 min") || tipo.toLowerCase().includes("vam")) && (resCalc > 0 || parseNum(in1) > 300)) { const vamTest = (resCalc > 5 && resCalc < 30) ? resCalc : +((parseNum(in1) / 1000) * 12).toFixed(2); if (vamTest > 0) state.perfil.vam = vamTest; }
+        const tipo = String(h["Ejercicio o Test"] || h["Ejercicio / Prueba"] || h["Tipo Test"] || "").trim();
+        const in1 = h["Métrica 1"] !== undefined ? h["Métrica 1"] : h["Resultado / Marca"]; 
+        const in2 = parseNum(h["Métrica 2"]); 
+        const resCalcStr = h["Marca Calculada"] !== undefined ? h["Marca Calculada"] : h["VAM / 1RM Estimado"];
+        const resCalc = rescatarVamNumero(resCalcStr) || parseNum(resCalcStr);
+        
+        if (state.rms[tipo] && parseNum(in1) > 0) { 
+          state.rms[tipo] = { peso: parseNum(in1), reps: in2 || 1, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2 || 1) }; 
+        } 
+        else if (!state.perfil.vam && (tipo.toLowerCase().includes("5 min") || tipo.toLowerCase().includes("vam")) && (resCalc > 0 || parseNum(in1) > 300)) {
+          const vamTest = (resCalc > 5 && resCalc < 30) ? resCalc : +((parseNum(in1) / 1000) * 12).toFixed(2);
+          if (vamTest > 0) state.perfil.vam = vamTest;
+        }
         else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
-        else if (tipo.startsWith("Marca PB ")) { const distKey = tipo.replace("Marca PB ", ""); if (state.pbs[distKey] !== undefined) { if (!state.pbs[distKey] || (in2 > 0 && in2 < state.pbs[distKey].segundos)) { state.pbs[distKey] = { tiempo: in1, segundos: in2, ritmo: resCalcStr }; } } }
+        else if (tipo.startsWith("Marca PB ")) {
+          const distKey = tipo.replace("Marca PB ", "");
+          if (state.pbs[distKey] !== undefined) {
+            if (!state.pbs[distKey] || (in2 > 0 && in2 < state.pbs[distKey].segundos)) {
+              state.pbs[distKey] = { tiempo: in1, segundos: in2, ritmo: resCalcStr };
+            }
+          }
+        }
       });
+      
       if (Array.isArray(data.rutinas)) {
         const mapa = new Map();
         data.rutinas.forEach(r => {
-          const rawFecha = r["Fecha"] || "-"; const displayFecha = formatSimpleDate(rawFecha); const tipo = r["Tipo de Sesión"] || "Sesión"; const key = `${displayFecha}__${tipo}`; const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
-          if (!mapa.has(key)) { mapa.set(key, { fechaRaw: displayFecha, fechaDisplay: displayFecha, tipo, volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || r["RPE"] || "", completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", indicacionesProfe: notaProfeRow, bloques: [] }); } else { if (!mapa.get(key).indicacionesProfe && notaProfeRow) mapa.get(key).indicaciones
+          const rawFecha = r["Fecha"] || "-"; 
+          const displayFecha = formatSimpleDate(rawFecha);
+          const tipo = r["Tipo de Sesión"] || "Sesión"; 
+          const key = `${displayFecha}__${tipo}`;
+          const notaProfeRow = r["Indicaciones del Profe"] || r["Indicaciones"] || r["Notas del Profe"] || "";
+
+          if (!mapa.has(key)) { 
+            mapa.set(key, { 
+              fechaRaw: displayFecha, fechaDisplay: displayFecha, tipo, 
+              volumen: r["Volumen Sesión"] || "-", rpe: r["Esfuerzo RPE (0-10)"] || r["RPE"] || "", 
+              completado: r["Completado (Sí/No)"] || "No", notaAtleta: r["Notas del Atleta"] || "", 
+              indicacionesProfe: notaProfeRow, bloques: [] 
+            }); 
+          } else {
+            if (!mapa.get(key).indicacionesProfe && notaProfeRow) mapa.get(key).indicacionesProfe = notaProfeRow;
+          }
+
+          mapa.get(key).bloques.push({
+            orden: r["Orden / Bloque"] || "-", ejercicio: r["Ejercicio"] || "",
+            seriesReps: r["Series y Repeticiones"] || "-", cargaRaw: r["Carga / Intensidad"] || "-", 
+            micropausa: r["Micropausa"] || "-", macropausa: r["Macropausa"] || "-"
+          });
+        });
+        state.sesionesAgrupadas = Array.from(mapa.values());
+      }
+
+      if (data.periodizacion) {
+        state.periodizacion = data.periodizacion;
+      }
+
+      if (Array.isArray(data.videoteca)) {
+        state.videoteca = data.videoteca;
+      } else {
+        state.videoteca = [];
+      }
+      
+      state.cuotaVencida = false;
+      if (Array.isArray(data.pagos)) {
+        state.pagos = data.pagos.map(p => {
+          const est = String(p["Estado"] || p.estado || "pendiente").trim().toLowerCase();
+          const vencLimpio = formatSimpleDate(p["Fecha de Vencimiento"] || p["Vencimiento"] || p.vencimiento || "");
+          const fVenc = parseFechaDDMMYYYY(vencLimpio);
+          const hoy = new Date(); hoy.setHours(0,0,0,0);
+          
+          // Bloqueo inteligente:
+          if (est.includes("vencid")) {
+             state.cuotaVencida = true;
+          } else if (est.includes("pendient")) {
+             if (!fVenc || fVenc < hoy) {
+                 state.cuotaVencida = true;
+             }
+          }
+
+          return {
+            ...p,
+            "Mes / Periodo": formatPeriodoTexto(p["Mes / Periodo"] || p["Periodo"] || p.periodo || ""),
+            "Monto": p["Monto"] || p.monto || "",
+            "Estado": p["Estado"] || p.estado || "Pendiente",
+            "Fecha de Vencimiento": vencLimpio || "-"
+          };
+        });
+      }
+
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVolumenChart(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
+    }
+
+    function actualizarUIPerfil() {
+      document.getElementById("headerAtletaNombre").textContent = state.perfil.nombre;
+      document.getElementById("perfilNombreCompleto").textContent = state.perfil.nombre;
+      document.getElementById("avatarIniciales").textContent = obtenerInicialesNombre(state.perfil.nombre);
+      document.getElementById("perfilEmailText").textContent = state.perfil.email;
+      document.getElementById("inputDNI").value = state.perfil.dni;
+      document.getElementById("inputFechaNac").value = state.perfil.fechaNac;
+      
+      const badgeClub = document.getElementById("perfilClubBadge");
+      if (state.perfil.club) {
+        badgeClub.textContent = `🏢 ${state.perfil.club}`;
+        badgeClub.classList.remove("hidden");
+      } else {
+        badgeClub.classList.add("hidden");
+      }
+
+      const badgeGrupo = document.getElementById("perfilGrupoBadge");
+      if (state.perfil.grupo) {
+        badgeGrupo.textContent = `👟 ${state.perfil.grupo}`;
+        badgeGrupo.classList.remove("hidden");
+      } else {
+        badgeGrupo.classList.add("hidden");
+      }
+
+      document.getElementById("inputVAM").value = state.perfil.vam || "";
+      document.getElementById("inputFCR").value = state.perfil.fcr;
+      document.getElementById("inputFCMax").value = state.perfil.fcmax;
+      
+      document.getElementById("inputCelular").value = limpiarTelefonoPuntos(state.perfil.celular);
+      document.getElementById("inputEmergencia").value = limpiarTelefonoPuntos(state.perfil.emergencia);
+      document.getElementById("inputDireccion").value = state.perfil.direccion;
+      document.getElementById("inputObraSocial").value = state.perfil.obraSocial;
+      document.getElementById("inputClinica").value = state.perfil.clinica;
+      document.getElementById("inputSangre").value = state.perfil.sangre;
+      document.getElementById("inputDonante").value = state.perfil.donante;
+      document.getElementById("inputAlergias").value = state.perfil.alergias;
+      
+      actualizarBadgeEdadPerfil();
+      previewTestResistencia(); previewTestFuerza(); previewPBRitmo();
+    }
+
+    function syncSeguroAtleta() {
+      state.perfil.dni = document.getElementById("inputDNI").value.trim() || state.perfil.dni;
+      state.perfil.fechaNac = document.getElementById("inputFechaNac").value;
+      state.perfil.fcr = parseNum(document.getElementById("inputFCR").value, state.perfil.fcr);
+      state.perfil.fcmax = parseNum(document.getElementById("inputFCMax").value, state.perfil.fcmax);
+      
+      state.perfil.celular = limpiarTelefonoPuntos(document.getElementById("inputCelular").value);
+      state.perfil.emergencia = limpiarTelefonoPuntos(document.getElementById("inputEmergencia").value);
+      document.getElementById("inputCelular").value = state.perfil.celular;
+      document.getElementById("inputEmergencia").value = state.perfil.emergencia;
+
+      state.perfil.direccion = document.getElementById("inputDireccion").value.trim();
+      state.perfil.obraSocial = document.getElementById("inputObraSocial").value.trim();
+      state.perfil.clinica = document.getElementById("inputClinica").value.trim();
+      state.perfil.sangre = document.getElementById("inputSangre").value.trim();
+      state.perfil.donante = document.getElementById("inputDonante").value.trim();
+      state.perfil.alergias = document.getElementById("inputAlergias").value.trim();
+    }
+
+    async function cambiarPinDirecto() {
+      const nuevoPin = document.getElementById("inputDNI").value.trim();
+      if (!nuevoPin || nuevoPin.length < 3) {
+        alert("⚠️ Ingresa un PIN válido (al menos 3 o 4 caracteres).");
+        return;
+      }
+      const btn = document.getElementById("btnCambiarPinRapido");
+      btn.disabled = true; btn.textContent = "Guardando...";
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "cambiarPinAtleta",
+            email: state.perfil.email,
+            pinActual: localStorage.getItem("etrain_pin") || state.perfil.dni,
+            nuevoPin: nuevoPin
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          state.perfil.dni = nuevoPin;
+          localStorage.setItem("etrain_pin", nuevoPin);
+          btn.textContent = "✔ PIN Actualizado";
+          setTimeout(() => { btn.textContent = "Guardar PIN"; btn.disabled = false; }, 2000);
+        } else {
+          alert(json.message || "Error al actualizar PIN");
+          btn.textContent = "Guardar PIN"; btn.disabled = false;
+        }
+      } catch (e) {
+        btn.textContent = "Error"; btn.disabled = false;
+      }
+    }
+
+    async function guardarPerfilEnSheets(testObj, botonId) {
+      syncSeguroAtleta(); const btn = document.getElementById(botonId); const txt = btn ? btn.textContent : "";
+      if(btn){ btn.disabled = true; btn.textContent = "Guardando..."; }
+      try {
+        const payload = { 
+          action: "updateAtleta", email: state.perfil.email, dni: state.perfil.dni, pin: state.perfil.dni, fechaNac: state.perfil.fechaNac, 
+          vam: state.perfil.vam, fcr: state.perfil.fcr, fcmax: state.perfil.fcmax,
+          celular: state.perfil.celular, emergencia: state.perfil.emergencia, direccion: state.perfil.direccion, obraSocial: state.perfil.obraSocial,
+          clinica: state.perfil.clinica, sangre: state.perfil.sangre, donante: state.perfil.donante, alergias: state.perfil.alergias, nuevoTest: testObj 
+        };
+        await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        localStorage.setItem("etrain_pin", state.perfil.dni);
+        if(btn){ btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = txt; btn.disabled = false; }, 2000); }
+      } catch (err) { if(btn){ btn.textContent = "Error"; btn.disabled = false; } }
+    }
+
+    async function guardarDatosPersonales() {
+      syncSeguroAtleta();
+      if (!state.perfil.celular || !state.perfil.emergencia) {
+        alert("⚠️ Por favor, completa tu Celular Personal y el Contacto de Emergencia."); return;
+      }
+      await guardarPerfilEnSheets(null, null); alert("Ficha Médica y PIN guardados con éxito.");
+    }
+    
+    async function guardarParametrosFisiologicos() { recalcularZonas(); await guardarPerfilEnSheets(null, "btnGuardarParametros"); }
+
+    function previewTestResistencia() {
+      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      document.getElementById("previewResistencia").textContent = tipo.includes("5 Min") ? ((dist / 1000) * 12).toFixed(2) + " km/h (VAM)" : calcCooperVO2(dist).toFixed(1) + " ml/kg/min (VO2)";
+    }
+
+    async function guardarTestResistencia() {
+      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      let resCalc = 0;
+      if (tipo.includes("5 Min")) { 
+        resCalc = +((dist / 1000) * 12).toFixed(2); document.getElementById("inputVAM").value = resCalc; state.perfil.vam = resCalc; recalcularZonas(); 
+      } else { 
+        resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); 
+      }
+      
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      const idxHoy = state.historialRaw.findIndex(x => formatSimpleDate(x["Fecha"]) === fechaHoyStr && String(x["Ejercicio o Test"]).toLowerCase() === tipo.toLowerCase());
+      const nuevoReg = { "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": dist, "Métrica 2": tipo.includes("5 Min") ? 5 : 12, "Marca Calculada": resCalc };
+      if (idxHoy !== -1) state.historialRaw[idxHoy] = nuevoReg;
+      else state.historialRaw.push(nuevoReg);
+
+      document.getElementById("chartSelector").value = tipo; renderChart();
+
+      await guardarPerfilEnSheets({ categoria: "Resistencia", tipo: tipo, input1: dist, input2: tipo.includes("5 Min") ? 5 : 12, resultado: resCalc }, "btnGuardarTestResistencia");
+    }
+    
+    function previewPBRitmo() {
+      const distVal = document.getElementById("pbDistancia").value;
+      const isKm = distVal.includes("k");
+      const distNum = parseFloat(distVal.replace("k", "").replace("m", ""));
+      const distKm = isKm ? distNum : distNum / 1000;
+      
+      const hs = parseInt(document.getElementById("pbHs").value || 0);
+      const min = parseInt(document.getElementById("pbMin").value || 0);
+      const seg = parseFloat(document.getElementById("pbSeg").value || 0); 
+      
+      const totalSegundos = (hs * 3600) + (min * 60) + seg;
+      
+      if (totalSegundos > 0 && distKm > 0) {
+        if (distKm < 0.8) { 
+          const ms = (distNum / totalSegundos).toFixed(2);
+          const kmh = ((distNum / totalSegundos) * 3.6).toFixed(1);
+          document.getElementById("previewPBRitmoText").textContent = `${kmh} km/h (${ms} m/s)`;
+        } else {
+          const ritmoDecimal = (totalSegundos / 60) / distKm;
+          const rMin = Math.floor(ritmoDecimal);
+          const rSeg = Math.round((ritmoDecimal - rMin) * 60);
+          const rSegStr = rSeg < 10 ? "0" + rSeg : rSeg;
+          document.getElementById("previewPBRitmoText").textContent = `${rMin}:${rSegStr} /km`;
+        }
+      } else {
+        document.getElementById("previewPBRitmoText").textContent = "-";
+      }
+    }
+
+    async function guardarPB() {
+      const distKey = document.getElementById("pbDistancia").value;
+      const hs = parseInt(document.getElementById("pbHs").value || 0);
+      const min = parseInt(document.getElementById("pbMin").value || 0);
+      const seg = parseFloat(document.getElementById("pbSeg").value || 0);
+      
+      const totalSegundos = (hs * 3600) + (min * 60) + seg;
+      if (totalSegundos === 0) { alert("Ingresá un tiempo válido."); return; }
+      
+      let tiempoStr = "";
+      if (hs > 0) tiempoStr += `${hs}h `;
+      if (min > 0 || hs > 0) tiempoStr += `${min}m `;
+      if (seg > 0 || (hs === 0 && min === 0)) tiempoStr += `${seg}s`;
+      tiempoStr = tiempoStr.trim();
+      
+      const ritmoStr = document.getElementById("previewPBRitmoText").textContent;
+      
+      if (!state.pbs[distKey] || totalSegundos < state.pbs[distKey].segundos) {
+        state.pbs[distKey] = { tiempo: tiempoStr, segundos: totalSegundos, ritmo: ritmoStr };
+        renderPBTable();
+      }
+
+      const tipoStr = "Marca PB " + distKey;
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      state.historialRaw.push({ "Fecha": fechaHoyStr, "Ejercicio o Test": tipoStr, "Métrica 1": tiempoStr, "Métrica 2": totalSegundos, "Marca Calculada": ritmoStr });
+      
+      document.getElementById("chartSelector").value = tipoStr; renderChart();
+
+      await guardarPerfilEnSheets({ categoria: "Running PB", tipo: tipoStr, input1: tiempoStr, input2: totalSegundos, resultado: ritmoStr }, "btnGuardarPB");
+    }
+
+    function renderPBTable() {
+      const distancias = ["100m", "200m", "400m", "800m", "1500m", "3k", "5k", "10k", "21k", "42k"];
+      let html = "";
+      distancias.forEach(d => {
+        if (state.pbs[d]) {
+          html += `<tr><td><strong>${d.toUpperCase()}</strong></td><td style="color:var(--accent); font-weight:700;">${state.pbs[d].tiempo}</td><td>${state.pbs[d].ritmo}</td></tr>`;
+        }
+      });
+      if (html === "") html = `<tr><td colspan="3" style="text-align:center; color:var(--muted);">Aún no hay récords guardados</td></tr>`;
+      document.getElementById("pbTableBody").innerHTML = html;
+    }
+
+    function previewTestFuerza() {
+      const p = parseNum(document.getElementById("testFuerzaPeso").value, 0); const r = parseNum(document.getElementById("testFuerzaReps").value, 1);
+      document.getElementById("previewFuerza").textContent = calcBrzycki(p, r).toFixed(1) + " kg";
+    }
+
+    async function guardarTestFuerza() {
+      const tipo = document.getElementById("testFuerzaTipo").value; const p = parseNum(document.getElementById("testFuerzaPeso").value, 0); const r = parseNum(document.getElementById("testFuerzaReps").value, 1);
+      const rm = +(calcBrzycki(p, r).toFixed(1)); state.rms[tipo] = { peso: p, reps: r, rm: rm };
+      renderRMTable(); renderRutinas();
+
+      const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
+      const idxHoy = state.historialRaw.findIndex(x => formatSimpleDate(x["Fecha"]) === fechaHoyStr && String(x["Ejercicio o Test"]).toLowerCase() === tipo.toLowerCase());
+      const nuevoReg = { "Fecha": fechaHoyStr, "Ejercicio o Test": tipo, "Métrica 1": p, "Métrica 2": r, "Marca Calculada": rm };
+      if (idxHoy !== -1) state.historialRaw[idxHoy] = nuevoReg;
+      else state.historialRaw.push(nuevoReg);
+
+      document.getElementById("chartSelector").value = tipo; renderChart();
+
+      await guardarPerfilEnSheets({ categoria: "Fuerza", tipo: tipo, input1: p, input2: r, resultado: rm }, "btnGuardarTestFuerza");
+    }
+
+    function renderChart() {
+      const canvas = document.getElementById("evolucionChart"); const emptyMsg = document.getElementById("chartEmptyMsg"); const selector = document.getElementById("chartSelector");
+      if (!canvas || !selector) return;
+
+      const filtro = selector.value;
+      const registros = state.historialRaw.filter(h => {
+        const tipoH = String(h["Ejercicio o Test"] || h["Ejercicio / Prueba"] || "").trim().toLowerCase();
+        if (filtro.includes("5 Min")) return tipoH.includes("5 min") || tipoH.includes("vam");
+        if (filtro.includes("Cooper")) return tipoH.includes("cooper");
+        return tipoH === filtro.toLowerCase();
+      });
+
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+      if (!registros.length) {
+        canvas.parentElement.classList.add("hidden"); emptyMsg.classList.remove("hidden"); return;
+      }
+      canvas.parentElement.classList.remove("hidden"); emptyMsg.classList.add("hidden");
+
+      const labels = []; const valores = [];
+      registros.forEach((r, idx) => {
+        const fechaRaw = r["Fecha"] || r["Fecha de Registro"] || "";
+        const fechaFmt = formatSimpleDate(fechaRaw);
+        labels.push(fechaFmt || `Test #${idx + 1}`);
+
+        const in1 = r["Métrica 1"] !== undefined ? r["Métrica 1"] : r["Resultado / Marca"]; 
+        const in2 = parseNum(r["Métrica 2"], 1); 
+        const marcaRaw = r["Marca Calculada"] !== undefined ? r["Marca Calculada"] : r["VAM / 1RM Estimado"];
+        const marca = rescatarVamNumero(marcaRaw) || parseNum(marcaRaw);
+        
+        let valFinal = marca;
+        if (filtro.includes("Cooper")) {
+          const metros = parseNum(in1) > 300 ? parseNum(in1) : marca; valFinal = +(calcCooperVO2(metros).toFixed(1));
+        } else if (filtro.includes("5 Min")) {
+          valFinal = (marca > 5 && marca < 35) ? marca : +(((parseNum(in1) / 1000) * 12).toFixed(2));
+        } else if (filtro.includes("Marca PB")) {
+          valFinal = in2;
+        } else {
+          valFinal = marca > 0 ? marca : +(calcBrzycki(parseNum(in1), in2).toFixed(1));
+        }
+        valores.push(valFinal);
+      });
+
+      const ctx = canvas.getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: selector.options[selector.selectedIndex].text, data: valores,
+            borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.15)", borderWidth: 3,
+            pointBackgroundColor: "#3b82f6", pointBorderColor: "#fff", pointRadius: 5, pointHoverRadius: 7, fill: true, tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { 
+            legend: { labels: { color: "#f8fafc", font: { size: 12, weight: "600" } } }, 
+            tooltip: { 
+              backgroundColor: "#0f172a", titleColor: "#3b82f6", bodyColor: "#f8fafc", borderColor: "#334155", borderWidth: 1, padding: 10,
+              callbacks: {
+                label: function(context) {
+                  if (filtro.includes("Marca PB")) return context.parsed.y + " segundos";
+                  return context.parsed.y;
+                }
+              }
+            } 
+          },
+          scales: { x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } }, y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } } }
+        }
+      });
+    }
+
+    function obtenerLunesSemana(fechaObj) {
+      const d = new Date(fechaObj);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function detectarUnidadVolumenAtleta(volStr) {
+      const s = String(volStr || "").toLowerCase();
+      if (s.includes("km")) return "km";
+      if (s.includes("min") || s.includes("'")) return "min";
+      if (s.includes("serie")) return "series";
+      if (s.includes("pasada")) return "pasadas";
+      if (s.includes("rep")) return "reps";
+      if (s.includes("kg")) return "kg";
+      return "unid.";
+    }
+
+    /* GRÁFICO DE TRIPLE CAPA CON SEMANA INTELIGENTE Y CLIC INTERACTIVO EN BARRAS */
+    function renderVolumenChart() {
+      const canvas = document.getElementById("volumenSemanalChart");
+      const emptyMsg = document.getElementById("volumenEmptyMsg");
+      const badgeState = document.getElementById("periodBadgeState");
+      const resumenBox = document.getElementById("resumenVolumenAtleta");
+      const selDisc = document.getElementById("filtroDisciplinaVolumen");
+      const discFiltro = selDisc ? selDisc.value : "Running_km";
+      if (!canvas) return;
+
+      const semanasMap = new Map();
+      state.sesionesAgrupadas.forEach(s => {
+        const fObj = parseFechaDDMMYYYY(s.fechaDisplay);
+        if (!fObj) return;
+
+        const tipoLower = String(s.tipo || "").toLowerCase();
+        const volLower = String(s.volumen || "").toLowerCase();
+        const matchVolReal = String(s.notaAtleta || "").match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
+
+        const uniPlan = detectarUnidadVolumenAtleta(volLower);
+        const uniReal = matchVolReal ? matchVolReal[2].toLowerCase().trim() : uniPlan;
+        const esFuerza = tipoLower.includes("fuerza") || tipoLower.includes("gym") || uniPlan === "series" || uniPlan === "kg";
+
+        if (discFiltro === "Running_km") {
+          if (esFuerza) return;
+          if (uniPlan !== "km" && uniReal !== "km") return;
+        } else if (discFiltro === "Running_min") {
+          if (esFuerza) return;
+          if (uniPlan !== "min" && uniReal !== "min") return;
+        } else if (discFiltro === "Fuerza") {
+          if (!esFuerza) return;
+        }
+
+        const matchNum = volLower.match(/([\d.,]+)/);
+        const valNum = matchNum ? parseFloat(matchNum[1].replace(",", ".")) : 0;
+        const rpeVal = parseNum(s.rpe, 0);
+        const realVal = matchVolReal ? parseFloat(matchVolReal[1].replace(",", ".")) : 0;
+
+        if (valNum <= 0 && rpeVal <= 0 && realVal <= 0) return;
+
+        const lunes = obtenerLunesSemana(fObj);
+        const sortKey = `${lunes.getFullYear()}-${String(lunes.getMonth() + 1).padStart(2, '0')}-${String(lunes.getDate()).padStart(2, '0')}`;
+        const labelSem = `Sem ${String(lunes.getDate()).padStart(2, '0')}/${String(lunes.getMonth() + 1).padStart(2, '0')}`;
+
+        if (!semanasMap.has(sortKey)) {
+          semanasMap.set(sortKey, {
+            key: sortKey,
+            label: labelSem,
+            total: 0,
+            realTotal: 0,
+            rpeSum: 0,
+            rpeCount: 0,
+            desglosePlan: {},
+            desgloseReal: {}
+          });
+        }
+        const entry = semanasMap.get(sortKey);
+        if (valNum > 0) {
+          entry.total += valNum;
+          entry.desglosePlan[uniPlan] = (entry.desglosePlan[uniPlan] || 0) + valNum;
+        }
+        if (realVal > 0) {
+          entry.realTotal += realVal;
+          entry.desgloseReal[uniReal] = (entry.desgloseReal[uniReal] || 0) + realVal;
+        }
+        if (rpeVal > 0) {
+          entry.rpeSum += rpeVal;
+          entry.rpeCount += 1;
+        }
+      });
+
+      const semanasOrdenadas = Array.from(semanasMap.values()).sort((a, b) => a.key.localeCompare(b.key)).slice(-8);
+      let labels = semanasOrdenadas.map(x => x.label);
+      let dataVols = semanasOrdenadas.map(x => +(x.total.toFixed(1)));
+      let dataReal = semanasOrdenadas.map(x => +(x.realTotal.toFixed(2)));
+      let dataRpe = semanasOrdenadas.map(x => x.rpeCount > 0 ? +((x.rpeSum / x.rpeCount).toFixed(1)) : null);
+
+      if (volumenChartInstance) { volumenChartInstance.destroy(); volumenChartInstance = null; }
+
+      if (!labels.length || (!dataVols.some(v => v > 0) && !dataRpe.some(r => r !== null) && !dataReal.some(w => w > 0))) {
+        canvas.parentElement.classList.add("hidden");
+        emptyMsg.classList.remove("hidden");
+        if (badgeState) { badgeState.textContent = "🟢 Fase Base"; badgeState.style.background = "var(--primary)"; }
+        if (resumenBox) resumenBox.innerHTML = `📈 <strong>Análisis de Triple Capa:</strong> Selecciona otra unidad en el desplegable superior si tus sesiones fueron cargadas en minutos o kilómetros.`;
+        return;
+      }
+
+      canvas.parentElement.classList.remove("hidden");
+      emptyMsg.classList.add("hidden");
+
+      const unidadLabel = discFiltro === "Running_km" ? "km" : (discFiltro === "Running_min" ? "min" : (discFiltro === "Fuerza" ? "series" : "km"));
+
+      const formatearDesglose = (obj, objPlanReferencia) => {
+        const entries = Object.entries(obj || {});
+        if (entries.length > 0) {
+          return entries.map(([u, v]) => `${+(v.toFixed(1))} ${u}`).join(" + ");
+        }
+        const unidadesPlan = Object.keys(objPlanReferencia || {});
+        const uniFallback = unidadesPlan.length > 0 ? unidadesPlan[0] : unidadLabel;
+        return `0 ${uniFallback}`;
+      };
+
+      const pintarResumenAtleta = (semObj) => {
+        if (!resumenBox || !semObj) return;
+        const txtPlan = formatearDesglose(semObj.desglosePlan, semObj.desglosePlan);
+        const txtReal = formatearDesglose(semObj.desgloseReal, semObj.desglosePlan);
+        const txtRpe = semObj.rpeCount > 0 ? (semObj.rpeSum / semObj.rpeCount).toFixed(1) : "-";
+        resumenBox.innerHTML = `📌 <strong>Semanal (${semObj.label}):</strong> Planificado: <strong>${txtPlan}</strong> | Real Completado: <strong style="color:var(--accent);">${txtReal}</strong> | RPE Promedio: <strong style="color:var(--warning);">${txtRpe}/10</strong> <small style="color:var(--muted); margin-left:6px;">(Tocá una barra para ver otra semana)</small>`;
+      };
+
+      // Selección inteligente: 1° Semana actual, 2° Última con datos reales/RPE, 3° Última planificada
+      const lunesHoy = obtenerLunesSemana(new Date());
+      const keyHoy = `${lunesHoy.getFullYear()}-${String(lunesHoy.getMonth() + 1).padStart(2, '0')}-${String(lunesHoy.getDate()).padStart(2, '0')}`;
+      let idxDestacado = semanasOrdenadas.findIndex(s => s.key === keyHoy);
+      if (idxDestacado === -1) {
+        for (let i = semanasOrdenadas.length - 1; i >= 0; i--) {
+          if (semanasOrdenadas[i].realTotal > 0 || semanasOrdenadas[i].rpeCount > 0) {
+            idxDestacado = i;
+            break;
+          }
+        }
+      }
+      if (idxDestacado === -1) idxDestacado = semanasOrdenadas.length - 1;
+
+      pintarResumenAtleta(semanasOrdenadas[idxDestacado]);
+
+      let semActualVol = dataVols[idxDestacado];
+      let anteriores = dataVols.slice(0, idxDestacado);
+      let promedioAnterior = anteriores.length > 0 ? anteriores.reduce((a, b) => a + b, 0) / anteriores.length : semActualVol;
+      
+      if (badgeState) {
+        const numSem = idxDestacado + 1;
+        if (promedioAnterior > 0 && semActualVol > promedioAnterior * 1.15) {
+          badgeState.textContent = `🔴 Sem. ${numSem} • Choque`;
+          badgeState.style.background = "var(--danger)";
+        } else if (promedioAnterior > 0 && semActualVol < promedioAnterior * 0.8) {
+          badgeState.textContent = `🟢 Sem. ${numSem} • Descarga`;
+          badgeState.style.background = "var(--accent)";
+        } else {
+          badgeState.textContent = `🔵 Sem. ${numSem} • Carga`;
+          badgeState.style.background = "var(--primary)";
+        }
+      }
+
+      const datasets = [
+        {
+          type: "bar",
+          label: `Planificado (${unidadLabel})`,
+          data: dataVols,
+          backgroundColor: "rgba(59, 130, 246, 0.6)",
+          borderColor: "#3b82f6",
+          borderWidth: 2,
+          borderRadius: 6,
+          yAxisID: "y",
+          order: 3
+        },
+        {
+          type: "bar",
+          label: `Real Completado (${unidadLabel})`,
+          data: dataReal,
+          backgroundColor: "rgba(16, 185, 129, 0.7)",
+          borderColor: "#10b981",
+          borderWidth: 2,
+          borderRadius: 6,
+          yAxisID: "y",
+          order: 2
+        },
+        {
+          type: "line",
+          label: "RPE Promedio (1-10)",
+          data: dataRpe,
+          borderColor: "#f59e0b",
+          backgroundColor: "rgba(245, 158, 11, 0.2)",
+          borderWidth: 3,
+          pointBackgroundColor: "#f59e0b",
+          pointBorderColor: "#fff",
+          pointRadius: 5,
+          tension: 0.3,
+          spanGaps: true,
+          yAxisID: "y1",
+          order: 1
+        }
+      ];
+
+      const ctx = canvas.getContext("2d");
+      volumenChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: { labels: labels, datasets: datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: (evt, activeEls) => {
+            if (activeEls && activeEls.length > 0) {
+              const idx = activeEls[0].index;
+              if (semanasOrdenadas[idx]) pintarResumenAtleta(semanasOrdenadas[idx]);
+            }
+          },
+          plugins: {
+            legend: { labels: { color: "#f8fafc", font: { size: 11, weight: "600" } } },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              titleColor: "#3b82f6",
+              bodyColor: "#f8fafc",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  const idx = context.dataIndex;
+                  const semObj = semanasOrdenadas[idx];
+                  if (context.dataset.yAxisID === "y1") {
+                    return `RPE Promedio: ${context.parsed.y !== null ? context.parsed.y + ' / 10' : '-'}`;
+                  }
+                  if (context.datasetIndex === 0 && semObj) {
+                    return `Planificado: ${formatearDesglose(semObj.desglosePlan, semObj.desglosePlan)}`;
+                  }
+                  if (context.datasetIndex === 1 && semObj) {
+                    return `Real Completado: ${formatearDesglose(semObj.desgloseReal, semObj.desglosePlan)}`;
+                  }
+                  return `${context.dataset.label}: ${context.parsed.y}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(51, 65, 85, 0.4)" } },
+            y: {
+              type: "linear",
+              position: "left",
+              ticks: { color: "#94a3b8" },
+              grid: { color: "rgba(51, 65, 85, 0.4)" },
+              title: { display: true, text: `Volumen (${unidadLabel})`, color: "#3b82f6", font: { size: 11, weight: "700" } }
+            },
+            y1: {
+              type: "linear",
+              position: "right",
+              min: 0,
+              max: 10,
+              ticks: { color: "#f59e0b", stepSize: 2 },
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "RPE (1-10)", color: "#f59e0b", font: { size: 11, weight: "700" } }
+            }
+          }
+        }
+      });
+    }
+
+    function toggleZonas(tipo) {
+      if(tipo === 'vam') {
+        document.getElementById('tablaVAM').classList.remove('hidden'); document.getElementById('tablaFC').classList.add('hidden');
+        document.getElementById('btnTablaVAM').classList.add('active'); document.getElementById('btnTablaFC').classList.remove('active');
+      } else {
+        document.getElementById('tablaFC').classList.remove('hidden'); document.getElementById('tablaVAM').classList.add('hidden');
+        document.getElementById('btnTablaFC').classList.add('active'); document.getElementById('btnTablaVAM').classList.remove('active');
+      }
+    }
+
+    function recalcularZonas() {
+      const vam = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5; 
+      const fcr = parseNum(document.getElementById("inputFCR").value, 52); const fcmax = parseNum(document.getElementById("inputFCMax").value, 188); const fcReserva = fcmax - fcr;
+      state.perfil.fcr = fcr; state.perfil.fcmax = fcmax;
+      document.getElementById("vo2Display").textContent = `${calcCooperVO2(state.perfil.cooperMetros).toFixed(1)} ml/kg/min`;
+      
+      const zonas = [ { n: "Z1 (Regenerativo)", p: 0.65 }, { n: "Z2 (Subaeróbico)", p: 0.75 }, { n: "Z3 (Superaeróbico)", p: 0.84 }, { n: "Z4 (Umbral)", p: 0.91 }, { n: "Z5 (VO2máx)", p: 1.00 } ];
+      document.getElementById("zonasTableBodyVAM").innerHTML = zonas.map(z => {
+        const vel = vam * z.p; return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td>${vel.toFixed(1)} km/h</td><td style="color:var(--accent); font-weight:700;">${kmhToPace(vel)}</td></tr>`;
+      }).join("");
+
+      document.getElementById("zonasTableBodyFC").innerHTML = zonas.map((z, idx) => {
+        const latidos = Math.round((fcReserva * z.p) + fcr); const latidosAnteriores = idx === 0 ? Math.round((fcReserva * 0.50) + fcr) : Math.round((fcReserva * zonas[idx-1].p) + fcr);
+        return `<tr><td><strong>${z.n}</strong></td><td>${Math.round(z.p*100)}%</td><td style="color:var(--accent); font-weight:700;">${latidosAnteriores} - ${latidos} ppm</td></tr>`;
+      }).join("");
+      renderRutinas();
+    }
+
+    function renderRMTable() {
+      document.getElementById("rmTableBody").innerHTML = Object.entries(state.rms).map(([n, d]) => `<tr><td><strong>${n}</strong></td><td style="color:var(--accent); font-weight:700;">${d.rm.toFixed(1)} kg</td><td>${(d.rm * 0.65).toFixed(1)} kg</td><td>${(d.rm * 0.75).toFixed(1)} kg</td><td>${(d.rm * 0.85).toFixed(1)} kg</td></tr>`).join("");
+    }
+
+    function enriquecerCarga(ejercicio, cargaRaw) {
+      if (!cargaRaw || cargaRaw === "-") return "Libre"; const texto = `${ejercicio} ${cargaRaw}`.toLowerCase();
+      const matchRM = cargaRaw.match(/(\d+)\s*%\s*1rm/i);
+      if (matchRM) {
+        const pct = parseFloat(matchRM[1]) / 100; let refKey = null;
+        if (texto.includes("sentadilla")) refKey = "Sentadilla"; else if (texto.includes("muerto")) refKey = "Peso Muerto"; else if (texto.includes("banca") || texto.includes("press")) refKey = "Press de Banca"; else if (texto.includes("hip")) refKey = "Hip Thrust";
+        if (refKey && state.rms[refKey]) return `${cargaRaw} → <strong>${(state.rms[refKey].rm * pct).toFixed(1)} kg</strong>`;
+      }
+      const matchVam = cargaRaw.match(/(\d+)\s*%\s*vam/i);
+      if (matchVam) {
+        const vamParaCalculo = state.perfil.vam ? parseNum(state.perfil.vam) : 15.5; const vel = vamParaCalculo * (parseFloat(matchVam[1]) / 100); return `${cargaRaw} → <strong>${kmhToPace(vel)}</strong> (${vel.toFixed(1)} km/h)`;
+      }
+      return cargaRaw;
+    }
+
+    function cambiarVistaRutina(vista) {
+      state.vistaRutina = vista;
+      document.getElementById("btnVistaLista").classList.toggle("active", vista === "lista");
+      document.getElementById("btnVistaCalendario").classList.toggle("active", vista === "calendario");
+      renderRutinas();
+    }
+
+    function filtrarRutinas(filtro) {
+      state.filtroRutina = filtro;
+      document.querySelectorAll("#barraFiltrosLista .tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`filtro-${filtro}`).classList.add("active");
+      renderRutinas();
+    }
+
+    function cambiarMesCalendario(delta) {
+      state.calMes += delta;
+      if (state.calMes > 11) { state.calMes = 0; state.calAnio++; }
+      else if (state.calMes < 0) { state.calMes = 11; state.calAnio--; }
+      state.calFechaSeleccionada = null;
+      renderRutinas();
+    }
+
+    function seleccionarDiaCalendario(fechaStr) {
+      state.calFechaSeleccionada = fechaStr;
+      renderRutinas();
+    }
+
+    function renderCalendarioGrid(sesionesConIndice) {
+      document.getElementById("calMesTitulo").textContent = `${MESES_NOMBRES[state.calMes]} ${state.calAnio}`;
+
+      const grid = document.getElementById("calGrid");
+      const diasNombres = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+      let html = diasNombres.map(d => `<div class="cal-day-name">${d}</div>`).join("");
+
+      const primerDiaMes = new Date(state.calAnio, state.calMes, 1).getDay();
+      const offsetLunes = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
+      const totalDiasMes = new Date(state.calAnio, state.calMes + 1, 0).getDate();
+
+      for (let i = 0; i < offsetLunes; i++) {
+        html += `<div class="cal-cell empty"></div>`;
+      }
+
+      const hoyStr = formatSimpleDate(new Date());
+
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const fechaDiaStr = `${String(dia).padStart(2, '0')}/${String(state.calMes + 1).padStart(2, '0')}/${state.calAnio}`;
+        const sesionesDelDia = sesionesConIndice.filter(s => s.fechaDisplay === fechaDiaStr);
+
+        let dotsHtml = "";
+        if (sesionesDelDia.length > 0) {
+          dotsHtml = `<div class="cal-dots">` + sesionesDelDia.map(s => {
+            const cls = s.completado === "Sí" ? "done" : (s.completado === "Parcialmente" ? "partial" : "");
+            return `<span class="cal-dot ${cls}"></span>`;
+          }).join("") + `</div>`;
+        }
+
+        const isToday = fechaDiaStr === hoyStr ? "today" : "";
+        const isSelected = state.calFechaSeleccionada === fechaDiaStr ? "selected" : "";
+
+        html += `<div class="cal-cell ${isToday} ${isSelected}" onclick="seleccionarDiaCalendario('${fechaDiaStr}')">
+          <span>${dia}</span>
+          ${dotsHtml}
+        </div>`;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    function toggleSesion(idx) {
+      const body = document.getElementById(`rutina-body-${idx}`); const icon = document.getElementById(`rutina-icon-${idx}`);
+      if (!body) return;
+      if (body.classList.contains("hidden")) { body.classList.remove("hidden"); if (icon) icon.textContent = "▲"; } 
+      else { body.classList.add("hidden"); if (icon) icon.textContent = "▼"; }
+    }
+
+    function obtenerNombreVideo(v) { return v["Ejercicio / Movimiento"] || v["Ejercicio"] || v.nombre || ""; }
+    function obtenerUrlVideo(v) { return v["URL del Video"] || v["Video URL"] || v["URL"] || v.url || ""; }
+    function obtenerGrupoVideo(v) { return v["Grupo Muscular"] || v["Categoría"] || v["Categoria"] || v.categoria || ""; }
+    function obtenerDescVideo(v) { return v["Descripción"] || v["Descripcion"] || v.descripcion || ""; }
+
+    function extraerVolumenRealGuardado(notaStr, volumenPlanStr) {
+      const uniDef = detectarUnidadVolumenAtleta(volumenPlanStr);
+      const fallbackUni = ["km", "min", "series", "pasadas", "reps"].includes(uniDef) ? uniDef : "km";
+      if (!notaStr) return { val: "", unidad: fallbackUni };
+      const m = String(notaStr).match(/\[📊 Real:\s*([\d.,]+)\s*([a-zA-Z/]+)\]/i);
+      if (!m) return { val: "", unidad: fallbackUni };
+      return { val: m[1], unidad: m[2].toLowerCase() };
+    }
+
+    function construirTarjetaSesionHTML(s, plegadoPorDefecto) {
+      const idx = s.originalIdx;
+      const notaProfeHtml = s.indicacionesProfe ? `<div class="coach-notes"><strong>📢 Indicaciones del Profe:</strong>${s.indicacionesProfe}</div>` : "";
+
+      const bloquesHtml = s.bloques.map(b => {
+        const cargaCalculada = enriquecerCarga(b.ejercicio, b.cargaRaw); let linkVideoHtml = "";
+        if (state.videoteca.length && b.ejercicio && b.ejercicio.length > 2) {
+          const busq = b.ejercicio.toLowerCase();
+          const match = state.videoteca.find(v => {
+            const nomV = obtenerNombreVideo(v).toLowerCase();
+            return nomV && (nomV.includes(busq) || busq.includes(nomV));
+          });
+          const urlV = match ? obtenerUrlVideo(match) : "";
+          if (urlV && urlV !== "#") {
+            linkVideoHtml = `<a href="${urlV}" target="_blank" style="font-size:0.8rem; color:var(--primary); text-decoration:none; background:#0f172a; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">🎥 Video</a>`;
+          }
+        }
+        return `<div class="bloque-item">
+            <div class="ejercicio-titulo"><span>${b.orden}: ${b.ejercicio}</span>${linkVideoHtml}</div>
+            <div class="bloque-meta"><span><i>Series/Reps:</i> <strong>${b.seriesReps}</strong></span><span><i>Carga:</i> <strong>${cargaCalculada}</strong></span><span><i>Micro:</i> <strong>${b.micropausa}</strong></span><span><i>Macro:</i> <strong>${b.macropausa}</strong></span></div>
+          </div>`;
+      }).join("");
+
+      const volGuardado = extraerVolumenRealGuardado(s.notaAtleta, s.volumen);
+      const badgeEstado = s.completado === "Sí" ? `<span class="badge badge-pagado">✅ Listo</span>` : (s.completado === "Parcialmente" ? `<span class="badge badge-pendiente">⚠️ Parcial</span>` : "");
+      const badgeRealHeader = volGuardado.val ? `<span class="badge" style="background:rgba(16, 185, 129, 0.2); color:var(--accent); border:1px solid var(--accent);">📊 Real: ${volGuardado.val} ${volGuardado.unidad}</span>` : "";
+
+      const notaLimpiaTexto = s.notaAtleta
+        ? s.notaAtleta.replace(/\[📊 Real:[^\]]+\]\s*/gi, "").trim()
+        : "";
+
+      return `<div class="card" style="background:#152033; margin-bottom:14px;">
+          <div class="rutina-header" onclick="toggleSesion(${idx})">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge" style="background:var(--primary);">${s.fechaDisplay}</span><strong style="font-size:1.05rem;">${s.tipo}</strong>${badgeEstado}${badgeRealHeader}</div>
+            <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:0.88rem; color:var(--muted); font-weight:700;">Plan: ${s.volumen}</span><span id="rutina-icon-${idx}" style="color:var(--muted); font-size:0.8rem;">${plegadoPorDefecto ? '▼' : '▲'}</span></div>
+          </div>
+          
+          <div id="rutina-body-${idx}" class="rutina-body ${plegadoPorDefecto ? 'hidden' : ''}">
+            ${notaProfeHtml} ${bloquesHtml}
+
+            <div class="grid-2" style="margin-top:12px; gap:10px;">
+              <div>
+                <label>Volumen Real Completado</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="number" step="any" id="vol-real-${idx}" value="${volGuardado.val}" placeholder="Ej: 8.5" style="flex:1;" />
+                  <select id="vol-unidad-${idx}" style="width:110px;">
+                    <option value="km" ${volGuardado.unidad === 'km' ? 'selected' : ''}>km</option>
+                    <option value="min" ${volGuardado.unidad === 'min' ? 'selected' : ''}>min</option>
+                    <option value="series" ${volGuardado.unidad === 'series' ? 'selected' : ''}>series</option>
+                    <option value="pasadas" ${volGuardado.unidad === 'pasadas' ? 'selected' : ''}>pasadas</option>
+                    <option value="reps" ${volGuardado.unidad === 'reps' ? 'selected' : ''}>reps</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label>RPE (Esfuerzo 1-10)</label>
+                <input type="number" min="0" max="10" id="rpe-${idx}" value="${s.rpe}" placeholder="Ej: 7" />
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:10px; gap:10px; align-items:end;">
+              <div>
+                <label>Estado de la Sesión</label>
+                <select id="comp-${idx}"><option value="No" ${s.completado === "No" ? "selected" : ""}>Pendiente</option><option value="Parcialmente" ${s.completado === "Parcialmente" ? "selected" : ""}>⚠️ Parcial</option><option value="Sí" ${s.completado === "Sí" ? "selected" : ""}>✅ Listo</option></select>
+              </div>
+              <div>
+                <button class="btn btn-success" id="btn-rutina-${idx}" onclick="registrarRPE(${idx})" style="height:41px;">Guardar Registro</button>
+              </div>
+            </div>
+            
+            <div style="margin-top: 10px;"><label>Nota / Sensaciones para el Profe</label><textarea id="nota-${idx}" placeholder="Molestias, clima, sensaciones...">${notaLimpiaTexto}</textarea></div>
+          </div>
+        </div>`;
+    }
+
+    function renderRutinas() {
+      const container = document.getElementById("rutinasContainer");
+      const barraFiltros = document.getElementById("barraFiltrosLista");
+      const calWrapper = document.getElementById("calendarioWrapper");
+      const controlesVista = document.getElementById("controlesVistaRutina");
+      const ayudaRutinas = document.getElementById("ayudaRutinas");
+      const periodCard = document.getElementById("periodCardContainer");
+      const cardGrafico = document.getElementById("cardGraficoVolumen");
+
+      if (state.cuotaVencida) {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.add("hidden");
+        controlesVista.classList.add("hidden");
+        ayudaRutinas.classList.add("hidden");
+        periodCard.classList.add("hidden");
+        cardGrafico.classList.add("hidden");
+
+        container.innerHTML = `
+          <div class="lock-screen">
+            <div style="font-size: 3rem;">🔒</div>
+            <h3>Planificación Bloqueada por Cuota Vencida</h3>
+            <p>Tu membresía registra un pago vencido. Por favor regulariza tu cuota con el entrenador para desbloquear el contenido.</p>
+            <button class="btn" style="max-width: 260px; background: var(--danger);" onclick="switchTab('pagos', document.getElementById('nav-btn-pagos'))">Ver Estado de mi Membresía →</button>
+          </div>
+        `;
+        return;
+      }
+
+      controlesVista.classList.remove("hidden");
+      ayudaRutinas.classList.remove("hidden");
+      periodCard.classList.remove("hidden");
+      cardGrafico.classList.remove("hidden");
+
+      if (!state.sesionesAgrupadas.length) {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.add("hidden");
+        container.innerHTML = `<p style="color:var(--muted);">No hay rutinas cargadas.</p>`;
+        return;
+      }
+      
+      const sesionesConIndice = state.sesionesAgrupadas.map((s, idx) => ({ ...s, originalIdx: idx }));
+
+      if (state.vistaRutina === "calendario") {
+        barraFiltros.classList.add("hidden");
+        calWrapper.classList.remove("hidden");
+        renderCalendarioGrid(sesionesConIndice);
+
+        if (!state.calFechaSeleccionada) {
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">👆 Toca un día con punto en el calendario para ver el entrenamiento.</p>`;
+          return;
+        }
+
+        const sesionesDia = sesionesConIndice.filter(s => s.fechaDisplay === state.calFechaSeleccionada);
+        if (!sesionesDia.length) {
+          container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 16px;">No hay entrenamientos para el <strong>${state.calFechaSeleccionada}</strong>.</p>`;
+          return;
+        }
+
+        container.innerHTML = sesionesDia.map(s => construirTarjetaSesionHTML(s, true)).join("");
+        return;
+      }
+
+      calWrapper.classList.add("hidden");
+      barraFiltros.classList.remove("hidden");
+
+      const sesionesFiltradas = sesionesConIndice.filter(s => {
+        if (state.filtroRutina === "semana") return esDeEstaSemana(s.fechaDisplay);
+        if (state.filtroRutina === "pendientes") return s.completado !== "Sí";
+        if (state.filtroRutina === "completadas") return s.completado === "Sí";
+        return true;
+      });
+
+      if (!sesionesFiltradas.length) {
+        let msj = "No hay sesiones en esta sección.";
+        if (state.filtroRutina === "semana") msj = "📅 No tienes sesiones programadas para esta semana. Revisa '⏳ Pendientes' o '🗓️ Mes'.";
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 24px 10px;">${msj}</p>`;
+        return;
+      }
+
+      container.innerHTML = sesionesFiltradas.map(s => {
+        return construirTarjetaSesionHTML(s, true); 
+      }).join("");
+    }
+
+    async function registrarRPE(idx) {
+      const s = state.sesionesAgrupadas[idx]; 
+      s.rpe = document.getElementById(`rpe-${idx}`).value; 
+      s.completado = document.getElementById(`comp-${idx}`).value; 
+      
+      const volVal = document.getElementById(`vol-real-${idx}`).value.trim();
+      const volUnidad = document.getElementById(`vol-unidad-${idx}`).value;
+      const notaLimpia = document.getElementById(`nota-${idx}`).value.trim();
+      
+      let tags = [];
+      if (volVal) tags.push(`[📊 Real: ${volVal} ${volUnidad}]`);
+
+      const prefijoTags = tags.join(" ");
+      s.notaAtleta = prefijoTags ? (notaLimpia ? `${prefijoTags}\n${notaLimpia}` : prefijoTags) : notaLimpia;
+
+      const btn = document.getElementById(`btn-rutina-${idx}`); btn.disabled = true; btn.textContent = "...";
+      try {
+        const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
+        await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar Registro"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
+      } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
+    }
+
+    function renderVideoteca(lista) {
+      const container = document.getElementById("videotecaContainer");
+      if (!Array.isArray(lista) || !lista.length) {
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding:16px;">No hay videos cargados en la videoteca.</p>`;
+        return;
+      }
+      container.innerHTML = lista.map(v => {
+        const titulo = obtenerNombreVideo(v) || "-";
+        const grupo = obtenerGrupoVideo(v);
+        const url = obtenerUrlVideo(v);
+        const desc = obtenerDescVideo(v);
+        const descHTML = desc ? `<div style="font-size:0.85rem; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border);"><em>${desc}</em></div>` : "";
+        return `<div class="video-card" style="flex-direction:column; align-items:stretch;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div><strong style="font-size:1.02rem; color:var(--text);">${titulo}</strong><div style="font-size:0.82rem; color:var(--accent); font-weight:700; text-transform:uppercase;">${grupo}</div></div>
+            <div>${url && url !== "#" ? `<a href="${url}" target="_blank" class="btn btn-outline" style="text-decoration:none; padding:6px 12px;">▶ Ver</a>` : `<span style="font-size:0.8rem; color:var(--muted);">Próx.</span>`}</div>
+          </div>
+          ${descHTML}
+        </div>`;
+      }).join("");
+    }
+    
+    function filtrarVideos() {
+      const q = document.getElementById("busquedaVideo").value.toLowerCase();
+      renderVideoteca(state.videoteca.filter(v =>
+        obtenerNombreVideo(v).toLowerCase().includes(q) ||
+        obtenerGrupoVideo(v).toLowerCase().includes(q) ||
+        obtenerDescVideo(v).toLowerCase().includes(q)
+      ));
+    }
+    
+    function renderPagos() {
+      const container = document.getElementById("pagosContainer");
+      if (!state.pagos.length) { container.innerHTML = `<p style="color:var(--muted);">Sin pagos registrados.</p>`; return; }
+      container.innerHTML = `<table><thead><tr><th>Periodo</th><th>Monto</th><th>Estado</th><th>Venc</th></tr></thead><tbody>${state.pagos.map(p => { const e = String(p["Estado"]||"").toLowerCase(); const bc = (e.includes("pagado")||e.includes("día")) ? "badge-pagado" : (e.includes("vencido") ? "badge-vencido" : "badge-pendiente"); return `<tr><td><strong>${p["Mes / Periodo"] || "-"}</strong></td><td>${p["Monto"] || "-"}</td><td><span class="badge ${bc}">${p["Estado"] || "Pendiente"}</span></td><td>${p["Fecha de Vencimiento"] || "-"}</td></tr>`; }).join("")}</tbody></table>`;
+    }
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(`tab-${tab}`).classList.remove("hidden");
+      document.querySelectorAll(".container > .tabs .tab-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      if (tab === 'calculadora') { setTimeout(() => renderChart(), 50); }
+      if (tab === 'rutinas') { setTimeout(() => renderVolumenChart(), 50); }
+    }
+  </script>
+</body>
+</html>
