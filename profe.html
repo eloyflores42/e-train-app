@@ -124,12 +124,6 @@
     
     .chart-wrapper { position: relative; height: 270px; width: 100%; margin-top: 12px; }
     .hidden { display: none !important; }
-
-    @media print {
-      header, .coach-tabs, #cardSelectorEspejoTop, .export-bar, button { display: none !important; }
-      body { background: #fff; color: #000; padding: 0; }
-      .card { border: 1px solid #ccc; background: #fff; color: #000; page-break-inside: avoid; }
-    }
   </style>
 </head>
 <body>
@@ -451,7 +445,7 @@
         </div>
       </section>
 
-      <!-- SECCIÓN 4: FICHAS ATLETAS + EXPORTACIÓN WHATSAPP / PDF -->
+      <!-- SECCIÓN 4: FICHAS ATLETAS + EXPORTACIÓN WHATSAPP / PDF LIMPIO -->
       <section id="coach-sec-espejo" class="hidden">
         <div class="card" id="cardSelectorEspejoTop">
           <h2>🩺 Seleccionar Atleta (FICHAS ATLETAS)</h2>
@@ -467,16 +461,16 @@
         </div>
 
         <div id="contenedorContenidoEspejo" class="hidden">
-          <!-- BARRA DE EXPORTACIÓN RÁPIDA WHATSAPP / TXT / PDF -->
+          <!-- BARRA DE EXPORTACIÓN RÁPIDA WHATSAPP / TXT / PDF FORMAL CON GRÁFICO -->
           <div class="export-bar">
             <div>
               <strong style="color:var(--accent); text-transform:uppercase; font-size:0.9rem;">📲 Exportar Evolución y Resumen del Atleta</strong>
-              <div style="font-size:0.8rem; color:var(--muted);">Armá el reporte automático con VAM, Semana Actual, RPE, Tests y Cuota para mandarle por WhatsApp.</div>
+              <div style="font-size:0.8rem; color:var(--muted);">Armá el reporte automático con VAM, Semana Actual, RPE, Tests y Cuota para WhatsApp o en Documento PDF con Gráfico.</div>
             </div>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
               <button type="button" class="btn btn-success" onclick="enviarReporteWhatsAppDirecto()" style="width:auto; padding:8px 14px; font-size:0.84rem;">📲 Enviar por WhatsApp</button>
               <button type="button" class="btn btn-outline" onclick="copiarReporteTextoPortapapeles()" style="border-color:var(--accent); color:var(--accent); padding:8px 12px; font-size:0.84rem;">📋 Copiar TXT</button>
-              <button type="button" class="btn btn-outline" onclick="window.print()" style="padding:8px 12px; font-size:0.84rem;">📄 Imprimir / PDF</button>
+              <button type="button" class="btn btn-outline" onclick="exportarFichaPDFFormatoLimpio()" style="padding:8px 12px; font-size:0.84rem;">📄 Descargar Reporte PDF</button>
             </div>
           </div>
 
@@ -1453,7 +1447,7 @@
       }
     }
 
-    // --- GENERADOR DE REPORTE PARA WHATSAPP / PORTAPAPELES ---
+    // --- GENERADOR DE REPORTE PARA WHATSAPP / PORTAPAPELES / PDF LIMPIO CON GRÁFICO ---
     function armarTextoReporteWhatsApp() {
       if (!paqueteEspejoActual) return "";
       const p = paqueteEspejoActual.perfil || {};
@@ -1535,6 +1529,144 @@
         ? `https://wa.me/${cel}?text=${encodeURIComponent(txt)}`
         : `https://wa.me/?text=${encodeURIComponent(txt)}`;
       window.open(urlWa, "_blank");
+    }
+
+    function exportarFichaPDFFormatoLimpio() {
+      if (!paqueteEspejoActual) return;
+      const p = paqueteEspejoActual.perfil || {};
+      const email = document.getElementById("espejoSelectAtleta").value;
+      const nombre = document.getElementById("fichaNombre").value.trim() || p["Nombre"] || email;
+      const fNac = limpiarFechaVisual(document.getElementById("fichaFechaNac").value);
+      const edad = calcularEdadExacta(fNac);
+      const club = document.getElementById("fichaClub").value.trim();
+      const grupo = document.getElementById("fichaGrupo").value.trim();
+      const vam = document.getElementById("fichaVam").value.trim();
+      const fcr = document.getElementById("fichaFcr").value.trim() || "52";
+      const fcmax = document.getElementById("fichaFcmax").value.trim() || "188";
+      const sangre = document.getElementById("fichaSangre").value.trim() || "-";
+      const obraSocial = document.getElementById("fichaObraSocial").value.trim() || "-";
+      const emergencia = document.getElementById("fichaEmergencia").value.trim() || "-";
+      const alergias = document.getElementById("fichaAlergias").value.trim() || "Sin observaciones.";
+      const infoCuota = evaluarEstadoCuotaAtleta(email);
+
+      // Capturar imagen del gráfico adaptada a fondo blanco para el documento PDF
+      let chartImgUrl = "";
+      const canvas = document.getElementById("espejoTripleChart");
+      if (canvas && espejoTripleChartInstance) {
+        try {
+          const origLegendColor = espejoTripleChartInstance.options.plugins.legend.labels.color;
+          const origXColor = espejoTripleChartInstance.options.scales.x.ticks.color;
+          const origYColor = espejoTripleChartInstance.options.scales.y.ticks.color;
+
+          espejoTripleChartInstance.options.plugins.legend.labels.color = "#1e293b";
+          espejoTripleChartInstance.options.scales.x.ticks.color = "#334155";
+          espejoTripleChartInstance.options.scales.y.ticks.color = "#334155";
+          espejoTripleChartInstance.update("none");
+
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = canvas.width;
+          tempCanvas.height = canvas.height;
+          const tCtx = tempCanvas.getContext("2d");
+          tCtx.fillStyle = "#ffffff";
+          tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+          tCtx.drawImage(canvas, 0, 0);
+          chartImgUrl = tempCanvas.toDataURL("image/png");
+
+          espejoTripleChartInstance.options.plugins.legend.labels.color = origLegendColor;
+          espejoTripleChartInstance.options.scales.x.ticks.color = origXColor;
+          espejoTripleChartInstance.options.scales.y.ticks.color = origYColor;
+          espejoTripleChartInstance.update("none");
+        } catch (err) {}
+      }
+
+      const tests = (paqueteEspejoActual.tests || []).slice().reverse();
+      const testsHtml = tests.length
+        ? tests.map(t => `<tr><td>${limpiarFechaVisual(t["Fecha"])}</td><td>${t["Ejercicio / Prueba"] || t["Tipo Test"]}</td><td><b>${t["Resultado / Marca"] || "-"}</b></td><td>${t["VAM / 1RM Estimado"] || "-"}</td></tr>`).join("")
+        : '<tr><td colspan="4" style="text-align:center; color:#64748b;">Sin evaluaciones registradas</td></tr>';
+
+      const feedbacks = (paqueteEspejoActual.feedback || []).slice(-8).reverse();
+      const feedHtml = feedbacks.length
+        ? feedbacks.map(f => {
+            const parsed = parsearNotaAtletaProfe(f["Comentarios"]);
+            return `<tr><td>${limpiarFechaVisual(f["Fecha"])}</td><td>${f["Tipo de Sesión"] || "-"}</td><td>${parsed.realTexto || "-"}</td><td><b>${f["RPE"] || "-"}/10</b></td><td>${parsed.notaLimpia || "-"}</td></tr>`;
+          }).join("")
+        : '<tr><td colspan="5" style="text-align:center; color:#64748b;">Sin sesiones recientes registradas</td></tr>';
+
+      const ventanaImpresion = window.open("", "_blank");
+      if (!ventanaImpresion) return alert("Habilitá las ventanas emergentes en tu navegador para generar el PDF.");
+
+      ventanaImpresion.document.write(`
+        <html>
+          <head>
+            <title>E-TRAIN | Reporte de Evolución - ${nombre}</title>
+            <style>
+              body { font-family: Arial, Helvetica, sans-serif; color: #0f172a; padding: 24px; line-height: 1.45; max-width: 820px; margin: 0 auto; }
+              .header-doc { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2563eb; padding-bottom: 12px; margin-bottom: 18px; }
+              h1 { color: #1e3a8a; margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 0.5px; }
+              .sub { color: #64748b; font-size: 12px; margin-top: 4px; }
+              h3 { border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-top: 22px; margin-bottom: 10px; color: #1e40af; font-size: 14px; text-transform: uppercase; }
+              .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; font-size: 13px; }
+              .resumen-box { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 14px; font-size: 13px; margin: 12px 0; border-radius: 0 6px 6px 0; }
+              .chart-box { text-align: center; margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
+              .chart-box img { max-width: 100%; height: auto; max-height: 250px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+              th, td { border: 1px solid #cbd5e1; padding: 7px 9px; text-align: left; }
+              th { background: #f1f5f9; color: #334155; font-weight: bold; text-transform: uppercase; font-size: 11px; }
+              .badge { display: inline-block; padding: 2px 8px; background: #dbeafe; color: #1e40af; border-radius: 4px; font-weight: bold; font-size: 11px; }
+            </style>
+          </head>
+          <body>
+            <div class="header-doc">
+              <div>
+                <h1>E-TRAIN | Reporte de Atleta y Evolución</h1>
+                <div class="sub">Fecha de emisión: ${new Date().toLocaleDateString()} • Plataforma de Gestión Deportiva E-TRAIN</div>
+              </div>
+              <div class="badge">${infoCuota.label}</div>
+            </div>
+            
+            <div class="info-grid">
+              <div><b>Atleta:</b> ${nombre} ${edad !== null ? '(' + edad + ' años)' : ''}</div>
+              <div><b>Club / Grupo:</b> ${[club, grupo].filter(Boolean).join(" • ") || "General"}</div>
+              <div><b>VAM Actual:</b> ${vam ? vam + ' km/h' : 'S/D'}</div>
+              <div><b>FC Reposo / Máx:</b> ${fcr} / ${fcmax} ppm</div>
+              <div><b>Obra Social / Sangre:</b> ${obraSocial} (${sangre})</div>
+              <div><b>Contacto Emergencia:</b> ${emergencia}</div>
+              <div style="grid-column: span 2;"><b>Observaciones Médicas:</b> ${alergias}</div>
+            </div>
+
+            <h3>Resumen y Gráfico de Volumen Semanal</h3>
+            <div class="resumen-box"><b>📌 Semana Destacada:</b> ${ultimoResumenSemanaTexto || "Sin registros en la semana seleccionada"}</div>
+            ${chartImgUrl ? `<div class="chart-box"><img src="${chartImgUrl}" alt="Gráfico de Evolución Semanal" /></div>` : ''}
+
+            <h3>Historial de Evaluaciones y Tests</h3>
+            <table>
+              <thead>
+                <tr><th>Fecha</th><th>Prueba / Ejercicio</th><th>Resultado / Marca</th><th>VAM / 1RM Estimado</th></tr>
+              </thead>
+              <tbody>
+                ${testsHtml}
+              </tbody>
+            </table>
+
+            <h3>Últimas Sesiones y Percepción del Esfuerzo (RPE)</h3>
+            <table>
+              <thead>
+                <tr><th>Fecha</th><th>Sesión</th><th>Volumen Real</th><th>RPE</th><th>Notas del Atleta</th></tr>
+              </thead>
+              <tbody>
+                ${feedHtml}
+              </tbody>
+            </table>
+
+            <script>
+              window.onload = function() {
+                setTimeout(function() { window.print(); window.close(); }, 300);
+              };
+            <\/script>
+          </body>
+        </html>
+      `);
+      ventanaImpresion.document.close();
     }
 
     function actualizarVistaEdadEnVivo() {
