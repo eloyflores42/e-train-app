@@ -2545,7 +2545,13 @@
           mapaSesiones.get(key).bloques.push(r);
         });
 
-        cacheRutinasAtletaCalendario = Array.from(mapaSesiones.values());
+        // Ordenamiento cronológico automático (por fecha ascendente)
+        cacheRutinasAtletaCalendario = Array.from(mapaSesiones.values()).sort((a, b) => {
+          const fa = parsearFechaDDMMYYYY(a.fechaRaw);
+          const fb = parsearFechaDDMMYYYY(b.fechaRaw);
+          return (fa ? fa.getTime() : 0) - (fb ? fb.getTime() : 0);
+        });
+
         renderGestionCalendarioGrid();
         renderGestionListadoSesiones();
       } catch (e) {
