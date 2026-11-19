@@ -799,7 +799,11 @@
             micropausa: r["Micropausa"] || "-", macropausa: r["Macropausa"] || "-"
           });
         });
-        state.sesionesAgrupadas = Array.from(mapa.values());
+        state.sesionesAgrupadas = Array.from(mapa.values()).sort((a, b) => {
+          const fa = parseFechaDDMMYYYY(a.fechaDisplay);
+          const fb = parseFechaDDMMYYYY(b.fechaDisplay);
+          return (fa ? fa.getTime() : 0) - (fb ? fb.getTime() : 0);
+        });
       }
 
       if (data.periodizacion) {
@@ -1287,7 +1291,6 @@
         resumenBox.innerHTML = `📌 <strong>Semanal (${semObj.label}):</strong> Planificado: <strong>${txtPlan}</strong> | Real Completado: <strong style="color:var(--accent);">${txtReal}</strong> | RPE Promedio: <strong style="color:var(--warning);">${txtRpe}/10</strong> <small style="color:var(--muted); margin-left:6px;">(Tocá una barra para ver otra semana)</small>`;
       };
 
-      // Selección inteligente: 1° Semana actual, 2° Última con datos reales/RPE, 3° Última planificada
       const lunesHoy = obtenerLunesSemana(new Date());
       const keyHoy = `${lunesHoy.getFullYear()}-${String(lunesHoy.getMonth() + 1).padStart(2, '0')}-${String(lunesHoy.getDate()).padStart(2, '0')}`;
       let idxDestacado = semanasOrdenadas.findIndex(s => s.key === keyHoy);
@@ -1704,6 +1707,15 @@
         if (state.filtroRutina === "pendientes") return s.completado !== "Sí";
         if (state.filtroRutina === "completadas") return s.completado === "Sí";
         return true;
+      });
+
+      // Ordenamiento cronológico automático
+      sesionesFiltradas.sort((a, b) => {
+        const fa = parseFechaDDMMYYYY(a.fechaDisplay);
+        const fb = parseFechaDDMMYYYY(b.fechaDisplay);
+        const ta = fa ? fa.getTime() : 0;
+        const tb = fb ? fb.getTime() : 0;
+        return state.filtroRutina === "completadas" ? (tb - ta) : (ta - tb);
       });
 
       if (!sesionesFiltradas.length) {
