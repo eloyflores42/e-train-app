@@ -64,10 +64,10 @@
     input, select, textarea { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border); background: #0b1120; color: var(--text); font-size: 0.98rem; font-weight: 600; }
     textarea { resize: vertical; min-height: 60px; }
     
-    button.btn { background: var(--primary); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; width: 100%; }
+    button.btn, a.btn { background: var(--primary); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; width: 100%; display: inline-block; text-align: center; text-decoration: none; }
     button.btn:disabled { opacity: 0.6; cursor: wait; }
-    button.btn-success { background: var(--accent); color: #000; }
-    button.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 10px; font-size: 0.82rem; }
+    button.btn-success, a.btn-success { background: var(--accent); color: #000; }
+    button.btn-outline, a.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); width: auto; padding: 6px 10px; font-size: 0.82rem; }
     
     table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-top: 8px; }
     th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
@@ -91,8 +91,9 @@
     .bloque-meta span { background: var(--card); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; gap: 4px; }
     .bloque-meta span i { font-style: normal; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
     
-    .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .period-badge { padding: 5px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--primary); color: #fff; }
+    .period-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+    .progress-track { width: 100%; height: 10px; background: #0b1120; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width 0.4s ease; width: 0%; }
 
     .view-switcher { display: inline-flex; background: #0b1120; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
     .view-switcher button { background: transparent; color: var(--muted); border: none; padding: 6px 12px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
@@ -174,14 +175,23 @@
         <button class="tab-btn" id="nav-btn-pagos" onclick="switchTab('pagos', this)">Pagos</button>
       </div>
 
-      <!-- SECCIÓN 1: RUTINAS & PERIODIZACIÓN -->
+      <!-- SECCIÓN 1: RUTINAS & OBJETIVO / PROGRESO -->
       <section id="tab-rutinas">
         <div class="period-card" id="periodCardContainer">
-          <div>
-            <div style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Fase de Entrenamiento Actual</div>
-            <div id="periodMacroTitle" style="font-size: 1.05rem; font-weight: 700; color: var(--text); margin-top: 2px;">Temporada Base / Desarrollo</div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+            <div>
+              <div style="font-size: 0.78rem; color: var(--accent); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">🎯 Objetivo / Próxima Carrera</div>
+              <div id="objetivoTitulo" style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin-top: 2px;">Plan de Entrenamiento Activo</div>
+              <div id="objetivoCicloSub" style="font-size: 0.84rem; color: var(--muted); margin-top: 2px;">Ciclo Mensual</div>
+            </div>
+            <div id="progresoPorcentajeBadge" class="badge badge-pagado" style="font-size: 0.9rem; padding: 5px 10px;">0%</div>
           </div>
-          <div id="periodBadgeState" class="period-badge" style="background: var(--accent);">🟢 Semana de Carga</div>
+          <div class="progress-track">
+            <div id="progresoBarraFill" class="progress-fill"></div>
+          </div>
+          <div id="progresoDetalleTexto" style="font-size: 0.82rem; color: var(--muted); margin-top: 6px; text-align: right; font-weight: 600;">
+            0 de 0 sesiones completadas
+          </div>
         </div>
 
         <div class="card">
@@ -456,6 +466,33 @@
           <div id="pagosContainer">Cargando pagos...</div>
         </div>
       </section>
+
+      <!-- CONTACTO DIRECTO CON EL PROFE (WHATSAPP + INSTAGRAM) -->
+      <div class="card" style="text-align: center; background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.4); margin-top: 20px;">
+        <p style="font-size: 0.95rem; color: var(--text); margin-bottom: 12px; font-weight: 600;">
+          Si tenés alguna duda con la app o el entrenamiento, no dudes en escribirme.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <a
+            href="https://wa.me/5492235066907?text=Hola%20Profe!%20Tengo%20una%20consulta%20sobre%20E-TRAIN%20o%20el%20entrenamiento."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-success"
+            style="width: auto; padding: 10px 18px;"
+          >
+            💬 Escribirme por WhatsApp
+          </a>
+          <a
+            href="https://instagram.com/soyelprofeloy"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+            style="width: auto; padding: 10px 18px;"
+          >
+            📸 Instagram (@soyelprofeloy)
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -502,7 +539,8 @@
     const state = {
       perfil: { 
         email: "", nombre: "", pin: "", dni: "", fechaNac: "", club: "", grupo: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
-        celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: ""
+        celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "",
+        objetivo: "", tipoCiclo: "mensual", inicioCiclo: "", finCiclo: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
       pbs: { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null },
@@ -740,7 +778,11 @@
           clinica: p["Clínica"] || p["Clínica Derivación"] || "",
           sangre: p["Grupo Sanguíneo"] || "",
           donante: p["Donante"] || "",
-          alergias: p["Alergias / Lesiones"] || p["Alergias / Observaciones"] || ""
+          alergias: p["Alergias / Lesiones"] || p["Alergias / Observaciones"] || "",
+          objetivo: p["Objetivo"] || "",
+          tipoCiclo: p["Tipo Ciclo"] || "mensual",
+          inicioCiclo: formatSimpleDate(p["Inicio Ciclo"] || ""),
+          finCiclo: formatSimpleDate(p["Fin Ciclo"] || "")
         };
       }
       
@@ -824,7 +866,6 @@
           const fVenc = parseFechaDDMMYYYY(vencLimpio);
           const hoy = new Date(); hoy.setHours(0,0,0,0);
           
-          // Bloqueo inteligente:
           if (est.includes("vencid")) {
              state.cuotaVencida = true;
           } else if (est.includes("pendient")) {
@@ -843,7 +884,55 @@
         });
       }
 
-      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderRutinas(); renderVolumenChart(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
+      actualizarUIPerfil(); recalcularZonas(); renderRMTable(); renderPBTable(); renderObjetivoYProgreso(); renderRutinas(); renderVolumenChart(); renderVideoteca(state.videoteca); renderPagos(); renderChart();
+    }
+
+    /* TARJETA SUPERIOR: OBJETIVO / PRÓXIMA CARRERA + BARRA DE PROGRESO POR CICLO */
+    function renderObjetivoYProgreso() {
+      const titEl = document.getElementById("objetivoTitulo");
+      const subEl = document.getElementById("objetivoCicloSub");
+      const badgeEl = document.getElementById("progresoPorcentajeBadge");
+      const fillEl = document.getElementById("progresoBarraFill");
+      const detEl = document.getElementById("progresoDetalleTexto");
+      if (!titEl || !subEl || !badgeEl || !fillEl || !detEl) return;
+
+      const objTexto = String(state.perfil.objetivo || "").trim();
+      titEl.textContent = objTexto || "Plan de Entrenamiento Activo";
+
+      const tipoCiclo = String(state.perfil.tipoCiclo || "mensual").toLowerCase();
+      const fIni = parseFechaDDMMYYYY(state.perfil.inicioCiclo);
+      const fFin = parseFechaDDMMYYYY(state.perfil.finCiclo);
+
+      let sesionesCiclo = [];
+      if (tipoCiclo === "rango" && fIni && fFin) {
+        fIni.setHours(0, 0, 0, 0);
+        fFin.setHours(23, 59, 59, 999);
+        subEl.textContent = `📅 Ciclo: ${state.perfil.inicioCiclo} al ${state.perfil.finCiclo}`;
+        sesionesCiclo = state.sesionesAgrupadas.filter(s => {
+          const fs = parseFechaDDMMYYYY(s.fechaDisplay);
+          return fs && fs >= fIni && fs <= fFin;
+        });
+      } else {
+        const hoy = new Date();
+        const mesAct = hoy.getMonth();
+        const anioAct = hoy.getFullYear();
+        const mesNombre = MESES_NOMBRES[mesAct].charAt(0).toUpperCase() + MESES_NOMBRES[mesAct].slice(1);
+        subEl.textContent = `🗓️ Ciclo Mensual: ${mesNombre} ${anioAct}`;
+        sesionesCiclo = state.sesionesAgrupadas.filter(s => {
+          const fs = parseFechaDDMMYYYY(s.fechaDisplay);
+          return fs && fs.getMonth() === mesAct && fs.getFullYear() === anioAct;
+        });
+      }
+
+      const total = sesionesCiclo.length;
+      const completadas = sesionesCiclo.filter(s => s.completado === "Sí").length;
+      const pct = total > 0 ? Math.round((completadas / total) * 100) : 0;
+
+      badgeEl.textContent = `${pct}%`;
+      fillEl.style.width = `${pct}%`;
+      detEl.textContent = total > 0
+        ? `${completadas} de ${total} sesiones completadas en este ciclo`
+        : `Sin sesiones asignadas en este ciclo todavía`;
     }
 
     function actualizarUIPerfil() {
@@ -1185,7 +1274,6 @@
     function renderVolumenChart() {
       const canvas = document.getElementById("volumenSemanalChart");
       const emptyMsg = document.getElementById("volumenEmptyMsg");
-      const badgeState = document.getElementById("periodBadgeState");
       const resumenBox = document.getElementById("resumenVolumenAtleta");
       const selDisc = document.getElementById("filtroDisciplinaVolumen");
       const discFiltro = selDisc ? selDisc.value : "Running_km";
@@ -1263,7 +1351,6 @@
       if (!labels.length || (!dataVols.some(v => v > 0) && !dataRpe.some(r => r !== null) && !dataReal.some(w => w > 0))) {
         canvas.parentElement.classList.add("hidden");
         emptyMsg.classList.remove("hidden");
-        if (badgeState) { badgeState.textContent = "🟢 Fase Base"; badgeState.style.background = "var(--primary)"; }
         if (resumenBox) resumenBox.innerHTML = `📈 <strong>Análisis de Triple Capa:</strong> Selecciona otra unidad en el desplegable superior si tus sesiones fueron cargadas en minutos o kilómetros.`;
         return;
       }
@@ -1305,24 +1392,6 @@
       if (idxDestacado === -1) idxDestacado = semanasOrdenadas.length - 1;
 
       pintarResumenAtleta(semanasOrdenadas[idxDestacado]);
-
-      let semActualVol = dataVols[idxDestacado];
-      let anteriores = dataVols.slice(0, idxDestacado);
-      let promedioAnterior = anteriores.length > 0 ? anteriores.reduce((a, b) => a + b, 0) / anteriores.length : semActualVol;
-      
-      if (badgeState) {
-        const numSem = idxDestacado + 1;
-        if (promedioAnterior > 0 && semActualVol > promedioAnterior * 1.15) {
-          badgeState.textContent = `🔴 Sem. ${numSem} • Choque`;
-          badgeState.style.background = "var(--danger)";
-        } else if (promedioAnterior > 0 && semActualVol < promedioAnterior * 0.8) {
-          badgeState.textContent = `🟢 Sem. ${numSem} • Descarga`;
-          badgeState.style.background = "var(--accent)";
-        } else {
-          badgeState.textContent = `🔵 Sem. ${numSem} • Carga`;
-          badgeState.style.background = "var(--primary)";
-        }
-      }
 
       const datasets = [
         {
@@ -1709,7 +1778,6 @@
         return true;
       });
 
-      // Ordenamiento cronológico automático
       sesionesFiltradas.sort((a, b) => {
         const fa = parseFechaDDMMYYYY(a.fechaDisplay);
         const fb = parseFechaDDMMYYYY(b.fechaDisplay);
@@ -1749,7 +1817,7 @@
       try {
         const payload = { action: "updateRutina", email: state.perfil.email, fecha: s.fechaRaw, tipoSesion: s.tipo, rpe: s.rpe, completado: s.completado, notaAtleta: s.notaAtleta };
         await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar Registro"; btn.disabled = false; renderRutinas(); renderVolumenChart(); }, 1200);
+        btn.textContent = "✔ Guardado"; setTimeout(() => { btn.textContent = "Guardar Registro"; btn.disabled = false; renderObjetivoYProgreso(); renderRutinas(); renderVolumenChart(); }, 1200);
       } catch (err) { btn.textContent = "Error"; btn.disabled = false; }
     }
 
