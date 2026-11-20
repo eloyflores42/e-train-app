@@ -437,6 +437,30 @@
           </details>
         </div>
 
+        <!-- CONFIGURACIÓN DE CONTACTO DEL ENTRENADOR (WHATSAPP E INSTAGRAM PARA LA APP ATLETA) -->
+        <div class="card">
+          <details id="acordeonContactoProfe">
+            <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+              <span>📱 Contacto del Entrenador (Botones en App Atleta)</span>
+              <span>▼</span>
+            </summary>
+            <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px;">
+              <p style="font-size:0.84rem; color:var(--muted); margin-bottom:12px;">Configurá tu número de WhatsApp y tu Instagram. Estos datos se guardan en tu propia base de datos y son los que verán tus atletas en la tarjeta de contacto de la app.</p>
+              <div class="grid-2">
+                <div>
+                  <label>WhatsApp (con código país, sin + ni espacios)</label>
+                  <input type="tel" id="configProfeWhatsapp" placeholder="Ej: 5492235066907" />
+                </div>
+                <div>
+                  <label>Instagram (usuario sin @ o enlace)</label>
+                  <input type="text" id="configProfeInstagram" placeholder="Ej: soyelprofeloy" />
+                </div>
+              </div>
+              <button type="button" class="btn btn-success" id="btnGuardarContactoProfe" onclick="guardarContactoProfe()">💾 Guardar Contacto del Entrenador</button>
+            </div>
+          </details>
+        </div>
+
         <div class="card" id="cardGestionPagos">
           <h2>💳 Registrar / Actualizar Cuota</h2>
           <div class="grid-2">
@@ -912,6 +936,45 @@
       }
     });
 
+    // --- GUARDAR CONTACTO DEL ENTRENADOR EN DB_Config ---
+    async function guardarContactoProfe() {
+      const waRaw = document.getElementById("configProfeWhatsapp").value.trim();
+      const igRaw = document.getElementById("configProfeInstagram").value.trim();
+      const waLimpio = waRaw.replace(/\D/g, "");
+      const igLimpio = igRaw.replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/^@/, "").replace(/\/.*$/, "").trim();
+
+      document.getElementById("configProfeWhatsapp").value = waLimpio;
+      document.getElementById("configProfeInstagram").value = igLimpio;
+
+      const btn = document.getElementById("btnGuardarContactoProfe");
+      btn.disabled = true;
+      btn.textContent = "⏳ Guardando contacto...";
+
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "guardarContactoProfe",
+            pass: claveGuardada,
+            whatsapp: waLimpio,
+            instagram: igLimpio
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert("✅ ¡Contacto guardado! Tus atletas ya verán estos botones en la app.");
+        } else {
+          alert("Error: " + (json.message || "No se pudo guardar."));
+        }
+      } catch (e) {
+        alert("Error de conexión al guardar el contacto.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "💾 Guardar Contacto del Entrenador";
+      }
+    }
+
     // --- FUNCION PARA EXPORTAR TABLA DEL SEGURO (CON TELÉFONO) ---
     function exportarTablaSeguro() {
       const q = (document.getElementById("buscadorAlumnosInput").value || "").trim().toLowerCase();
@@ -1259,6 +1322,13 @@
           }));
           pagosGlobalMap = data.pagos || {};
           videotecaGlobal = data.videoteca || [];
+
+          if (data.contacto) {
+            const inpWa = document.getElementById("configProfeWhatsapp");
+            const inpIg = document.getElementById("configProfeInstagram");
+            if (inpWa) inpWa.value = data.contacto.whatsapp || "";
+            if (inpIg) inpIg.value = data.contacto.instagram || "";
+          }
 
           if (Array.isArray(data.plantillas) && data.plantillas.length > 0) {
             plantillasPersonalizadas = data.plantillas;
@@ -2732,7 +2802,6 @@
           mapaSesiones.get(key).bloques.push(r);
         });
 
-        // Ordenamiento cronológico automático (por fecha ascendente)
         cacheRutinasAtletaCalendario = Array.from(mapaSesiones.values()).sort((a, b) => {
           const fa = parsearFechaDDMMYYYY(a.fechaRaw);
           const fb = parsearFechaDDMMYYYY(b.fechaRaw);
@@ -2846,7 +2915,8 @@
                   <div style="font-size: 0.85rem; color: var(--muted);">Volumen: <strong>${s.volumen}</strong> | Ejercicios: ${s.bloques.length} <span style="color:var(--accent);">(Toca para desplegar ▼)</span></div>
                 </div>
               </div>
-              <div style="display:flex; gap:6px;" onclick="event.stopPropagation();">
+              <div style="display:flex; gap:6px; flex-wrap:wrap;" onclick="event.stopPropagation();">
+                <button class="btn btn-outline" onclick="enviarRutinaWhatsAppDesdeGestion(${index})" style="border-color:var(--accent); color:var(--accent); padding: 5px 10px;">📲 WhatsApp</button>
                 <button class="btn btn-outline" onclick="editarRutinaDesdeGestion(${index})" style="background:var(--primary); color:#fff; border:none; padding: 5px 10px;">✏️ Editar</button>
                 <button class="btn btn-outline" onclick="borrarRutinaDesdeGestion(${index})" style="border-color:var(--danger); color:var(--danger); padding: 5px 10px;">🗑️ Borrar</button>
               </div>
@@ -2859,6 +2929,58 @@
           </div>
         `;
       }).join("");
+    }
+
+    // --- EXPORTAR RUTINA A WHATSAPP (EXCLUSIVO PANEL PROFE) ---
+    function enviarRutinaWhatsAppDesdeGestion(index) {
+      const s = cacheRutinasAtletaCalendario[index];
+      const email = document.getElementById("gestionSelectAtleta").value;
+      if (!s || !email) return;
+
+      const atleta = listaAtletasGlobal.find(a => String(a.email || "").trim().toLowerCase() === String(email).trim().toLowerCase());
+      const nombreAtleta = atleta ? atleta.nombre : email;
+
+      const bloquesTxt = (s.bloques || []).map(b => {
+        const orden = b["Orden / Bloque"] || "-";
+        const ej = b["Ejercicio"] || "-";
+        const ser = b["Series y Repeticiones"] || "-";
+        const carga = b["Carga / Intensidad"] || "-";
+        const micro = b["Micropausa"] || "-";
+        const macro = b["Macropausa"] || "-";
+        const pausas = [];
+        if (micro && micro !== "-") pausas.push(`Micro: ${micro}`);
+        if (macro && macro !== "-") pausas.push(`Macro: ${macro}`);
+        const pausaStr = pausas.length ? ` | ${pausas.join(" • ")}` : "";
+        return `• *${orden} - ${ej}*\n  ${ser} | Carga: ${carga}${pausaStr}`;
+      }).join("\n");
+
+      const lineas = [
+        `🏋️‍♂️ *ENTRENAMIENTO E-TRAIN*`,
+        `👤 *Atleta:* ${nombreAtleta}`,
+        `📅 *Fecha:* ${s.fechaRaw}`,
+        `📌 *Sesión:* ${s.tipo}`,
+        `📊 *Volumen:* ${s.volumen || "-"}`
+      ];
+
+      if (s.indicaciones) {
+        lineas.push(`📢 *Indicaciones:* ${s.indicaciones}`);
+      }
+
+      lineas.push(`────────────────────`);
+      lineas.push(bloquesTxt || "Sin ejercicios cargados.");
+      lineas.push(`────────────────────`);
+      lineas.push(`🚀 _Recordá cargar tu RPE y volumen real en la app._`);
+
+      const textoFinal = lineas.join("\n");
+
+      let cel = atleta ? limpiarTelefonoPuntos(atleta.celular).replace(/\D/g, "") : "";
+      if (cel.startsWith("0")) cel = cel.substring(1);
+      if (cel.length === 10 && !cel.startsWith("54")) cel = "549" + cel;
+
+      const urlWa = cel
+        ? `https://wa.me/${cel}?text=${encodeURIComponent(textoFinal)}`
+        : `https://wa.me/?text=${encodeURIComponent(textoFinal)}`;
+      window.open(urlWa, "_blank");
     }
 
     function toggleSeleccionRutinaBorrar(key, isChecked) {
