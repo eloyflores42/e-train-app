@@ -392,6 +392,51 @@
           </details>
         </div>
 
+        <!-- ATAJO EN LOTE: ASIGNAR OBJETIVO Y CICLO POR CLUB O GRUPO -->
+        <div class="card">
+          <details id="acordeonCicloLote">
+            <summary style="font-family:'Montserrat', sans-serif; font-style:italic; font-size:1.05rem; letter-spacing:0.5px; text-transform:uppercase; color:var(--accent); list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+              <span>🎯 Asignar Objetivo y Ciclo en Lote (por Club / Grupo)</span>
+              <span>▼</span>
+            </summary>
+            <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px;">
+              <p style="font-size:0.84rem; color:var(--muted); margin-bottom:12px;">Filtrá por Club o Grupo, marcá los atletas activos y aplicá el mismo Objetivo o Rango de Ciclo (ej. del 15 al 15 o hasta una carrera) a todos en un clic.</p>
+              <div class="grid-2" style="gap:8px; margin-bottom:6px;">
+                <select id="filtroLoteCicloClub" onchange="filtrarChecksLoteCiclo()" style="margin-bottom:0; padding:7px; font-size:0.84rem;">
+                  <option value="">🏢 Todos los Clubes</option>
+                </select>
+                <select id="filtroLoteCicloGrupo" onchange="filtrarChecksLoteCiclo()" style="margin-bottom:0; padding:7px; font-size:0.84rem;">
+                  <option value="">👟 Todos los Grupos</option>
+                </select>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem;">
+                <a href="#" onclick="marcarVisiblesLoteCiclo(true); return false;" style="color:var(--primary); text-decoration:none;">✔ Marcar visibles</a>
+                <a href="#" onclick="marcarVisiblesLoteCiclo(false); return false;" style="color:var(--muted); text-decoration:none;">✖ Desmarcar</a>
+              </div>
+              <div class="multi-atleta-box" id="listaCheckLoteCiclo" style="max-height:145px;"></div>
+
+              <div class="grid-2">
+                <div>
+                  <label>Objetivo / Próxima Carrera (Opcional: vacío mantiene el actual)</label>
+                  <input type="text" id="loteObjetivo" placeholder="Ej: 21K Mar del Plata / Ciclo Nov-Dic" />
+                </div>
+                <div>
+                  <label>Modo de Reinicio de la Barra</label>
+                  <select id="loteTipoCiclo" onchange="toggleFechasCicloLote()">
+                    <option value="rango">📅 Ciclo / Rango de Fechas (ej. 15 al 15 o Carrera)</option>
+                    <option value="mensual">🗓️ Mes Calendario (Automático del 1 al 31)</option>
+                  </select>
+                </div>
+              </div>
+              <div id="contenedorFechasLote" class="grid-2">
+                <div><label>Inicio del Ciclo</label><input type="date" id="loteInicioCiclo" /></div>
+                <div><label>Fin del Ciclo / Fecha de Carrera</label><input type="date" id="loteFinCiclo" /></div>
+              </div>
+              <button type="button" class="btn btn-success" id="btnAplicarCicloLote" onclick="aplicarCicloMasivo()">🎯 Aplicar Objetivo y Ciclo a Seleccionados</button>
+            </div>
+          </details>
+        </div>
+
         <div class="card" id="cardGestionPagos">
           <h2>💳 Registrar / Actualizar Cuota</h2>
           <div class="grid-2">
@@ -536,6 +581,29 @@
                 <label>Alergias, Lesiones u Observaciones Médicas (Ciclo / Menopausia / Antecedentes)</label>
                 <textarea id="fichaAlergias"></textarea>
               </div>
+
+              <!-- BLOQUE OBJETIVO Y CICLO INDIVIDUAL -->
+              <div style="background:#0b1120; border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:8px; padding:12px; margin-bottom:14px;">
+                <h4 style="font-size:0.9rem; color:var(--accent); text-transform:uppercase; margin-bottom:10px;">🎯 Objetivo y Ciclo de Progreso (App Atleta)</h4>
+                <div class="grid-2">
+                  <div>
+                    <label>Objetivo / Próxima Carrera</label>
+                    <input type="text" id="fichaObjetivo" placeholder="Ej: 21K Mar del Plata / Base 10K" style="margin-bottom:8px;">
+                  </div>
+                  <div>
+                    <label>Modo de Reinicio de Barra</label>
+                    <select id="fichaTipoCiclo" onchange="toggleFechasCicloFicha()" style="margin-bottom:8px;">
+                      <option value="mensual">🗓️ Mes Calendario (Automático)</option>
+                      <option value="rango">📅 Ciclo / Rango de Fechas (ej. 15 al 15 o Carrera)</option>
+                    </select>
+                  </div>
+                </div>
+                <div id="contenedorFechasCicloFicha" class="grid-2 hidden">
+                  <div><label>Inicio del Ciclo</label><input type="date" id="fichaInicioCiclo" style="margin-bottom:0;"></div>
+                  <div><label>Fin del Ciclo / Fecha de Carrera</label><input type="date" id="fichaFinCiclo" style="margin-bottom:0;"></div>
+                </div>
+              </div>
+
               <button class="btn btn-success" onclick="guardarFichaDesdeProfe()">💾 Guardar Cambios en la Ficha del Atleta</button>
             </div>
           </div>
@@ -844,7 +912,7 @@
       }
     });
 
-    // --- FUNCION PARA EXPORTAR TABLA DEL SEGURO ---
+    // --- FUNCION PARA EXPORTAR TABLA DEL SEGURO (CON TELÉFONO) ---
     function exportarTablaSeguro() {
       const q = (document.getElementById("buscadorAlumnosInput").value || "").trim().toLowerCase();
       const fClub = (document.getElementById("filtroAlumnosClub").value || "").trim().toLowerCase();
@@ -872,6 +940,7 @@
           <td>${a.nombre}</td>
           <td>${a.dni || "-"}</td>
           <td>${limpiarFechaVisual(a.fechaNac) || "-"}</td>
+          <td>${limpiarTelefonoPuntos(a.celular) || "-"}</td>
           <td>${a.club || "-"}</td>
         </tr>
       `).join("");
@@ -883,7 +952,7 @@
             <title>Planilla de Seguro / Buena Fe - E-TRAIN</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; }
-              table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
               th, td { border: 1px solid #333; padding: 8px; text-align: left; }
               th { background: #f0f0f0; text-transform: uppercase; }
               h2 { margin-bottom: 5px; color: #1e3a8a; }
@@ -894,7 +963,7 @@
             <p>Filtro aplicado: <strong>${document.querySelector('.filter-pill.active').textContent}</strong> | Fecha: ${new Date().toLocaleDateString()}</p>
             <table>
               <thead>
-                <tr><th>Nombre y Apellido</th><th>DNI</th><th>Fecha Nacimiento</th><th>Club / Institución</th></tr>
+                <tr><th>Nombre y Apellido</th><th>DNI</th><th>Fecha Nacimiento</th><th>Teléfono / Celular</th><th>Club / Institución</th></tr>
               </thead>
               <tbody>${filas}</tbody>
             </table>
@@ -903,6 +972,89 @@
         </html>
       `);
       ventana.document.close();
+    }
+
+    // --- CONTROLES DE CICLO (INDIVIDUAL Y EN LOTE) ---
+    function toggleFechasCicloFicha() {
+      const tipo = document.getElementById("fichaTipoCiclo").value;
+      const box = document.getElementById("contenedorFechasCicloFicha");
+      if (box) box.classList.toggle("hidden", tipo !== "rango");
+    }
+
+    function toggleFechasCicloLote() {
+      const tipo = document.getElementById("loteTipoCiclo").value;
+      const box = document.getElementById("contenedorFechasLote");
+      if (box) box.classList.toggle("hidden", tipo !== "rango");
+    }
+
+    function filtrarChecksLoteCiclo() {
+      const fClub = (document.getElementById("filtroLoteCicloClub").value || "").toLowerCase();
+      const fGrupo = (document.getElementById("filtroLoteCicloGrupo").value || "").toLowerCase();
+      document.querySelectorAll(".item-lote-ciclo").forEach(row => {
+        const c = row.getAttribute("data-club") || "";
+        const g = row.getAttribute("data-grupo") || "";
+        const okClub = !fClub || c === fClub;
+        const okGrupo = !fGrupo || g === fGrupo;
+        row.classList.toggle("hidden", !(okClub && okGrupo));
+      });
+    }
+
+    function marcarVisiblesLoteCiclo(estado) {
+      document.querySelectorAll(".item-lote-ciclo").forEach(row => {
+        if (!row.classList.contains("hidden")) {
+          const chk = row.querySelector(".check-lote-ciclo");
+          if (chk) chk.checked = estado;
+        }
+      });
+    }
+
+    async function aplicarCicloMasivo() {
+      const emailsSel = [];
+      document.querySelectorAll(".check-lote-ciclo:checked").forEach(c => emailsSel.push(c.value));
+      if (!emailsSel.length) return alert("Marcá al menos un atleta para aplicar el objetivo/ciclo.");
+
+      const objetivo = document.getElementById("loteObjetivo").value.trim();
+      const tipoCiclo = document.getElementById("loteTipoCiclo").value;
+      const inicioCiclo = tipoCiclo === "rango" ? formatFechaEnvio(document.getElementById("loteInicioCiclo").value) : "";
+      const finCiclo = tipoCiclo === "rango" ? formatFechaEnvio(document.getElementById("loteFinCiclo").value) : "";
+
+      if (tipoCiclo === "rango" && (!inicioCiclo || !finCiclo)) {
+        return alert("Elegí la Fecha de Inicio y la Fecha de Fin del ciclo.");
+      }
+
+      if (!confirm(`¿Aplicar esta configuración de ciclo a ${emailsSel.length} atleta(s)?`)) return;
+
+      const btn = document.getElementById("btnAplicarCicloLote");
+      btn.disabled = true;
+      btn.textContent = "⏳ Actualizando atletas...";
+
+      try {
+        const res = await fetch(getApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "asignarCicloMasivo",
+            pass: claveGuardada,
+            emails: emailsSel,
+            objetivo: objetivo,
+            tipoCiclo: tipoCiclo,
+            inicioCiclo: inicioCiclo,
+            finCiclo: finCiclo
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert(`✅ ¡Listo! Se actualizó el objetivo/ciclo en ${json.actualizados || emailsSel.length} atleta(s).`);
+          verificarProfe();
+        } else {
+          alert("Error: " + json.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al aplicar el ciclo en lote.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🎯 Aplicar Objetivo y Ciclo a Seleccionados";
+      }
     }
 
     // --- GESTIÓN DE MÚLTIPLES FECHAS EN ASIGNACIÓN ---
@@ -1099,7 +1251,11 @@
             ...a,
             dni: a.dni || (a.ficha && a.ficha["DNI"]) || "",
             club: a.club || (a.ficha && a.ficha["Club"]) || "",
-            grupo: a.grupo || (a.ficha && a.ficha["Grupo"]) || ""
+            grupo: a.grupo || (a.ficha && a.ficha["Grupo"]) || "",
+            objetivo: a.objetivo || (a.ficha && a.ficha["Objetivo"]) || "",
+            tipoCiclo: a.tipoCiclo || (a.ficha && a.ficha["Tipo Ciclo"]) || "mensual",
+            inicioCiclo: a.inicioCiclo || (a.ficha && a.ficha["Inicio Ciclo"]) || "",
+            finCiclo: a.finCiclo || (a.ficha && a.ficha["Fin Ciclo"]) || ""
           }));
           pagosGlobalMap = data.pagos || {};
           videotecaGlobal = data.videoteca || [];
@@ -1174,6 +1330,8 @@
       poblarSelectFiltro("filtroAlumnosGrupo", "👟 Todos los Grupos", gruposActivos);
       poblarSelectFiltro("filtroGrupalClub", "🏢 Todos los Clubes", clubesActivos);
       poblarSelectFiltro("filtroGrupalGrupo", "👟 Todos los Grupos", gruposActivos);
+      poblarSelectFiltro("filtroLoteCicloClub", "🏢 Todos los Clubes", clubesActivos);
+      poblarSelectFiltro("filtroLoteCicloGrupo", "👟 Todos los Grupos", gruposActivos);
     }
 
     function poblarSelectoresAtletas() {
@@ -1183,6 +1341,7 @@
       const espejoSelectAtleta = document.getElementById("espejoSelectAtleta");
       const checkContainer = document.getElementById("listaCheckAtletas");
       const checkBorradoGrupal = document.getElementById("listaCheckBorradoGrupal");
+      const checkLoteCiclo = document.getElementById("listaCheckLoteCiclo");
 
       const prevPagoSel = pagoSelectAtleta.value;
       const prevEspejoSel = espejoSelectAtleta.value;
@@ -1194,6 +1353,7 @@
       espejoSelectAtleta.innerHTML = '<option value="">Elegir atleta...</option>';
       checkContainer.innerHTML = '';
       if (checkBorradoGrupal) checkBorradoGrupal.innerHTML = '';
+      if (checkLoteCiclo) checkLoteCiclo.innerHTML = '';
 
       listaAtletasGlobal.forEach(a => {
         const emailNorm = String(a.email || "").trim().toLowerCase();
@@ -1241,6 +1401,22 @@
               </div>
             `;
             checkBorradoGrupal.appendChild(lblB);
+          }
+
+          if (checkLoteCiclo) {
+            const lblL = document.createElement("label");
+            lblL.className = "atleta-check-item item-lote-ciclo";
+            lblL.setAttribute("data-club", clubStr.toLowerCase());
+            lblL.setAttribute("data-grupo", grupoStr.toLowerCase());
+            lblL.innerHTML = `
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <input type="checkbox" class="check-lote-ciclo" value="${emailNorm}">
+                <span><strong>${a.nombre}</strong></span>
+                ${badgesClubGrupo}
+              </div>
+              <small style="color:var(--muted);">${a.objetivo || "Sin objetivo"}</small>
+            `;
+            checkLoteCiclo.appendChild(lblL);
           }
         }
 
@@ -1502,6 +1678,12 @@
         document.getElementById("fichaSangre").value = `${p["Grupo Sanguíneo"] || ""} ${p["Donante"] ? '(' + p["Donante"] + ')' : ''}`.trim();
         document.getElementById("fichaAlergias").value = p["Alergias / Observaciones"] || "";
 
+        document.getElementById("fichaObjetivo").value = p["Objetivo"] || "";
+        document.getElementById("fichaTipoCiclo").value = (p["Tipo Ciclo"] === "rango") ? "rango" : "mensual";
+        document.getElementById("fichaInicioCiclo").value = formatFechaInput(p["Inicio Ciclo"] || "");
+        document.getElementById("fichaFinCiclo").value = formatFechaInput(p["Fin Ciclo"] || "");
+        toggleFechasCicloFicha();
+
         document.getElementById("kpiVam").textContent = vamLimpia ? `${vamLimpia} km/h` : "-";
         document.getElementById("kpiFC").textContent = `${p["FC Reposo"] || "-"} / ${p["FC Max"] || "-"}`;
         document.getElementById("kpiPin").textContent = p["PIN"] || "-";
@@ -1619,7 +1801,6 @@
       const alergias = document.getElementById("fichaAlergias").value.trim() || "Sin observaciones.";
       const infoCuota = evaluarEstadoCuotaAtleta(email);
 
-      // Capturar imagen del gráfico adaptada a fondo blanco para el documento PDF
       let chartImgUrl = "";
       const canvas = document.getElementById("espejoTripleChart");
       if (canvas && espejoTripleChartInstance) {
@@ -1771,6 +1952,8 @@
       document.getElementById("fichaCelular").value = celLimpio;
       document.getElementById("fichaEmergencia").value = emgLimpio;
 
+      const tipoCiclo = document.getElementById("fichaTipoCiclo").value;
+
       const payload = {
         action: "guardarPerfil",
         email: email,
@@ -1787,14 +1970,18 @@
         emergencia: emgLimpio,
         obraSocial: document.getElementById("fichaObraSocial").value.trim(),
         sangre: document.getElementById("fichaSangre").value.trim(),
-        alergias: document.getElementById("fichaAlergias").value.trim()
+        alergias: document.getElementById("fichaAlergias").value.trim(),
+        objetivo: document.getElementById("fichaObjetivo").value.trim(),
+        tipoCiclo: tipoCiclo,
+        inicioCiclo: tipoCiclo === "rango" ? formatFechaEnvio(document.getElementById("fichaInicioCiclo").value) : "",
+        finCiclo: tipoCiclo === "rango" ? formatFechaEnvio(document.getElementById("fichaFinCiclo").value) : ""
       };
 
       try {
         const res = await fetch(getApiUrl(), { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (json.status === "success") {
-          alert("✅ Ficha médica, Club y Grupo actualizados correctamente.");
+          alert("✅ Ficha médica, Club, Grupo y Objetivo/Ciclo actualizados correctamente.");
           cargarFichaYEspejoAtleta();
           verificarProfe();
         } else {
