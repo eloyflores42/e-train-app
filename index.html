@@ -353,8 +353,8 @@
             🏃‍♂️ <strong>¿Qué estás viendo?</strong> Cuando realizas un Test de 5 Minutos o de Cooper, ingresa aquí los metros alcanzados. El sistema calculará tu <strong>VAM (Velocidad Aeróbica Máxima)</strong> para ajustar automáticamente todos los ritmos de tus rutinas.
           </div>
           <div class="grid-3">
-            <div><label>Tipo de Test</label><select id="testResistenciaTipo" onchange="previewTestResistencia()"><option value="Test de 5 Min (VAM)">Test de 5 Minutos (VAM)</option><option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option></select></div>
-            <div><label>Distancia lograda (metros)</label><input type="number" id="testResistenciaDist" value="1200" step="10" oninput="previewTestResistencia()" /></div>
+            <div><label>Tipo de Test</label><select id="testResistenciaTipo" onchange="cargarDistanciaUltimoTestResistencia()"><option value="Test de 5 Min (VAM)">Test de 5 Minutos (VAM)</option><option value="Test de Cooper (VO2 Max)">Test de Cooper (12 min)</option></select></div>
+            <div><label>Distancia lograda (metros)</label><input type="number" id="testResistenciaDist" placeholder="Sin test registrado" step="10" oninput="previewTestResistencia()" /></div>
           </div>
           <div style="margin-top:10px; font-size:0.95rem;">Resultado Estimado: <strong id="previewResistencia" style="color:var(--accent);">-</strong></div>
           <button class="btn" style="margin-top:10px;" id="btnGuardarTestResistencia" onclick="guardarTestResistencia()">Guardar Test y Actualizar Perfil</button>
@@ -547,7 +547,8 @@
       perfil: { 
         email: "", nombre: "", pin: "", dni: "", fechaNac: "", club: "", grupo: "", vam: "", fcr: 52, fcmax: 188, cooperMetros: 2800,
         celular: "", emergencia: "", direccion: "", obraSocial: "", clinica: "", sangre: "", donante: "", alergias: "",
-        objetivo: "", tipoCiclo: "mensual", inicioCiclo: "", finCiclo: ""
+        objetivo: "", tipoCiclo: "mensual", inicioCiclo: "", finCiclo: "",
+        ultimoTestVamDist: "", ultimoTestCooperDist: ""
       },
       rms: { "Sentadilla": { peso: 80, reps: 5, rm: 90.0 }, "Hip Thrust": { peso: 100, reps: 8, rm: 124.2 }, "Peso Muerto": { peso: 110, reps: 3, rm: 116.5 }, "Press de Banca": { peso: 70, reps: 6, rm: 81.3 } },
       pbs: { "100m": null, "200m": null, "400m": null, "800m": null, "1500m": null, "3k": null, "5k": null, "10k": null, "21k": null, "42k": null },
@@ -814,7 +815,9 @@
           objetivo: p["Objetivo"] || "",
           tipoCiclo: p["Tipo Ciclo"] || "mensual",
           inicioCiclo: formatSimpleDate(p["Inicio Ciclo"] || ""),
-          finCiclo: formatSimpleDate(p["Fin Ciclo"] || "")
+          finCiclo: formatSimpleDate(p["Fin Ciclo"] || ""),
+          ultimoTestVamDist: "",
+          ultimoTestCooperDist: ""
         };
       }
       
@@ -832,11 +835,18 @@
         if (state.rms[tipo] && parseNum(in1) > 0) { 
           state.rms[tipo] = { peso: parseNum(in1), reps: in2 || 1, rm: resCalc > 0 ? resCalc : calcBrzycki(parseNum(in1), in2 || 1) }; 
         } 
-        else if (!state.perfil.vam && (tipo.toLowerCase().includes("5 min") || tipo.toLowerCase().includes("vam")) && (resCalc > 0 || parseNum(in1) > 300)) {
-          const vamTest = (resCalc > 5 && resCalc < 30) ? resCalc : +((parseNum(in1) / 1000) * 12).toFixed(2);
-          if (vamTest > 0) state.perfil.vam = vamTest;
+        else if (tipo.toLowerCase().includes("5 min") || tipo.toLowerCase().includes("vam")) {
+          const distNum = parseNum(in1);
+          if (distNum > 0) state.perfil.ultimoTestVamDist = String(distNum);
+          if (!state.perfil.vam && (resCalc > 0 || distNum > 300)) {
+            const vamTest = (resCalc > 5 && resCalc < 30) ? resCalc : +((distNum / 1000) * 12).toFixed(2);
+            if (vamTest > 0) state.perfil.vam = vamTest;
+          }
         }
-        else if (tipo.includes("Cooper") && parseNum(in1) > 0) { state.perfil.cooperMetros = parseNum(in1); }
+        else if (tipo.toLowerCase().includes("cooper") && parseNum(in1) > 0) {
+          state.perfil.cooperMetros = parseNum(in1);
+          state.perfil.ultimoTestCooperDist = String(parseNum(in1));
+        }
         else if (tipo.startsWith("Marca PB ")) {
           const distKey = tipo.replace("Marca PB ", "");
           if (state.pbs[distKey] !== undefined) {
@@ -1007,7 +1017,20 @@
       document.getElementById("inputAlergias").value = state.perfil.alergias;
       
       actualizarBadgeEdadPerfil();
-      previewTestResistencia(); previewTestFuerza(); previewPBRitmo();
+      cargarDistanciaUltimoTestResistencia();
+      previewTestFuerza(); previewPBRitmo();
+    }
+
+    function cargarDistanciaUltimoTestResistencia() {
+      const tipo = document.getElementById("testResistenciaTipo").value;
+      const distInput = document.getElementById("testResistenciaDist");
+      if (!distInput) return;
+      if (tipo.includes("5 Min")) {
+        distInput.value = state.perfil.ultimoTestVamDist || "";
+      } else {
+        distInput.value = state.perfil.ultimoTestCooperDist || "";
+      }
+      previewTestResistencia();
     }
 
     function syncSeguroAtleta() {
@@ -1093,17 +1116,37 @@
     async function guardarParametrosFisiologicos() { recalcularZonas(); await guardarPerfilEnSheets(null, "btnGuardarParametros"); }
 
     function previewTestResistencia() {
-      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
-      document.getElementById("previewResistencia").textContent = tipo.includes("5 Min") ? ((dist / 1000) * 12).toFixed(2) + " km/h (VAM)" : calcCooperVO2(dist).toFixed(1) + " ml/kg/min (VO2)";
+      const tipo = document.getElementById("testResistenciaTipo").value;
+      const rawDist = document.getElementById("testResistenciaDist").value.trim();
+      const dist = parseNum(rawDist, 0);
+      if (!rawDist || dist <= 0) {
+        document.getElementById("previewResistencia").textContent = "-";
+        return;
+      }
+      document.getElementById("previewResistencia").textContent = tipo.includes("5 Min")
+        ? ((dist / 1000) * 12).toFixed(2) + " km/h (VAM)"
+        : calcCooperVO2(dist).toFixed(1) + " ml/kg/min (VO2)";
     }
 
     async function guardarTestResistencia() {
-      const tipo = document.getElementById("testResistenciaTipo").value; const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      const tipo = document.getElementById("testResistenciaTipo").value;
+      const dist = parseNum(document.getElementById("testResistenciaDist").value, 0);
+      if (dist <= 0) {
+        alert("Ingresá una distancia válida en metros.");
+        return;
+      }
       let resCalc = 0;
       if (tipo.includes("5 Min")) { 
-        resCalc = +((dist / 1000) * 12).toFixed(2); document.getElementById("inputVAM").value = resCalc; state.perfil.vam = resCalc; recalcularZonas(); 
+        resCalc = +((dist / 1000) * 12).toFixed(2);
+        document.getElementById("inputVAM").value = resCalc;
+        state.perfil.vam = resCalc;
+        state.perfil.ultimoTestVamDist = String(dist);
+        recalcularZonas(); 
       } else { 
-        resCalc = dist; state.perfil.cooperMetros = dist; recalcularZonas(); 
+        resCalc = dist;
+        state.perfil.cooperMetros = dist;
+        state.perfil.ultimoTestCooperDist = String(dist);
+        recalcularZonas(); 
       }
       
       const hoy = new Date(); const fechaHoyStr = `${String(hoy.getDate()).padStart(2,'0')}/${String(hoy.getMonth()+1).padStart(2,'0')}/${hoy.getFullYear()}`;
